@@ -3,15 +3,19 @@
 use App\Http\Controllers\AlertaEpidemiologicaController;
 use App\Http\Controllers\CasoEpidemiologicoController;
 use App\Http\Controllers\CategoriaEnfermedadController;
+use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SegmentacionZonaController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\TipoTransmisionController;
 use App\Http\Controllers\TipoUsuarioController;
@@ -78,27 +82,23 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
         ["index", "store"]
     );
 
-
     // TIPO USUARIOS
     Route::get("tipo_usuarios/listado", [TipoUsuarioController::class, 'listado'])->name("tipo_usuarios.listado");
 
-    // ALERTAS EPIDEMIOLOGICAS
-    Route::get("alerta_epidemiologicas", [AlertaEpidemiologicaController::class, 'index'])->name("alerta_epidemiologicas.index");
+    // DEPARTAMENTOS
+    Route::get("departamentos/listado", [DepartamentoController::class, 'listado'])->name("departamentos.listado");
 
-    // ROLES
-    Route::get("roles/api", [RoleController::class, 'api'])->name("roles.api");
-    Route::get("roles/paginado", [RoleController::class, 'paginado'])->name("roles.paginado");
-    Route::get("roles/listado", [RoleController::class, 'listado'])->name("roles.listado");
-    Route::post("roles/actualizaPermiso/{role}", [RoleController::class, 'actualizaPermiso'])->name("roles.actualizaPermiso");
-    Route::resource("roles", RoleController::class)->only(
-        ["index", "store", "edit", "show", "update", "destroy"]
-    );
+    // PROVINCIAS
+    Route::get("provincias/listado", [ProvinciaController::class, 'listado'])->name("provincias.listado");
 
-    // COMUNIDADES
-    Route::get("comunidads/paginado", [ComunidadController::class, 'paginado'])->name("comunidads.paginado");
-    Route::get("comunidads/listado", [ComunidadController::class, 'listado'])->name("comunidads.listado");
-    Route::post("comunidads/actualizaPermiso/{role}", [ComunidadController::class, 'actualizaPermiso'])->name("comunidads.actualizaPermiso");
-    Route::resource("comunidads", ComunidadController::class)->only(
+    // CIUDADS
+    Route::get("ciudads/listado", [CiudadController::class, 'listado'])->name("ciudads.listado");
+
+    // SEGMENTACION ZONAS
+    Route::get("segmentacion_zonas/paginado", [SegmentacionZonaController::class, 'paginado'])->name("segmentacion_zonas.paginado");
+    Route::get("segmentacion_zonas/listado", [SegmentacionZonaController::class, 'listado'])->name("segmentacion_zonas.listado");
+    Route::post("segmentacion_zonas/actualizaPermiso/{role}", [SegmentacionZonaController::class, 'actualizaPermiso'])->name("segmentacion_zonas.actualizaPermiso");
+    Route::resource("segmentacion_zonas", SegmentacionZonaController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 

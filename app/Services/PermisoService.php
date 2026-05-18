@@ -23,12 +23,25 @@ class PermisoService
             "usuarios.byTipo",
 
             "tipo_usuarios.listado",
+            "departamentos.listado",
+            "provincias.listado",
+            "ciudads.listado",
 
             "configuracions.index",
             "configuracions.create",
             "configuracions.edit",
             "configuracions.update",
             "configuracions.destroy",
+
+            "segmentacion_zonas.paginado",
+            "segmentacion_zonas.index",
+            "segmentacion_zonas.listado",
+            "segmentacion_zonas.create",
+            "segmentacion_zonas.store",
+            "segmentacion_zonas.edit",
+            "segmentacion_zonas.show",
+            "segmentacion_zonas.update",
+            "segmentacion_zonas.destroy",
 
 
             "reportes.usuarios",

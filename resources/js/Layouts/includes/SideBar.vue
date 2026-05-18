@@ -149,10 +149,7 @@ onUnmounted(() => {});
                         v-if="
                             permisos == '*' ||
                             permisos.includes('usuarios.index') ||
-                            permisos.includes('alerta_epidemiologicas.index') ||
-                            permisos.includes('sucursals.index') ||
-                            permisos.includes('tipo_certificados.index') ||
-                            permisos.includes('certificados.index')
+                            permisos.includes('segmentacion_zonas.index')
                         "
                     >
                         ADMINISTRACIÓN
@@ -160,158 +157,28 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('alerta_epidemiologicas.index')
+                            permisos.includes('segmentacion_zonas.index')
                         "
-                        :label="'Alertas Epidemiologicas'"
-                        :ruta="'alerta_epidemiologicas.index'"
-                        :icon="'fa fa-map'"
+                        :label="'Segmentación de Zonas'"
+                        :ruta="'segmentacion_zonas.index'"
+                        :icon="'fa fa-map-marked-alt'"
                     ></ItemMenu>
+
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('comunidads.index')
+                            permisos.includes('usuarios.index')
                         "
-                        :label="'Comunidades'"
-                        :ruta="'comunidads.index'"
-                        :icon="'fa fa-list'"
+                        :label="'Usuarios'"
+                        :ruta="'usuarios.index'"
+                        :icon="'fa fa-users'"
                     ></ItemMenu>
-                    <li
-                        class="nav-item"
-                        v-if="
-                            permisos == '*' ||
-                            permisos.includes('enfermedads.index') ||
-                            permisos.includes('categoria_enfermedads.index') ||
-                            permisos.includes('tipo_transmisions.index')
-                        "
-                        :class="{ 'menu-open': openMenus.enfermedads }"
-                    >
-                        <a
-                            href="#"
-                            class="nav-link"
-                            :class="[
-                                route_current == 'enfermedads.index' ||
-                                route_current ==
-                                    'categoria_enfermedads.index' ||
-                                route_current == 'tipo_transmisions.index'
-                                    ? 'active menu-is-opening menu-open'
-                                    : '',
-                            ]"
-                            @click.prevent="toggleSubMenu('enfermedads')"
-                        >
-                            <i class="nav-icon fa fa-clipboard-list"></i>
-                            <p>
-                                Enfermedades
-                                <i class="nav-arrow fa fa-chevron-right"></i>
-                            </p>
-                        </a>
-                        <ul
-                            class="nav nav-treeview"
-                            role="navigation"
-                            aria-label="Navigation 4"
-                            :style="{
-                                maxHeight: openMenus.enfermedads
-                                    ? '500px'
-                                    : '0px',
-                            }"
-                        >
-                            <ItemMenu
-                                v-if="
-                                    permisos == '*' ||
-                                    permisos.includes('enfermedads.index')
-                                "
-                                :label="'Enfermedades'"
-                                :ruta="'enfermedads.index'"
-                                :icon="'fa fa-angle-right'"
-                            ></ItemMenu>
-                            <ItemMenu
-                                v-if="
-                                    permisos == '*' ||
-                                    permisos.includes(
-                                        'categoria_enfermedads.index',
-                                    )
-                                "
-                                :label="'Categoría Enfermedades'"
-                                :ruta="'categoria_enfermedads.index'"
-                                :icon="'fa fa-angle-right'"
-                            ></ItemMenu>
-                            <ItemMenu
-                                v-if="
-                                    permisos == '*' ||
-                                    permisos.includes('tipo_transmisions.index')
-                                "
-                                :label="'Tipo de Transmisiones'"
-                                :ruta="'tipo_transmisions.index'"
-                                :icon="'fa fa-angle-right'"
-                            ></ItemMenu>
-                        </ul>
-                    </li>
-                    <li
-                        class="nav-item"
-                        v-if="
-                            permisos == '*' ||
-                            permisos.includes('usuarios.index') ||
-                            permisos.includes('roles.index')
-                        "
-                        :class="{ 'menu-open': openMenus.usuarios }"
-                    >
-                        <a
-                            href="#"
-                            class="nav-link"
-                            :class="[
-                                route_current == 'usuarios.index' ||
-                                route_current == 'roles.index'
-                                    ? 'active menu-is-opening menu-open'
-                                    : '',
-                            ]"
-                            @click.prevent="toggleSubMenu('usuarios')"
-                        >
-                            <i class="nav-icon fa fa-users"></i>
-                            <p>
-                                Usuarios
-                                <i class="nav-arrow fa fa-chevron-right"></i>
-                            </p>
-                        </a>
-                        <ul
-                            class="nav nav-treeview"
-                            role="navigation"
-                            aria-label="Navigation 4"
-                            :style="{
-                                maxHeight: openMenus.usuarios ? '500px' : '0px',
-                            }"
-                        >
-                            <ItemMenu
-                                v-if="
-                                    permisos == '*' ||
-                                    permisos.includes('usuarios.index')
-                                "
-                                :label="'Usuarios'"
-                                :ruta="'usuarios.index'"
-                                :icon="'fa fa-angle-right'"
-                            ></ItemMenu>
-                            <ItemMenu
-                                v-if="
-                                    permisos == '*' ||
-                                    permisos.includes('roles.index')
-                                "
-                                :label="'Roles y Permisos'"
-                                :ruta="'roles.index'"
-                                :icon="'fa fa-angle-right'"
-                            ></ItemMenu>
-                        </ul>
-                    </li>
                     <li
                         class="nav-header font-weight-bold"
                         v-if="
                             permisos == '*' ||
                             permisos.includes('reportes.usuarios') ||
-                            permisos.includes('reportes.clientes') ||
-                            permisos.includes('reportes.certificados') ||
-                            permisos.includes(
-                                'reportes.certificados_interno',
-                            ) ||
-                            permisos.includes('reportes.historial_accions') ||
-                            permisos.includes('reportes.gcemitidos') ||
-                            permisos.includes('reportes.gmemitidos')
+                            permisos.includes('reportes.clientes')
                         "
                     >
                         REPORTES
@@ -335,11 +202,11 @@ onUnmounted(() => {});
                         :ruta="'configuracions.index'"
                         :icon="'fa fa-cog'"
                     ></ItemMenu>
-                    <!-- <ItemMenu
+                    <ItemMenu
                         :label="'Perfil'"
                         :ruta="'profile.edit'"
                         :icon="'fa fa-id-card'"
-                    ></ItemMenu> -->
+                    ></ItemMenu>
                     <li class="nav-item">
                         <a
                             href="#"
