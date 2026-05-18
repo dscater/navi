@@ -36,6 +36,7 @@ class PermisoService
             "segmentacion_zonas.paginado",
             "segmentacion_zonas.index",
             "segmentacion_zonas.listado",
+            "segmentacion_zonas.listadoSegmentacion",
             "segmentacion_zonas.create",
             "segmentacion_zonas.store",
             "segmentacion_zonas.edit",

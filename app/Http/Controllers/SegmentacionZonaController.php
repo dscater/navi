@@ -44,6 +44,17 @@ class SegmentacionZonaController extends Controller
             "segmentacion_zonas" => $this->segmentacion_zonaService->listado()
         ]);
     }
+    public function listadoSegmentacion(Request $request): JsonResponse
+    {
+        $segmentacion_zonas = SegmentacionZona::select("segmentacion_zonas.*");
+        if (isset($request->id)) {
+            $segmentacion_zonas->where("id", "!=", $request->id);
+        }
+        $segmentacion_zonas = $segmentacion_zonas->get();
+        return response()->JSON([
+            "segmentacion_zonas" => $segmentacion_zonas
+        ]);
+    }
 
     public function paginado(Request $request)
     {

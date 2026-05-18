@@ -41,7 +41,7 @@ class SegmentacionZonaStoreRequest extends FormRequest
             "provincia_id" => "Debes completar este campo",
             "ciudad_id" => "Debes completar este campo",
             "color" => "Debes completar este campo",
-            "segmentacion" => "Debes completar este campo",
+            "segmentacion" => "Debes dibujar la segmentacion de la zona",
         ];
     }
 }

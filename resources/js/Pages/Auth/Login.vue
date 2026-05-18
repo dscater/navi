@@ -100,6 +100,7 @@ onMounted(() => {
                         <img
                             :src="oConfiguracion.url_logo"
                             alt="Logo"
+                            height="150px"
                             class="logoPortada rounded-circle"
                             lazy
                         />
@@ -113,7 +114,7 @@ onMounted(() => {
                                 <div class="col-12">
                                     <label
                                         for="usuario"
-                                        class="d-flex text-white"
+                                        class="d-flex text-dark fw-bold text-lg"
                                         style="z-index: 100"
                                         >Usuario</label
                                     >
@@ -145,7 +146,7 @@ onMounted(() => {
                                 <div class="col-12 mt-2">
                                     <label
                                         for="password"
-                                        class="d-flex text-white"
+                                        class="d-flex text-dark fw-bold text-lg"
                                         style="z-index: 100"
                                         >Contraseña</label
                                     >

@@ -8,7 +8,19 @@ import "leaflet-draw";
 import { onMounted, ref, watch } from "vue";
 
 const props = defineProps({
+    /**
+     * AREAS EDITABLES
+     */
     areas: {
+        type: Array,
+        default: () => [],
+    },
+
+    /**
+     * SEGMENTACIONES BLOQUEADAS
+     * OBJETO COMPLETO
+     */
+    areasBloqueadas: {
         type: Array,
         default: () => [],
     },
@@ -20,17 +32,17 @@ const props = defineProps({
 
     zoom: {
         type: Number,
-        default: 13,
+        default: 16,
     },
 
     latitud: {
         type: Number,
-        default: -16.125102,
+        default: null,
     },
 
     longitud: {
         type: Number,
-        default: -67.196268,
+        default: null,
     },
 });
 
@@ -39,8 +51,18 @@ const emit = defineEmits(["update:areas"]);
 const mapa = ref(null);
 
 let map = null;
+
+// EDITABLES
 let drawnItems = null;
 
+// SOLO VISUALIZACION
+let blockedItems = null;
+
+let drawControl = null;
+
+/**
+ * OBTENER DATOS
+ */
 const obtenerDatos = () => {
     const nuevasAreas = [];
 
@@ -61,7 +83,9 @@ const obtenerDatos = () => {
     emit("update:areas", nuevasAreas);
 };
 
-let drawControl = null;
+/**
+ * CONTROLES
+ */
 const crearControles = () => {
     if (drawControl) {
         map.removeControl(drawControl);
@@ -73,7 +97,14 @@ const crearControles = () => {
         },
 
         draw: {
-            polygon: true,
+            polygon: {
+                shapeOptions: {
+                    color: props.color,
+                    fillColor: props.color,
+                    fillOpacity: 0.4,
+                },
+            },
+
             rectangle: false,
             circle: false,
             marker: false,
@@ -81,53 +112,142 @@ const crearControles = () => {
             circlemarker: false,
         },
     });
+
     map.addControl(drawControl);
+};
+
+/**
+ * ACTUALIZAR COLOR
+ */
+const actualizarColorDrawer = () => {
+    if (!drawControl) return;
+
+    const polygonHandler = drawControl._toolbars.draw._modes.polygon.handler;
+
+    polygonHandler.setOptions({
+        shapeOptions: {
+            color: props.color,
+            fillColor: props.color,
+            fillOpacity: 0.4,
+        },
+    });
 };
 
 watch(
     () => props.color,
-    (nuevoColor) => {
+    () => {
         actualizarColorDrawer();
+
+        drawnItems.eachLayer((layer) => {
+            layer.setStyle({
+                color: props.color,
+                fillColor: props.color,
+            });
+        });
+
+        obtenerDatos();
     },
 );
 
-onMounted(() => {
-    map = L.map(mapa.value).setView(
-        [props.latitud, props.longitud],
-        props.zoom,
-    );
+const iniciarMapa = (lat, lng) => {
+    map = L.map(mapa.value).setView([lat, lng], props.zoom);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap",
     }).addTo(map);
 
+    /**
+     * TILES
+     */
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap",
+    }).addTo(map);
+
+    /**
+     * GRUPOS
+     */
     drawnItems = new L.FeatureGroup();
+
+    blockedItems = new L.LayerGroup();
+
+    map.addLayer(blockedItems);
 
     map.addLayer(drawnItems);
 
-    // CARGAR AREAS EXISTENTES
+    /**
+     * AREAS BLOQUEADAS
+     */
+    props.areasBloqueadas.forEach((segmentacion) => {
+        if (!segmentacion.segmentacion) return;
+
+        segmentacion.segmentacion.forEach((area) => {
+            const polygon = L.polygon(
+                area.coordenadas.map((p) => [Number(p.lat), Number(p.lng)]),
+                {
+                    color: segmentacion.color || "#999999",
+                    fillColor: segmentacion.color || "#999999",
+
+                    fillOpacity: 0.2,
+
+                    // interactive: false,
+                },
+            );
+
+            /**
+             * TOOLTIP
+             */
+            polygon.bindTooltip(segmentacion.zona || "Zona", {
+                permanent: true,
+                direction: "center",
+                className: "tooltip-zona",
+            });
+
+            /**
+             * POPUP
+             */
+            polygon.bindPopup(`
+                <div>
+                    <strong>${segmentacion.zona}</strong>
+                </div>
+            `);
+
+            blockedItems.addLayer(polygon);
+        });
+    });
+
+    /**
+     * AREAS EDITABLES
+     */
     props.areas.forEach((area) => {
         const polygon = L.polygon(
-            area.coordenadas.map((p) => [p.lat, p.lng]),
+            area.coordenadas.map((p) => [Number(p.lat), Number(p.lng)]),
             {
-                color: props.color,
-                fillColor: props.color,
+                color: area.color || props.color,
+                fillColor: area.color || props.color,
                 fillOpacity: 0.4,
             },
         );
 
         drawnItems.addLayer(polygon);
     });
+    // ir a la ubicación del area
+    if (drawnItems.getLayers().length > 0) {
+        map.fitBounds(drawnItems.getBounds(), {
+            padding: [20, 20],
+        });
+    }
 
+    /**
+     * CONTROLES
+     */
     crearControles();
 
-    map.addControl(drawControl);
-
-    // CREAR
+    /**
+     * CREAR
+     */
     map.on(L.Draw.Event.CREATED, (event) => {
         const layer = event.layer;
 
-        // APLICAR COLOR ACTUAL
         layer.setStyle({
             color: props.color,
             fillColor: props.color,
@@ -139,28 +259,40 @@ onMounted(() => {
         obtenerDatos();
     });
 
-    // EDITAR
+    /**
+     * EDITAR
+     */
     map.on(L.Draw.Event.EDITED, () => {
         obtenerDatos();
     });
 
-    // ELIMINAR
+    /**
+     * ELIMINAR
+     */
     map.on(L.Draw.Event.DELETED, () => {
         obtenerDatos();
     });
-});
-
-const actualizarColorDrawer = () => {
-    const polygonHandler = drawControl._toolbars.draw._modes.polygon.handler;
-
-    polygonHandler.setOptions({
-        shapeOptions: {
-            color: props.color,
-            fillColor: props.color,
-            fillOpacity: 0.4,
-        },
-    });
 };
+
+onMounted(() => {
+    // SI VIENEN COORDENADAS
+    if (props.latitud && props.longitud) {
+        iniciarMapa(props.latitud, props.longitud);
+        return;
+    }
+
+    // GEOLOCALIZACION
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            iniciarMapa(position.coords.latitude, position.coords.longitude);
+        },
+
+        () => {
+            // FALLBACK
+            iniciarMapa(-16.125102, -67.196268);
+        },
+    );
+});
 </script>
 
 <template>
@@ -170,6 +302,14 @@ const actualizarColorDrawer = () => {
 <style scoped>
 .mapa {
     width: 100%;
-    height: 500px;
+    height: 330px;
+}
+
+:deep(.tooltip-zona) {
+    background: white;
+    border: 1px solid #ccc;
+    color: #333;
+    font-weight: bold;
+    box-shadow: none;
 }
 </style>

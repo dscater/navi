@@ -132,10 +132,29 @@ const cargarCiudads = () => {
     });
 };
 
+const listSegmentacions = ref([]);
+const cargaSegmentacion = ref(false);
+const cargarSegmentacions = () => {
+    cargaSegmentacion.value = false;
+    axios
+        .get(route("segmentacion_zonas.listadoSegmentacion"), {
+            params: {
+                id: form.id,
+            },
+        })
+        .then((response) => {
+            listSegmentacions.value = response.data.segmentacion_zonas;
+        })
+        .finally(() => {
+            cargaSegmentacion.value = true;
+        });
+};
+
 const cargarListas = () => {
     cargarDepartamentos();
     cargarProvincias();
     cargarCiudads();
+    cargarSegmentacions();
 };
 
 onMounted(() => {
@@ -257,16 +276,16 @@ onMounted(() => {
                             type="text"
                             class="form-control"
                             :class="{
-                                'parsley-error': form.errors?.nombre,
+                                'parsley-error': form.errors?.zona,
                             }"
-                            v-model="form.nombre"
+                            v-model="form.zona"
                         />
                         <ul
-                            v-if="form.errors?.nombre"
+                            v-if="form.errors?.zona"
                             class="list-unstyled text-danger"
                         >
                             <li class="parsley-required">
-                                {{ form.errors?.nombre }}
+                                {{ form.errors?.zona }}
                             </li>
                         </ul>
                     </div>
@@ -294,12 +313,21 @@ onMounted(() => {
                             >Indicar Ubicación
                             <i class="fa fa-map-marker-alt"></i
                         ></label>
-
                         <MapSegmentacion
-                            v-model:latitud="form.latitud"
-                            v-model:longitud="form.longitud"
+                            v-if="cargaSegmentacion"
+                            v-model:areas="form.segmentacion"
+                            :areas-bloqueadas="listSegmentacions"
                             :color="form.color"
                         ></MapSegmentacion>
+
+                        <ul
+                            v-if="form.errors?.segmentacion"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.segmentacion }}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </form>
@@ -315,7 +343,7 @@ onMounted(() => {
             <button
                 type="button"
                 class="btn btn-primary"
-                :disabled="enviando"
+                :disabled="enviando || !cargaSegmentacion"
                 @click.prevent="enviarFormulario"
                 v-html="textBtn"
             ></button>

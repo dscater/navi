@@ -97,6 +97,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // SEGMENTACION ZONAS
     Route::get("segmentacion_zonas/paginado", [SegmentacionZonaController::class, 'paginado'])->name("segmentacion_zonas.paginado");
     Route::get("segmentacion_zonas/listado", [SegmentacionZonaController::class, 'listado'])->name("segmentacion_zonas.listado");
+    Route::get("segmentacion_zonas/listadoSegmentacion", [SegmentacionZonaController::class, 'listadoSegmentacion'])->name("segmentacion_zonas.listadoSegmentacion");
     Route::post("segmentacion_zonas/actualizaPermiso/{role}", [SegmentacionZonaController::class, 'actualizaPermiso'])->name("segmentacion_zonas.actualizaPermiso");
     Route::resource("segmentacion_zonas", SegmentacionZonaController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
