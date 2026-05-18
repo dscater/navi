@@ -289,7 +289,7 @@ onMounted(() => {
 
         () => {
             // FALLBACK
-            iniciarMapa(-16.125102, -67.196268);
+            iniciarMapa(-16.491933, -68.143987);
         },
     );
 });
