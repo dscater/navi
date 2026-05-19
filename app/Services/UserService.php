@@ -31,7 +31,6 @@ class UserService
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $users = User::select("users.*")
-            ->with(["sucursal:id,nombre"])
             ->where("users.id", "!=", 1);
 
         $users->buscarNombre($search);
@@ -140,12 +139,12 @@ class UserService
     public function crear(array $datos): User
     {
         $user = User::create([
-            "usuario" => mb_strtolower($datos["usuario"]),
-            "nombre" => mb_strtoupper($datos["nombre"]),
+            "usuario" => $datos["usuario"],
+            "nombre" => $datos["nombre"],
             "acceso" => $datos["acceso"],
             "bloqueo" => $datos["bloqueo"],
             "password" => $datos["password"],
-            "tipo" => mb_strtoupper($datos["tipo"]),
+            "tipo" => $datos["tipo"],
             "fecha_registro" => date("Y-m-d")
         ]);
 
@@ -169,11 +168,11 @@ class UserService
     {
         $old_user = clone $user;
         $user->update([
-            "usuario" => mb_strtolower($datos["usuario"]),
-            "nombre" => mb_strtoupper($datos["nombre"]),
+            "usuario" => $datos["usuario"],
+            "nombre" => $datos["nombre"],
             "acceso" => $datos["acceso"],
             "bloqueo" => $datos["bloqueo"],
-            "tipo" => mb_strtoupper($datos["tipo"]),
+            "tipo" => $datos["tipo"],
             "sucursal_id" => $datos["sucursal_id"],
         ]);
 

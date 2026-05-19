@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 18-05-2026 a las 21:38:40
+-- Tiempo de generación: 19-05-2026 a las 14:33:40
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -30,11 +30,20 @@ SET time_zone = "+00:00";
 CREATE TABLE `asignacion_zonas` (
   `id` bigint UNSIGNED NOT NULL,
   `segmentacion_zona_id` bigint UNSIGNED NOT NULL,
-  `distribuidor_id` bigint UNSIGNED NOT NULL,
-  `vendedor_id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `asignacion_zonas`
+--
+
+INSERT INTO `asignacion_zonas` (`id`, `segmentacion_zona_id`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 3, '2026-05-19 14:11:04', '2026-05-19 14:11:04'),
+(2, 2, 4, '2026-05-19 14:14:31', '2026-05-19 14:14:31'),
+(3, 1, 5, '2026-05-19 14:17:03', '2026-05-19 14:17:03'),
+(5, 2, 6, '2026-05-19 14:22:08', '2026-05-19 14:22:08');
 
 -- --------------------------------------------------------
 
@@ -48,6 +57,14 @@ CREATE TABLE `categoria_productos` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `categoria_productos`
+--
+
+INSERT INTO `categoria_productos` (`id`, `nombre`, `created_at`, `updated_at`) VALUES
+(1, 'CATEGORIA 1', '2026-05-19 14:30:20', '2026-05-19 14:30:20'),
+(2, 'CATEGORIA 2', '2026-05-19 14:30:24', '2026-05-19 14:30:24');
 
 -- --------------------------------------------------------
 
@@ -263,7 +280,26 @@ CREATE TABLE `historial_accions` (
 
 INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `datos_original`, `datos_nuevo`, `modulo`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
 (1, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA SUCURSAL', '{\"id\": 1, \"zona\": \"zona 1\", \"color\": \"#ee4949\", \"ciudad_id\": \"1\", \"created_at\": \"2026-05-18T21:15:38.000000Z\", \"updated_at\": \"2026-05-18T21:15:38.000000Z\", \"provincia_id\": \"1\", \"segmentacion\": [{\"color\": \"#ee4949\", \"coordenadas\": [{\"lat\": \"-16.12577832514687\", \"lng\": \"-67.19754338264467\"}, {\"lat\": \"-16.125262989358294\", \"lng\": \"-67.1967923641205\"}, {\"lat\": \"-16.12590200553673\", \"lng\": \"-67.19606280326845\"}, {\"lat\": \"-16.12668531287989\", \"lng\": \"-67.1968996524811\"}]}], \"departamento_id\": \"1\"}', NULL, 'SEGMENTACIÓN DE ZONAS', '2026-05-18', '17:15:38', '2026-05-18 21:15:38', '2026-05-18 21:15:38'),
-(2, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA SUCURSAL', '{\"id\": 2, \"zona\": \"zona 2\", \"color\": \"#2ab760\", \"ciudad_id\": \"1\", \"created_at\": \"2026-05-18T21:32:09.000000Z\", \"updated_at\": \"2026-05-18T21:32:09.000000Z\", \"provincia_id\": \"1\", \"segmentacion\": [{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19490408897401\"}, {\"lat\": \"-16.127241871478976\", \"lng\": \"-67.19548344612123\"}, {\"lat\": \"-16.12757168324447\", \"lng\": \"-67.19458222389223\"}, {\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19436764717103\"}]}], \"departamento_id\": \"1\"}', NULL, 'SEGMENTACIÓN DE ZONAS', '2026-05-18', '17:32:09', '2026-05-18 21:32:09', '2026-05-18 21:32:09');
+(2, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA SUCURSAL', '{\"id\": 2, \"zona\": \"zona 2\", \"color\": \"#2ab760\", \"ciudad_id\": \"1\", \"created_at\": \"2026-05-18T21:32:09.000000Z\", \"updated_at\": \"2026-05-18T21:32:09.000000Z\", \"provincia_id\": \"1\", \"segmentacion\": [{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19490408897401\"}, {\"lat\": \"-16.127241871478976\", \"lng\": \"-67.19548344612123\"}, {\"lat\": \"-16.12757168324447\", \"lng\": \"-67.19458222389223\"}, {\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19436764717103\"}]}], \"departamento_id\": \"1\"}', NULL, 'SEGMENTACIÓN DE ZONAS', '2026-05-18', '17:32:09', '2026-05-18 21:32:09', '2026-05-18 21:32:09'),
+(3, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA SUCURSAL', '{\"id\": 2, \"zona\": \"zona 2\", \"color\": \"#2ab760\", \"ciudad_id\": 1, \"created_at\": \"2026-05-18T21:32:09.000000Z\", \"updated_at\": \"2026-05-18T21:32:09.000000Z\", \"provincia_id\": 1, \"segmentacion\": [{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19490408897401\"}, {\"lat\": \"-16.127241871478976\", \"lng\": \"-67.19548344612123\"}, {\"lat\": \"-16.12757168324447\", \"lng\": \"-67.19458222389223\"}, {\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19436764717103\"}]}], \"departamento_id\": 1}', '{\"id\": 2, \"zona\": \"zona 2\", \"color\": \"#2ab760\", \"ciudad_id\": \"1\", \"created_at\": \"2026-05-18T21:32:09.000000Z\", \"updated_at\": \"2026-05-18T21:44:08.000000Z\", \"provincia_id\": \"1\", \"segmentacion\": [{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.511951190703318\", \"lng\": \"-68.15705537796022\"}, {\"lat\": \"-16.508906397080768\", \"lng\": \"-68.15606832504274\"}, {\"lat\": \"-16.509070981745964\", \"lng\": \"-68.16160440444948\"}, {\"lat\": \"-16.512198063759822\", \"lng\": \"-68.16164731979372\"}]}], \"departamento_id\": \"1\"}', 'SEGMENTACIÓN DE ZONAS', '2026-05-18', '17:44:08', '2026-05-18 21:44:08', '2026-05-18 21:44:08'),
+(4, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA SUCURSAL', '{\"id\": 1, \"zona\": \"zona 1\", \"color\": \"#ee4949\", \"ciudad_id\": 1, \"created_at\": \"2026-05-18T21:15:38.000000Z\", \"updated_at\": \"2026-05-18T21:15:38.000000Z\", \"provincia_id\": 1, \"segmentacion\": [{\"color\": \"#ee4949\", \"coordenadas\": [{\"lat\": \"-16.12577832514687\", \"lng\": \"-67.19754338264467\"}, {\"lat\": \"-16.125262989358294\", \"lng\": \"-67.1967923641205\"}, {\"lat\": \"-16.12590200553673\", \"lng\": \"-67.19606280326845\"}, {\"lat\": \"-16.12668531287989\", \"lng\": \"-67.1968996524811\"}]}], \"departamento_id\": 1}', '{\"id\": 1, \"zona\": \"zona 1\", \"color\": \"#ee4949\", \"ciudad_id\": \"1\", \"created_at\": \"2026-05-18T21:15:38.000000Z\", \"updated_at\": \"2026-05-18T21:44:48.000000Z\", \"provincia_id\": \"1\", \"segmentacion\": [{\"color\": \"#ee4949\", \"coordenadas\": [{\"lat\": \"-16.521764794670002\", \"lng\": \"-68.15729141235353\"}, {\"lat\": \"-16.51676515842266\", \"lng\": \"-68.15362215042116\"}, {\"lat\": \"-16.52190815381132\", \"lng\": \"-68.15096139907838\"}, {\"lat\": \"-16.525364169786208\", \"lng\": \"-68.1563687324524\"}]}], \"departamento_id\": \"1\"}', 'SEGMENTACIÓN DE ZONAS', '2026-05-18', '17:44:48', '2026-05-18 21:44:48', '2026-05-18 21:44:48'),
+(5, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"id\": 2, \"tipo\": \"ADMINISTRADOR\", \"acceso\": \"1\", \"nombre\": \"JUAN PERES\", \"bloqueo\": \"1\", \"usuario\": \"jperes\", \"created_at\": \"2026-05-19T13:02:59.000000Z\", \"updated_at\": \"2026-05-19T13:02:59.000000Z\", \"fecha_registro\": \"2026-05-19\"}', NULL, 'USUARIOS', '2026-05-19', '09:02:59', '2026-05-19 13:02:59', '2026-05-19 13:02:59'),
+(6, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"id\": 3, \"tipo\": \"DISTRIBUIDOR\", \"acceso\": \"1\", \"nombre\": \"FELIX CORTEZ\", \"bloqueo\": \"1\", \"usuario\": \"fcortez\", \"created_at\": \"2026-05-19T13:03:19.000000Z\", \"updated_at\": \"2026-05-19T13:03:19.000000Z\", \"fecha_registro\": \"2026-05-19\"}', NULL, 'USUARIOS', '2026-05-19', '09:03:19', '2026-05-19 13:03:19', '2026-05-19 13:03:19'),
+(7, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"id\": 4, \"tipo\": \"DISTRIBUIDOR\", \"acceso\": \"1\", \"nombre\": \"CARLOS SANZ\", \"bloqueo\": \"1\", \"usuario\": \"csanz\", \"created_at\": \"2026-05-19T13:03:33.000000Z\", \"updated_at\": \"2026-05-19T13:03:33.000000Z\", \"fecha_registro\": \"2026-05-19\"}', NULL, 'USUARIOS', '2026-05-19', '09:03:33', '2026-05-19 13:03:33', '2026-05-19 13:03:33'),
+(8, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"id\": 5, \"tipo\": \"VENDEDOR\", \"acceso\": \"1\", \"nombre\": \"JOSE MAMANI\", \"bloqueo\": \"1\", \"usuario\": \"jmamani\", \"created_at\": \"2026-05-19T13:03:57.000000Z\", \"updated_at\": \"2026-05-19T13:03:57.000000Z\", \"fecha_registro\": \"2026-05-19\"}', NULL, 'USUARIOS', '2026-05-19', '09:03:57', '2026-05-19 13:03:57', '2026-05-19 13:03:57'),
+(9, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"id\": 6, \"tipo\": \"VENDEDOR\", \"acceso\": \"1\", \"nombre\": \"MARIA MAMANI\", \"bloqueo\": \"1\", \"usuario\": \"mmamani\", \"created_at\": \"2026-05-19T13:04:11.000000Z\", \"updated_at\": \"2026-05-19T13:04:11.000000Z\", \"fecha_registro\": \"2026-05-19\"}', NULL, 'USUARIOS', '2026-05-19', '09:04:11', '2026-05-19 13:04:11', '2026-05-19 13:04:11'),
+(10, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 1, \"user_id\": 3, \"created_at\": \"2026-05-19T14:11:04.000000Z\", \"updated_at\": \"2026-05-19T14:11:04.000000Z\", \"segmentacion_zona_id\": 1}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:11:04', '2026-05-19 14:11:04', '2026-05-19 14:11:04'),
+(11, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 2, \"user_id\": 4, \"created_at\": \"2026-05-19T14:14:31.000000Z\", \"updated_at\": \"2026-05-19T14:14:31.000000Z\", \"segmentacion_zona_id\": 2}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:14:31', '2026-05-19 14:14:31', '2026-05-19 14:14:31'),
+(12, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 3, \"user_id\": 5, \"created_at\": \"2026-05-19T14:17:03.000000Z\", \"updated_at\": \"2026-05-19T14:17:03.000000Z\", \"segmentacion_zona_id\": 1}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:17:03', '2026-05-19 14:17:03', '2026-05-19 14:17:03'),
+(13, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 4, \"user_id\": 6, \"created_at\": \"2026-05-19T14:21:48.000000Z\", \"updated_at\": \"2026-05-19T14:21:48.000000Z\", \"segmentacion_zona_id\": 2}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:21:48', '2026-05-19 14:21:48', '2026-05-19 14:21:48'),
+(14, 1, 'ELIMINACIÓN', 'EL USUARIO admin ELIMINÓ UNA ASIGNACIÓN DE ZONA', '{\"id\": 4, \"user_id\": 6, \"created_at\": \"2026-05-19T14:21:48.000000Z\", \"updated_at\": \"2026-05-19T14:21:48.000000Z\", \"segmentacion_zona_id\": 2}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:21:58', '2026-05-19 14:21:58', '2026-05-19 14:21:58'),
+(15, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 5, \"user_id\": 6, \"created_at\": \"2026-05-19T14:22:08.000000Z\", \"updated_at\": \"2026-05-19T14:22:08.000000Z\", \"segmentacion_zona_id\": 2}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-05-19', '10:22:08', '2026-05-19 14:22:08', '2026-05-19 14:22:08'),
+(16, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:47.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:29:47', '2026-05-19 14:29:47', '2026-05-19 14:29:47'),
+(17, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:47.000000Z\"}', '{\"id\": 1, \"nombre\": \"CATEGORIA 1 ASD\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:50.000000Z\"}', 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:29:50', '2026-05-19 14:29:50', '2026-05-19 14:29:50'),
+(18, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1 ASD\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:50.000000Z\"}', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:55.000000Z\"}', 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:29:55', '2026-05-19 14:29:55', '2026-05-19 14:29:55'),
+(19, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 2, \"nombre\": \"CATEGORIA 2\", \"created_at\": \"2026-05-19T14:30:00.000000Z\", \"updated_at\": \"2026-05-19T14:30:00.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:00', '2026-05-19 14:30:00', '2026-05-19 14:30:00'),
+(20, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:30:20.000000Z\", \"updated_at\": \"2026-05-19T14:30:20.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:20', '2026-05-19 14:30:20', '2026-05-19 14:30:20'),
+(21, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 2, \"nombre\": \"CATEGORIA 2\", \"created_at\": \"2026-05-19T14:30:24.000000Z\", \"updated_at\": \"2026-05-19T14:30:24.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:24', '2026-05-19 14:30:24', '2026-05-19 14:30:24');
 
 -- --------------------------------------------------------
 
@@ -423,8 +459,8 @@ CREATE TABLE `segmentacion_zonas` (
 --
 
 INSERT INTO `segmentacion_zonas` (`id`, `departamento_id`, `provincia_id`, `ciudad_id`, `zona`, `color`, `segmentacion`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, 'zona 1', '#ee4949', '[{\"color\": \"#ee4949\", \"coordenadas\": [{\"lat\": \"-16.12577832514687\", \"lng\": \"-67.19754338264467\"}, {\"lat\": \"-16.125262989358294\", \"lng\": \"-67.1967923641205\"}, {\"lat\": \"-16.12590200553673\", \"lng\": \"-67.19606280326845\"}, {\"lat\": \"-16.12668531287989\", \"lng\": \"-67.1968996524811\"}]}]', '2026-05-18 21:15:38', '2026-05-18 21:15:38'),
-(2, 1, 1, 1, 'zona 2', '#2ab760', '[{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19490408897401\"}, {\"lat\": \"-16.127241871478976\", \"lng\": \"-67.19548344612123\"}, {\"lat\": \"-16.12757168324447\", \"lng\": \"-67.19458222389223\"}, {\"lat\": \"-16.12647917966873\", \"lng\": \"-67.19436764717103\"}]}]', '2026-05-18 21:32:09', '2026-05-18 21:32:09');
+(1, 1, 1, 1, 'zona 1', '#ee4949', '[{\"color\": \"#ee4949\", \"coordenadas\": [{\"lat\": \"-16.521764794670002\", \"lng\": \"-68.15729141235353\"}, {\"lat\": \"-16.51676515842266\", \"lng\": \"-68.15362215042116\"}, {\"lat\": \"-16.52190815381132\", \"lng\": \"-68.15096139907838\"}, {\"lat\": \"-16.525364169786208\", \"lng\": \"-68.1563687324524\"}]}]', '2026-05-18 21:15:38', '2026-05-18 21:44:48'),
+(2, 1, 1, 1, 'zona 2', '#2ab760', '[{\"color\": \"#2ab760\", \"coordenadas\": [{\"lat\": \"-16.511951190703318\", \"lng\": \"-68.15705537796022\"}, {\"lat\": \"-16.508906397080768\", \"lng\": \"-68.15606832504274\"}, {\"lat\": \"-16.509070981745964\", \"lng\": \"-68.16160440444948\"}, {\"lat\": \"-16.512198063759822\", \"lng\": \"-68.16164731979372\"}]}]', '2026-05-18 21:32:09', '2026-05-18 21:44:08');
 
 -- --------------------------------------------------------
 
@@ -452,7 +488,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `usuario`, `nombre`, `password`, `foto`, `acceso`, `bloqueo`, `tipo`, `fecha_registro`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', '$2y$12$M2b1lEQrbaI17YIiht9xAuk2FCenB023wiuQVI63qmFsgogMzdXFe', NULL, 1, 0, 'ADMINISTRADOR', '2026-05-18', 1, '2026-05-18 13:31:09', '2026-05-18 13:31:09');
+(1, 'admin', 'admin', '$2y$12$M2b1lEQrbaI17YIiht9xAuk2FCenB023wiuQVI63qmFsgogMzdXFe', NULL, 1, 0, 'ADMINISTRADOR', '2026-05-18', 1, '2026-05-18 13:31:09', '2026-05-18 13:31:09'),
+(2, 'jperes', 'JUAN PERES', '$2y$12$LQY1VK7rzrSVgLmxmMYRyeh.JeSIG2Hn9SavUruOtwuFgwktPTa6W', NULL, 1, 1, 'ADMINISTRADOR', '2026-05-19', 1, '2026-05-19 13:02:59', '2026-05-19 13:02:59'),
+(3, 'fcortez', 'FELIX CORTEZ', '$2y$12$1m21Dvtn6UxFGOUABnzwZep515WuVPuiKuDYjbgCoOxzBTqU378/O', NULL, 1, 1, 'DISTRIBUIDOR', '2026-05-19', 1, '2026-05-19 13:03:19', '2026-05-19 13:03:19'),
+(4, 'csanz', 'CARLOS SANZ', '$2y$12$PPb6IyMpNpo1KTqPhYF./eTkJr8ildoMDAtEkXbto3Fxn26QTZ2ua', NULL, 1, 1, 'DISTRIBUIDOR', '2026-05-19', 1, '2026-05-19 13:03:33', '2026-05-19 13:03:33'),
+(5, 'jmamani', 'JOSE MAMANI', '$2y$12$rMLj2OuFwzN/uTtmuJ2G0eFjE0NPp/GxoIJB5Z4QUBLaTdOzUSMlq', NULL, 1, 1, 'VENDEDOR', '2026-05-19', 1, '2026-05-19 13:03:57', '2026-05-19 13:03:57'),
+(6, 'mmamani', 'MARIA MAMANI', '$2y$12$SCXrQpZOHpAhBcRhYYr2oOcFE0ti9fX8oqMNAZ.q0eD1dtd7j0g0a', NULL, 1, 1, 'VENDEDOR', '2026-05-19', 1, '2026-05-19 13:04:11', '2026-05-19 13:04:11');
 
 -- --------------------------------------------------------
 
@@ -484,8 +525,7 @@ CREATE TABLE `ventas` (
 ALTER TABLE `asignacion_zonas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `asignacion_zonas_segmentacion_zona_id_foreign` (`segmentacion_zona_id`),
-  ADD KEY `asignacion_zonas_distribuidor_id_foreign` (`distribuidor_id`),
-  ADD KEY `asignacion_zonas_vendedor_id_foreign` (`vendedor_id`);
+  ADD KEY `asignacion_zonas_user_id_foreign` (`user_id`) USING BTREE;
 
 --
 -- Indices de la tabla `categoria_productos`
@@ -640,13 +680,13 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `asignacion_zonas`
 --
 ALTER TABLE `asignacion_zonas`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria_productos`
 --
 ALTER TABLE `categoria_productos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ciudads`
@@ -706,7 +746,7 @@ ALTER TABLE `despacho_detalles`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -754,7 +794,7 @@ ALTER TABLE `segmentacion_zonas`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
@@ -770,9 +810,8 @@ ALTER TABLE `ventas`
 -- Filtros para la tabla `asignacion_zonas`
 --
 ALTER TABLE `asignacion_zonas`
-  ADD CONSTRAINT `asignacion_zonas_distribuidor_id_foreign` FOREIGN KEY (`distribuidor_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `asignacion_zonas_segmentacion_zona_id_foreign` FOREIGN KEY (`segmentacion_zona_id`) REFERENCES `segmentacion_zonas` (`id`),
-  ADD CONSTRAINT `asignacion_zonas_vendedor_id_foreign` FOREIGN KEY (`vendedor_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `asignacion_zonas_distribuidor_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `asignacion_zonas_segmentacion_zona_id_foreign` FOREIGN KEY (`segmentacion_zona_id`) REFERENCES `segmentacion_zonas` (`id`);
 
 --
 -- Filtros para la tabla `compras`

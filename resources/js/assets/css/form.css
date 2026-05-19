@@ -313,3 +313,13 @@ input.checkboxTable:checked:disabled {
     border-color: #86b7fe;
     box-shadow: none;
 }
+
+.checkboxForm {
+    cursor: pointer;
+    height: 18px;
+    width: 18px;
+}
+
+.checkboxForm:disabled {
+    cursor: not-allowed;
+}

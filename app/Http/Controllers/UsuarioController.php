@@ -37,8 +37,44 @@ class UsuarioController extends Controller
     public function listado(Request $request): JsonResponse
     {
         $usuarios = User::where("id", "!=", 1);
+        if (isset($request->tipo)) {
+            if (is_array($request->tipo)) {
+                $usuarios->whereIn("tipo", $request->tipo);
+            } else {
+                $usuarios->where("tipo", $request->tipo);
+            }
+        }
         $usuarios = $usuarios->where("status", 1)->get();
         return response()->JSON([
+            "usuarios" => $usuarios
+        ]);
+    }
+
+    public function listadoAsignacions(Request $request)
+    {
+        $usuarios = User::where("id", "!=", 1);
+
+        if (isset($request->tipo)) {
+            if (is_array($request->tipo)) {
+                $usuarios->whereIn("tipo", $request->tipo);
+            } else {
+                $usuarios->where("tipo", $request->tipo);
+            }
+        }
+
+        $usuarios = $usuarios->where("status", 1)
+            ->get()
+            ->map(function ($usuario) use ($request) {
+                $zonaAsignada = $usuario->asignacion_zona;
+                $usuario->segmentacion_zona_id = $zonaAsignada?->segmentacion_zona_id;
+                $usuario->asignado = $usuario->asignacion_zona()
+                    // ->where('segmentacion_zona_id', $request->zona_id)
+                    ->exists();
+
+                return $usuario;
+            });
+
+        return response()->json([
             "usuarios" => $usuarios
         ]);
     }

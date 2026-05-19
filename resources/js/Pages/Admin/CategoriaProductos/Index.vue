@@ -2,7 +2,7 @@
 import Content from "@/Components/Content.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import { useSegmentacionZonas } from "@/composables/segmentacion_zonas/useSegmentacionZonas";
+import { useCategoriaProductos } from "@/composables/categoria_productos/useCategoriaProductos";
 import { ref, onMounted, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
@@ -15,8 +15,8 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setSegmentacionZona, limpiarSegmentacionZona, form } =
-    useSegmentacionZonas();
+const { setCategoriaProducto, limpiarCategoriaProducto, form } =
+    useCategoriaProductos();
 
 const miTable = ref(null);
 const headers = [
@@ -27,23 +27,8 @@ const headers = [
         width: "3%",
     },
     {
-        label: "DEPARTAMENTO",
-        key: "departamento.nombre",
-        sortable: true,
-    },
-    {
-        label: "PROVINCIA",
-        key: "provincia.nombre",
-        sortable: true,
-    },
-    {
-        label: "CIUDAD",
-        key: "ciudad.nombre",
-        sortable: true,
-    },
-    {
-        label: "COLOR",
-        key: "color",
+        label: "NOMBRE",
+        key: "nombre",
         sortable: true,
     },
     {
@@ -60,22 +45,21 @@ const multiSearch = ref({
 });
 
 const muestra_formulario = ref(false);
-const muestra_formulario_pass = ref(false);
 
 const agregarRegistro = () => {
-    limpiarSegmentacionZona();
+    limpiarCategoriaProducto();
     muestra_formulario.value = true;
 };
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
-        limpiarSegmentacionZona();
+        limpiarCategoriaProducto();
         muestra_formulario.value = false;
     }
 };
 
-const eliminarSegmentacionZona = (item) => {
+const eliminarCategoriaProducto = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
         html: `<strong>${item.nombre}</strong>`,
@@ -91,7 +75,7 @@ const eliminarSegmentacionZona = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("segmentacion_zonas.destroy", item.id),
+                route("categoria_productos.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -105,15 +89,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <Head title="Segmentación de Zonas"></Head>
+    <Head title="Categoría de Productos"></Head>
 
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h3 class="m-0">
-                        <i class="fa fa-map-marked-alt"></i> Segmentación de
-                        Zonas
+                        <i class="fa fa-list"></i> Categoría de Productos
                     </h3>
                 </div>
                 <!-- /.col -->
@@ -123,7 +106,7 @@ onMounted(async () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Segmentación de Zonas
+                            Categoría de Productos
                         </li>
                     </ol>
                 </div>
@@ -140,15 +123,15 @@ onMounted(async () => {
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'segmentacion_zonas.create',
+                                    'categoria_productos.create',
                                 )
                             "
                             type="button"
                             class="btn btn-primary text-sm"
                             @click="agregarRegistro"
                         >
-                            <i class="fa fa-plus"></i> Nueva Segmentación de
-                            Zona
+                            <i class="fa fa-plus"></i> Nueva Categoría de
+                            Producto
                         </button>
                     </div>
                     <div class="col-md-8 my-1">
@@ -183,7 +166,7 @@ onMounted(async () => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('segmentacion_zonas.paginado')"
+                            :url="route('categoria_productos.paginado')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -192,14 +175,28 @@ onMounted(async () => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
-                            <template #color="{ item }">
+                            <template #foto="{ item }">
+                                <img
+                                    class="direct-chat-img"
+                                    :src="item.url_foto"
+                                    alt="Foto"
+                                />
+                            </template>
+
+                            <template #acceso="{ item }">
                                 <div
                                     class="badge text-sm"
-                                    :style="{
-                                        backgroundColor: item.color,
-                                    }"
+                                    :class="[
+                                        item.acceso == 1
+                                            ? 'bg-success'
+                                            : 'bg-danger',
+                                    ]"
                                 >
-                                    {{ item.color }}
+                                    {{
+                                        item.acceso == 1
+                                            ? "HABILITADO"
+                                            : "DESHABILITADO"
+                                    }}
                                 </div>
                             </template>
                             <template #accion="{ item }">
@@ -207,7 +204,7 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'segmentacion_zonas.edit',
+                                            'categoria_productos.edit',
                                         )
                                     "
                                 >
@@ -220,7 +217,7 @@ onMounted(async () => {
                                         <button
                                             class="btn btn-warning"
                                             @click="
-                                                setSegmentacionZona(item);
+                                                setCategoriaProducto(item);
                                                 muestra_formulario = true;
                                             "
                                         >
@@ -231,7 +228,7 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'segmentacion_zonas.destroy',
+                                            'categoria_productos.destroy',
                                         )
                                     "
                                 >
@@ -244,7 +241,7 @@ onMounted(async () => {
                                         <button
                                             class="btn btn-danger"
                                             @click="
-                                                eliminarSegmentacionZona(item)
+                                                eliminarCategoriaProducto(item)
                                             "
                                         >
                                             <i

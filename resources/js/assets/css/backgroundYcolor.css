@@ -18,6 +18,10 @@ table .bg-principal,
     background-color: var(--bg1) !important;
 }
 
+.bg2 {
+    background-color: var(--bg2);
+}
+
 .bgVerificado {
     background-color: var(--bgVerificado);
 }

@@ -13,6 +13,7 @@ class PermisoService
             "usuarios.paginado",
             "usuarios.index",
             "usuarios.listado",
+            "usuarios.listadoAsignacions",
             "usuarios.create",
             "usuarios.store",
             "usuarios.edit",
@@ -44,13 +45,32 @@ class PermisoService
             "segmentacion_zonas.update",
             "segmentacion_zonas.destroy",
 
+            "asignacion_zonas.paginado",
+            "asignacion_zonas.index",
+            "asignacion_zonas.listado",
+            "asignacion_zonas.create",
+            "asignacion_zonas.store",
+            "asignacion_zonas.edit",
+            "asignacion_zonas.show",
+            "asignacion_zonas.update",
+            "asignacion_zonas.destroy",
+
+            "categoria_productos.paginado",
+            "categoria_productos.index",
+            "categoria_productos.listado",
+            "categoria_productos.create",
+            "categoria_productos.store",
+            "categoria_productos.edit",
+            "categoria_productos.show",
+            "categoria_productos.update",
+            "categoria_productos.destroy",
 
             "reportes.usuarios",
             "reportes.r_usuarios",
 
         ],
-        "GERENTE" => [],
-        "SECRETARIA" => [],
+        "DISTRIBUIDOR" => [],
+        "VENDEDOR" => [],
     ];
 
     public function getTiposUsuarios()

@@ -127,13 +127,8 @@ class User extends Authenticatable
         return $query;
     }
 
-    public function sucursal()
+    public function asignacion_zona()
     {
-        return $this->belongsTo(Sucursal::class, 'sucursal_id');
-    }
-
-    public function login_user()
-    {
-        return $this->hasMany(LoginUser::class, 'user_id');
+        return $this->hasOne(AsignacionZona::class, 'user_id');
     }
 }

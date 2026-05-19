@@ -91,7 +91,7 @@ class SegmentacionZonaService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA SUCURSAL", $segmentacion_zona);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA SEGMENTACIÓN DE ZONA", $segmentacion_zona);
 
         return $segmentacion_zona;
     }
@@ -117,7 +117,7 @@ class SegmentacionZonaService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA SUCURSAL", $old_segmentacion_zona, $segmentacion_zona->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA SEGMENTACIÓN DE ZONA", $old_segmentacion_zona, $segmentacion_zona->withoutRelations());
 
         return $segmentacion_zona;
     }
@@ -136,7 +136,7 @@ class SegmentacionZonaService
         $segmentacion_zona->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA SUCURSAL", $old_segmentacion_zona, $segmentacion_zona);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA SEGMENTACIÓN DE ZONA", $old_segmentacion_zona, $segmentacion_zona);
 
         return true;
     }

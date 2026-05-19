@@ -149,11 +149,33 @@ onUnmounted(() => {});
                         v-if="
                             permisos == '*' ||
                             permisos.includes('usuarios.index') ||
-                            permisos.includes('segmentacion_zonas.index')
+                            permisos.includes('segmentacion_zonas.index') ||
+                            permisos.includes('asignacion_zonas.index') ||
+                            permisos.includes('categoria_productos.index') ||
+                            permisos.includes('productos.index')
                         "
                     >
                         ADMINISTRACIÓN
                     </li>
+
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('categoria_productos.index')
+                        "
+                        :label="'Categoría de Productos'"
+                        :ruta="'categoria_productos.index'"
+                        :icon="'fa fa-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('asignacion_zonas.index')
+                        "
+                        :label="'Asignación de Zonas'"
+                        :ruta="'asignacion_zonas.index'"
+                        :icon="'fa fa-table'"
+                    ></ItemMenu>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
@@ -163,7 +185,6 @@ onUnmounted(() => {});
                         :ruta="'segmentacion_zonas.index'"
                         :icon="'fa fa-map-marked-alt'"
                     ></ItemMenu>
-
                     <ItemMenu
                         v-if="
                             permisos == '*' ||

@@ -14,13 +14,11 @@ return new class extends Migration
         Schema::create('asignacion_zonas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("segmentacion_zona_id");
-            $table->unsignedBigInteger("distribuidor_id");
-            $table->unsignedBigInteger("vendedor_id");
+            $table->unsignedBigInteger("user_id");
             $table->timestamps();
 
             $table->foreign("segmentacion_zona_id")->on("segmentacion_zonas")->references("id");
-            $table->foreign("distribuidor_id")->on("users")->references("id");
-            $table->foreign("vendedor_id")->on("users")->references("id");
+            $table->foreign("user_id")->on("users")->references("id");
         });
     }
 
