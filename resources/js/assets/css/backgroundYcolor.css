@@ -19,11 +19,11 @@ table .bg-principal,
 }
 
 .bg2 {
-    background-color: var(--bg2);
+    background-color: var(--bg2) !important;
 }
 
 .bgVerificado {
-    background-color: var(--bgVerificado);
+    background-color: var(--bgVerificado) !important;
 }
 
 .bgWhite {

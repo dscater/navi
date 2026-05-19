@@ -7,12 +7,15 @@ use App\Http\Controllers\CategoriaEnfermedadController;
 use App\Http\Controllers\CategoriaProductoController;
 use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CompraController;
 use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\PresentacionProductoController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReporteController;
@@ -101,7 +104,6 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("segmentacion_zonas/paginado", [SegmentacionZonaController::class, 'paginado'])->name("segmentacion_zonas.paginado");
     Route::get("segmentacion_zonas/listado", [SegmentacionZonaController::class, 'listado'])->name("segmentacion_zonas.listado");
     Route::get("segmentacion_zonas/listadoSegmentacion", [SegmentacionZonaController::class, 'listadoSegmentacion'])->name("segmentacion_zonas.listadoSegmentacion");
-    Route::post("segmentacion_zonas/actualizaPermiso/{role}", [SegmentacionZonaController::class, 'actualizaPermiso'])->name("segmentacion_zonas.actualizaPermiso");
     Route::resource("segmentacion_zonas", SegmentacionZonaController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
@@ -110,7 +112,6 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("asignacion_zonas/paginado", [AsignacionZonaController::class, 'paginado'])->name("asignacion_zonas.paginado");
     Route::get("asignacion_zonas/listado", [AsignacionZonaController::class, 'listado'])->name("asignacion_zonas.listado");
     Route::get("asignacion_zonas/listadoSegmentacion", [AsignacionZonaController::class, 'listadoSegmentacion'])->name("asignacion_zonas.listadoSegmentacion");
-    Route::post("asignacion_zonas/actualizaPermiso/{role}", [AsignacionZonaController::class, 'actualizaPermiso'])->name("asignacion_zonas.actualizaPermiso");
     Route::resource("asignacion_zonas", AsignacionZonaController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
@@ -118,9 +119,29 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // CATEGORIA PRODUCTOS
     Route::get("categoria_productos/paginado", [CategoriaProductoController::class, 'paginado'])->name("categoria_productos.paginado");
     Route::get("categoria_productos/listado", [CategoriaProductoController::class, 'listado'])->name("categoria_productos.listado");
-    Route::get("categoria_productos/listadoSegmentacion", [CategoriaProductoController::class, 'listadoSegmentacion'])->name("categoria_productos.listadoSegmentacion");
-    Route::post("categoria_productos/actualizaPermiso/{role}", [CategoriaProductoController::class, 'actualizaPermiso'])->name("categoria_productos.actualizaPermiso");
     Route::resource("categoria_productos", CategoriaProductoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // PRODUCTOS
+    Route::get("productos/paginado", [ProductoController::class, 'paginado'])->name("productos.paginado");
+    Route::get("productos/listado", [ProductoController::class, 'listado'])->name("productos.listado");
+    Route::get("productos/listadoStockBajo", [ProductoController::class, 'listadoStockBajo'])->name("productos.listadoStockBajo");
+    Route::resource("productos", ProductoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // PRESENTACION PRODUCTOS
+    Route::get("presentacion_productos/paginado", [PresentacionProductoController::class, 'paginado'])->name("presentacion_productos.paginado");
+    Route::get("presentacion_productos/listado", [PresentacionProductoController::class, 'listado'])->name("presentacion_productos.listado");
+    Route::resource("presentacion_productos", PresentacionProductoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // COMRPAS
+    Route::get("compras/paginado", [CompraController::class, 'paginado'])->name("compras.paginado");
+    Route::get("compras/listado", [CompraController::class, 'listado'])->name("compras.listado");
+    Route::resource("compras", CompraController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 

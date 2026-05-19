@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 19-05-2026 a las 14:33:40
+-- Tiempo de generación: 19-05-2026 a las 20:59:04
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -299,7 +299,23 @@ INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `dato
 (18, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1 ASD\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:50.000000Z\"}', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:29:47.000000Z\", \"updated_at\": \"2026-05-19T14:29:55.000000Z\"}', 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:29:55', '2026-05-19 14:29:55', '2026-05-19 14:29:55'),
 (19, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 2, \"nombre\": \"CATEGORIA 2\", \"created_at\": \"2026-05-19T14:30:00.000000Z\", \"updated_at\": \"2026-05-19T14:30:00.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:00', '2026-05-19 14:30:00', '2026-05-19 14:30:00'),
 (20, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 1, \"nombre\": \"CATEGORIA 1\", \"created_at\": \"2026-05-19T14:30:20.000000Z\", \"updated_at\": \"2026-05-19T14:30:20.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:20', '2026-05-19 14:30:20', '2026-05-19 14:30:20'),
-(21, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 2, \"nombre\": \"CATEGORIA 2\", \"created_at\": \"2026-05-19T14:30:24.000000Z\", \"updated_at\": \"2026-05-19T14:30:24.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:24', '2026-05-19 14:30:24', '2026-05-19 14:30:24');
+(21, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA CATEGORÍA DE PRODUCTO', '{\"id\": 2, \"nombre\": \"CATEGORIA 2\", \"created_at\": \"2026-05-19T14:30:24.000000Z\", \"updated_at\": \"2026-05-19T14:30:24.000000Z\"}', NULL, 'CATEGORÍA DE PRODUCTOS', '2026-05-19', '10:30:24', '2026-05-19 14:30:24', '2026-05-19 14:30:24'),
+(22, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 1, \"estado\": \"1\", \"imagen\": \"11779216124.png\", \"nombre\": \"producto 1\", \"stock_min\": \"5\", \"created_at\": \"2026-05-19T18:42:04.000000Z\", \"updated_at\": \"2026-05-19T18:42:04.000000Z\", \"descripcion\": \"desc prod 1\", \"categoria_producto_id\": \"1\"}', NULL, 'PRODUCTOS', '2026-05-19', '14:42:04', '2026-05-19 18:42:04', '2026-05-19 18:42:04'),
+(23, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 2, \"estado\": \"1\", \"imagen\": \"21779216384.png\", \"nombre\": \"producto 2\", \"stock_min\": \"4\", \"created_at\": \"2026-05-19T18:46:24.000000Z\", \"updated_at\": \"2026-05-19T18:46:24.000000Z\", \"descripcion\": null, \"categoria_producto_id\": \"2\"}', NULL, 'PRODUCTOS', '2026-05-19', '14:46:24', '2026-05-19 18:46:24', '2026-05-19 18:46:24'),
+(24, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 3, \"estado\": \"1\", \"nombre\": \"producto 3\", \"stock_min\": \"4\", \"created_at\": \"2026-05-19T18:46:36.000000Z\", \"updated_at\": \"2026-05-19T18:46:36.000000Z\", \"descripcion\": null, \"categoria_producto_id\": \"1\"}', NULL, 'PRODUCTOS', '2026-05-19', '14:46:36', '2026-05-19 18:46:36', '2026-05-19 18:46:36'),
+(25, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 1, \"nombre\": \"caja\", \"precio\": \"120\", \"equivale\": \"24\", \"created_at\": \"2026-05-19T19:39:50.000000Z\", \"updated_at\": \"2026-05-19T19:39:50.000000Z\", \"producto_id\": \"3\", \"comi_vendedor\": \"5\", \"comi_distribuidor\": \"10\"}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:39:50', '2026-05-19 19:39:50', '2026-05-19 19:39:50'),
+(26, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 2, \"nombre\": \"media caja\", \"precio\": \"65\", \"equivale\": \"12\", \"created_at\": \"2026-05-19T19:41:19.000000Z\", \"updated_at\": \"2026-05-19T19:41:19.000000Z\", \"producto_id\": \"3\", \"comi_vendedor\": \"2.50\", \"comi_distribuidor\": \"5\"}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:41:19', '2026-05-19 19:41:19', '2026-05-19 19:41:19'),
+(27, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 3, \"nombre\": \"unidad\", \"precio\": \"6\", \"equivale\": \"1\", \"created_at\": \"2026-05-19T19:43:34.000000Z\", \"updated_at\": \"2026-05-19T19:43:34.000000Z\", \"producto_id\": \"3\", \"comi_vendedor\": \"0.5\", \"comi_distribuidor\": \"6\"}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:43:34', '2026-05-19 19:43:34', '2026-05-19 19:43:34'),
+(28, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 4, \"nombre\": \"caja\", \"precio\": 200, \"equivale\": 24, \"created_at\": \"2026-05-19T19:46:57.000000Z\", \"updated_at\": \"2026-05-19T19:46:57.000000Z\", \"producto_id\": 2, \"comi_vendedor\": \"5\", \"comi_distribuidor\": 10}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:46:57', '2026-05-19 19:46:57', '2026-05-19 19:46:57'),
+(29, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 5, \"nombre\": \"media caja\", \"precio\": 110, \"equivale\": 12, \"created_at\": \"2026-05-19T19:48:16.000000Z\", \"updated_at\": \"2026-05-19T19:48:16.000000Z\", \"producto_id\": 2, \"comi_vendedor\": \"2.5\", \"comi_distribuidor\": 5}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:48:16', '2026-05-19 19:48:16', '2026-05-19 19:48:16'),
+(30, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 6, \"nombre\": \"unidad\", \"precio\": 7, \"equivale\": 1, \"created_at\": \"2026-05-19T19:48:37.000000Z\", \"updated_at\": \"2026-05-19T19:48:37.000000Z\", \"producto_id\": 2, \"comi_vendedor\": \"0.5\", \"comi_distribuidor\": 2.5}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:48:37', '2026-05-19 19:48:37', '2026-05-19 19:48:37'),
+(31, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 7, \"nombre\": \"caja\", \"precio\": 400, \"equivale\": 24, \"created_at\": \"2026-05-19T19:49:05.000000Z\", \"updated_at\": \"2026-05-19T19:49:05.000000Z\", \"producto_id\": 1, \"comi_vendedor\": 10, \"comi_distribuidor\": 20}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:49:05', '2026-05-19 19:49:05', '2026-05-19 19:49:05'),
+(32, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 8, \"nombre\": \"media caja\", \"precio\": 200, \"equivale\": 12, \"created_at\": \"2026-05-19T19:50:47.000000Z\", \"updated_at\": \"2026-05-19T19:50:47.000000Z\", \"producto_id\": 1, \"comi_vendedor\": 5, \"comi_distribuidor\": 10}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:50:47', '2026-05-19 19:50:47', '2026-05-19 19:50:47'),
+(33, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 3, \"nombre\": \"unidad\", \"precio\": \"6.00\", \"equivale\": 1, \"created_at\": \"2026-05-19T19:43:34.000000Z\", \"updated_at\": \"2026-05-19T19:43:34.000000Z\", \"producto_id\": 3, \"comi_vendedor\": \"0.50\", \"comi_distribuidor\": \"6.00\"}', '{\"id\": 3, \"nombre\": \"unidad\", \"precio\": \"6.00\", \"equivale\": 1, \"created_at\": \"2026-05-19T19:43:34.000000Z\", \"updated_at\": \"2026-05-19T19:55:53.000000Z\", \"producto_id\": 3, \"comi_vendedor\": \"0.50\", \"comi_distribuidor\": 1.5}', 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:55:53', '2026-05-19 19:55:53', '2026-05-19 19:55:53'),
+(34, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 9, \"nombre\": \"asd\", \"precio\": 1, \"equivale\": 1, \"created_at\": \"2026-05-19T19:59:39.000000Z\", \"updated_at\": \"2026-05-19T19:59:39.000000Z\", \"producto_id\": 3, \"comi_vendedor\": 1, \"comi_distribuidor\": 1}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '15:59:39', '2026-05-19 19:59:39', '2026-05-19 19:59:39'),
+(35, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 10, \"nombre\": \"asdasd\", \"precio\": 1, \"equivale\": 1, \"created_at\": \"2026-05-19T20:00:10.000000Z\", \"updated_at\": \"2026-05-19T20:00:10.000000Z\", \"producto_id\": 3, \"comi_vendedor\": 1, \"comi_distribuidor\": 1}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '16:00:10', '2026-05-19 20:00:10', '2026-05-19 20:00:10'),
+(36, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 11, \"nombre\": \"xx\", \"precio\": 1, \"equivale\": 1, \"created_at\": \"2026-05-19T20:00:19.000000Z\", \"updated_at\": \"2026-05-19T20:00:19.000000Z\", \"producto_id\": 3, \"comi_vendedor\": 1, \"comi_distribuidor\": 1}', NULL, 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '16:00:19', '2026-05-19 20:00:19', '2026-05-19 20:00:19'),
+(37, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UNA PRESENTACIÓN DE PRODUCTO', '{\"id\": 10, \"nombre\": \"asdasd\", \"precio\": \"1.00\", \"equivale\": 1, \"created_at\": \"2026-05-19T20:00:10.000000Z\", \"updated_at\": \"2026-05-19T20:00:10.000000Z\", \"producto_id\": 3, \"comi_vendedor\": \"1.00\", \"comi_distribuidor\": \"1.00\"}', '{\"id\": 10, \"nombre\": \"eeeeee\", \"precio\": \"1.00\", \"equivale\": 1, \"created_at\": \"2026-05-19T20:00:10.000000Z\", \"updated_at\": \"2026-05-19T20:00:27.000000Z\", \"producto_id\": 3, \"comi_vendedor\": \"1.00\", \"comi_distribuidor\": \"1.00\"}', 'PRESENTACIÓN DE PRODUCTOS', '2026-05-19', '16:00:27', '2026-05-19 20:00:27', '2026-05-19 20:00:27');
 
 -- --------------------------------------------------------
 
@@ -396,6 +412,20 @@ CREATE TABLE `presentacion_productos` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `presentacion_productos`
+--
+
+INSERT INTO `presentacion_productos` (`id`, `producto_id`, `nombre`, `equivale`, `precio`, `comi_distribuidor`, `comi_vendedor`, `created_at`, `updated_at`) VALUES
+(1, 3, 'caja', 24, 120.00, 10.00, 5.00, '2026-05-19 19:39:50', '2026-05-19 19:39:50'),
+(2, 3, 'media caja', 12, 65.00, 5.00, 2.50, '2026-05-19 19:41:19', '2026-05-19 19:41:19'),
+(3, 3, 'unidad', 1, 6.00, 1.50, 0.50, '2026-05-19 19:43:34', '2026-05-19 19:55:53'),
+(4, 2, 'caja', 24, 200.00, 10.00, 5.00, '2026-05-19 19:46:57', '2026-05-19 19:46:57'),
+(5, 2, 'media caja', 12, 110.00, 5.00, 2.50, '2026-05-19 19:48:16', '2026-05-19 19:48:16'),
+(6, 2, 'unidad', 1, 7.00, 2.50, 0.50, '2026-05-19 19:48:37', '2026-05-19 19:48:37'),
+(7, 1, 'caja', 24, 400.00, 20.00, 10.00, '2026-05-19 19:49:05', '2026-05-19 19:49:05'),
+(8, 1, 'media caja', 12, 200.00, 10.00, 5.00, '2026-05-19 19:50:47', '2026-05-19 19:50:47');
+
 -- --------------------------------------------------------
 
 --
@@ -408,12 +438,21 @@ CREATE TABLE `productos` (
   `descripcion` text COLLATE utf8mb4_unicode_ci,
   `categoria_producto_id` bigint UNSIGNED NOT NULL,
   `stock_min` double NOT NULL,
-  `stock_actual` double NOT NULL,
+  `stock_actual` double NOT NULL DEFAULT '0',
   `estado` int NOT NULL DEFAULT '1',
-  `imagen` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `imagen` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `categoria_producto_id`, `stock_min`, `stock_actual`, `estado`, `imagen`, `created_at`, `updated_at`) VALUES
+(1, 'producto 1', 'desc prod 1', 1, 5, 0, 1, '11779216124.png', '2026-05-19 18:42:04', '2026-05-19 18:42:04'),
+(2, 'producto 2', NULL, 2, 4, 0, 1, '21779216384.png', '2026-05-19 18:46:24', '2026-05-19 18:46:24'),
+(3, 'producto 3', NULL, 1, 4, 0, 1, NULL, '2026-05-19 18:46:36', '2026-05-19 18:46:36');
 
 -- --------------------------------------------------------
 
@@ -746,7 +785,7 @@ ALTER TABLE `despacho_detalles`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -770,13 +809,13 @@ ALTER TABLE `pedido_detalles`
 -- AUTO_INCREMENT de la tabla `presentacion_productos`
 --
 ALTER TABLE `presentacion_productos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `provincias`

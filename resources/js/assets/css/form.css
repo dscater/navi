@@ -323,3 +323,8 @@ input.checkboxTable:checked:disabled {
 .checkboxForm:disabled {
     cursor: not-allowed;
 }
+@media (max-width: 996px) and (min-width: 700px) {
+    .modal-dialog.modal-xl {
+        min-width: 98%;
+    }
+}

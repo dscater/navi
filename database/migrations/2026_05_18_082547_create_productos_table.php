@@ -17,9 +17,9 @@ return new class extends Migration
             $table->text("descripcion")->nullable();
             $table->unsignedBigInteger("categoria_producto_id");
             $table->double("stock_min", 8, 2);
-            $table->double("stock_actual", 8, 2);
+            $table->double("stock_actual", 8, 2)->default(0);
             $table->integer("estado")->default(1);
-            $table->string("imagen");
+            $table->string("imagen")->nullable();
             $table->timestamps();
 
             $table->foreign("categoria_producto_id")->on("categoria_productos")->references("id");

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Services\HistorialAccionService;
-use App\Models\CategoriaProducto;
+use App\Models\Compra;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Exception;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
-class CategoriaProductoService
+class CompraService
 {
     private $modulo = "CATEGORÍA DE PRODUCTOS";
 
@@ -20,11 +20,11 @@ class CategoriaProductoService
 
     public function listado(): Collection
     {
-        $categoria_productos = CategoriaProducto::select("categoria_productos.*")->get();
-        return $categoria_productos;
+        $compras = Compra::select("compras.*")->get();
+        return $compras;
     }
     /**
-     * Lista de categoria_productos paginado con filtros
+     * Lista de compras paginado con filtros
      *
      * @param integer $length
      * @param integer $page
@@ -35,25 +35,25 @@ class CategoriaProductoService
      */
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
-        $categoria_productos = CategoriaProducto::select("categoria_productos.*");
+        $compras = Compra::select("compras.*");
 
         // Filtros exactos
         foreach ($columnsFilter as $key => $value) {
             if (!is_null($value)) {
-                $categoria_productos->where("categoria_productos.$key", $value);
+                $compras->where("compras.$key", $value);
             }
         }
 
         // Filtros por rango
         foreach ($columnsBetweenFilter as $key => $value) {
             if (isset($value[0], $value[1])) {
-                $categoria_productos->whereBetween("categoria_productos.$key", $value);
+                $compras->whereBetween("compras.$key", $value);
             }
         }
 
         // Búsqueda en múltiples columnas con LIKE
         if (!empty($search) && !empty($columnsSerachLike)) {
-            $categoria_productos->where(function ($query) use ($search, $columnsSerachLike) {
+            $compras->where(function ($query) use ($search, $columnsSerachLike) {
                 foreach ($columnsSerachLike as $col) {
                     $query->orWhere("$col", "LIKE", "%$search%");
                 }
@@ -63,69 +63,69 @@ class CategoriaProductoService
         // Ordenamiento
         foreach ($orderBy as $value) {
             if (isset($value[0], $value[1])) {
-                $categoria_productos->orderBy($value[0], $value[1]);
+                $compras->orderBy($value[0], $value[1]);
             }
         }
 
 
-        $categoria_productos = $categoria_productos->paginate($length, ['*'], 'page', $page);
-        return $categoria_productos;
+        $compras = $compras->paginate($length, ['*'], 'page', $page);
+        return $compras;
     }
 
     /**
-     * Crear categoria_producto
+     * Crear compra
      *
      * @param array $datos
-     * @return CategoriaProducto
+     * @return Compra
      */
-    public function crear(array $datos): CategoriaProducto
+    public function crear(array $datos): Compra
     {
-        $categoria_producto = CategoriaProducto::create([
+        $compra = Compra::create([
             "nombre" => $datos["nombre"],
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA CATEGORÍA DE PRODUCTO", $categoria_producto);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA CATEGORÍA DE PRODUCTO", $compra);
 
-        return $categoria_producto;
+        return $compra;
     }
 
     /**
-     * Actualizar categoria_producto
+     * Actualizar compra
      *
      * @param array $datos
-     * @param CategoriaProducto $categoria_producto
-     * @return CategoriaProducto
+     * @param Compra $compra
+     * @return Compra
      */
-    public function actualizar(array $datos, CategoriaProducto $categoria_producto): CategoriaProducto
+    public function actualizar(array $datos, Compra $compra): Compra
     {
-        $old_categoria_producto = clone $categoria_producto;
+        $old_compra = clone $compra;
 
-        $categoria_producto->update([
+        $compra->update([
             "nombre" => $datos["nombre"],
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO", $old_categoria_producto, $categoria_producto->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO", $old_compra, $compra->withoutRelations());
 
-        return $categoria_producto;
+        return $compra;
     }
 
     /**
-     * Eliminar categoria_producto
+     * Eliminar compra
      *
-     * @param CategoriaProducto $categoria_producto
+     * @param Compra $compra
      * @return boolean
      */
-    public function eliminar(CategoriaProducto $categoria_producto): bool|Exception
+    public function eliminar(Compra $compra): bool|Exception
     {
         // TODO: VERIFICAR RELACIONES
 
-        $old_categoria_producto = clone $categoria_producto;
-        $categoria_producto->delete();
+        $old_compra = clone $compra;
+        $compra->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA CATEGORÍA DE PRODUCTO", $old_categoria_producto, $categoria_producto);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA CATEGORÍA DE PRODUCTO", $old_compra, $compra);
 
         return true;
     }

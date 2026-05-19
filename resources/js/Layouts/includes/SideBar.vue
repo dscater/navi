@@ -152,12 +152,30 @@ onUnmounted(() => {});
                             permisos.includes('segmentacion_zonas.index') ||
                             permisos.includes('asignacion_zonas.index') ||
                             permisos.includes('categoria_productos.index') ||
-                            permisos.includes('productos.index')
+                            permisos.includes('productos.index') ||
+                            permisos.includes('compras.index')
                         "
                     >
                         ADMINISTRACIÓN
                     </li>
-
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('compras.index')
+                        "
+                        :label="'Compras'"
+                        :ruta="'compras.index'"
+                        :icon="'fa fa-clipboard-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('productos.index')
+                        "
+                        :label="'Productos'"
+                        :ruta="'productos.index'"
+                        :icon="'fa fa-boxes'"
+                    ></ItemMenu>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
