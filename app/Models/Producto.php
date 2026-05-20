@@ -16,7 +16,7 @@ class Producto extends Model
         "imagen",
     ];
 
-    protected $appends = ["url_imagen", "imagenb64"];
+    protected $appends = ["url_imagen"];
 
     public function getUrlImagenAttribute()
     {
@@ -46,5 +46,10 @@ class Producto extends Model
     public function presentacion_productos()
     {
         return $this->hasMany(PresentacionProducto::class, 'producto_id');
+    }
+
+    public function pedido_detalles()
+    {
+        return $this->hasMany(PedidoDetalle::class, 'producto_id');
     }
 }

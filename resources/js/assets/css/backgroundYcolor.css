@@ -22,8 +22,16 @@ table .bg-principal,
     background-color: var(--bg2) !important;
 }
 
+.bg2t {
+    background-color: var(--bg2t) !important;
+}
+
 .bgVerificado {
     background-color: var(--bgVerificado) !important;
+}
+
+.bgVerificado2 {
+    background-color: var(--bgVerificado2) !important;
 }
 
 .bgWhite {
@@ -35,7 +43,7 @@ table .bg-principal,
 }
 
 .bgYellow2 {
-    background-color: var(--bgYellow2);
+    background-color: var(--bgYellow2) !important;
 }
 
 .bgDark {

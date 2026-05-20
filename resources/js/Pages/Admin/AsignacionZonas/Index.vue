@@ -144,25 +144,6 @@ onMounted(async () => {
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
-                        <button
-                            v-if="
-                                props_page.auth?.user.permisos == '*' ||
-                                props_page.auth?.user.permisos.includes(
-                                    'asignacion_zona.create',
-                                )
-                            "
-                            type="button"
-                            class="btn btn-primary text-sm"
-                            @click="agregarRegistro"
-                        >
-                            <i class="fa fa-plus"></i> Nueva Segmentación de
-                            Zona
-                        </button>
-                    </div>
-                    <div class="col-md-8 my-1"></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Lista de Zonas</h4>

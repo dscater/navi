@@ -17,6 +17,10 @@ return new class extends Migration
             $table->unsignedBigInteger("producto_id");
             $table->unsignedBigInteger("presentacion_producto_id");
             $table->double("cantidad", 8, 2);
+            $table->double("cantidad_total", 8, 2);
+            $table->double("cantidad_despacho", 8, 2);
+            $table->double("cantidad_entregado", 8, 2);
+            $table->double("cantidad_devolucion", 8, 2)->default(0);
             $table->decimal("precio", 24, 2);
             $table->decimal("subtotal", 24, 2);
             $table->timestamps();

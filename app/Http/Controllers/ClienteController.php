@@ -7,6 +7,7 @@ use App\Http\Requests\ClienteUpdateRequest;
 use App\Models\Cliente;
 use App\Models\User;
 use App\Services\ClienteService;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ use Inertia\Response as ResponseInertia;
 
 class ClienteController extends Controller
 {
-    public function __construct(private ClienteService $clienteService) {}
+    public function __construct(private ClienteService $clienteService, private UserService $user_service) {}
 
     /**
      * Página index
@@ -42,6 +43,16 @@ class ClienteController extends Controller
     {
         return response()->JSON([
             "clientes" => $this->clienteService->listado()
+        ]);
+    }
+
+    public function listadoSegmentacion(Request $request)
+    {
+        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        $clientes = Cliente::where("segmentacion_zona_id", $segmentacion_zona->id)
+            ->get();
+        return response()->JSON([
+            "clientes" => $clientes
         ]);
     }
 
@@ -101,27 +112,6 @@ class ClienteController extends Controller
             ]);
         }
     }
-
-    public function nuevo(ClienteStoreRequest $request): JsonResponse|Response
-    {
-        DB::beginTransaction();
-        try {
-            // crear el Cliente
-            $cliente = $this->clienteService->crear($request->validated());
-            DB::commit();
-            return response()->JSON([
-                "cliente" => $cliente,
-                "sw" => true,
-                "message" => "Registro realizado"
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw ValidationException::withMessages([
-                'error' =>  $e->getMessage(),
-            ]);
-        }
-    }
-
 
     /**
      * Mostrar un cliente

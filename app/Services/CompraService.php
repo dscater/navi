@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Services\HistorialAccionService;
 use App\Models\Compra;
+use App\Models\Producto;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Exception;
 use Illuminate\Container\Attributes\Auth;
@@ -14,9 +16,9 @@ use Illuminate\Validation\ValidationException;
 
 class CompraService
 {
-    private $modulo = "CATEGORÍA DE PRODUCTOS";
+    private $modulo = "COMPRAS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private MovimientoInventarioService $movimiento_inventario_service) {}
 
     public function listado(): Collection
     {
@@ -80,12 +82,26 @@ class CompraService
      */
     public function crear(array $datos): Compra
     {
+
+        $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
+        $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
+
         $compra = Compra::create([
-            "nombre" => $datos["nombre"],
+            "categoria_producto_id" => $datos["categoria_producto_id"],
+            "producto_id" => $datos["producto_id"],
+            "cantidad" => $datos["cantidad"],
+            "precio_compra" => $datos["precio_compra"],
+            "total" => $datos["total"],
+            "fecha" => $fecha_actual,
+            "hora" => $hora_actual
         ]);
 
+        // registrar movimiento
+        $producto = Producto::findOrFail($compra->producto_id);
+        $this->movimiento_inventario_service->registrarMovimiento("Compra", "INGRESO", $producto, $compra->cantidad, $compra->precio_compra, "", "Compra", $compra->id);
+
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA CATEGORÍA DE PRODUCTO", $compra);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA COMPRA", $compra);
 
         return $compra;
     }
@@ -106,7 +122,7 @@ class CompraService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA CATEGORÍA DE PRODUCTO", $old_compra, $compra->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA COMPRA", $old_compra, $compra->withoutRelations());
 
         return $compra;
     }
@@ -125,7 +141,7 @@ class CompraService
         $compra->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA CATEGORÍA DE PRODUCTO", $old_compra, $compra);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA COMPRA", $old_compra, $compra);
 
         return true;
     }

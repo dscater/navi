@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\LoginUser;
+use App\Models\Pedido;
 use App\Models\User;
 use App\Services\LoginUserService;
 use App\Services\PermisoService;
@@ -50,15 +51,25 @@ class UserController extends Controller
                     "url" => "usuarios.index"
                 ];
             }
-            // if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
-            //     $array_infos[] = [
-            //         'label' => 'CLIENTES',
-            //         'cantidad' => Cliente::where('status', 1)->count(),
-            //         'color' => 'bgWhite',
-            //         'icon' => "fa-user-friends",
-            //         "url" => "clientes.index"
-            //     ];
-            // }
+            if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
+                $array_infos[] = [
+                    'label' => 'CLIENTES',
+                    'cantidad' => Cliente::where('status', 1)->count(),
+                    'color' => 'bgWhite',
+                    'icon' => "fa-user-friends",
+                    "url" => "clientes.index"
+                ];
+            }
+
+            if ($permisos == '*' || (is_array($permisos) && in_array('pedidos.index', $permisos))) {
+                $array_infos[] = [
+                    'label' => 'PEDIDOS',
+                    'cantidad' => Pedido::where('status', 1)->count(),
+                    'color' => 'bgWhite',
+                    'icon' => "fa-clipboard-list",
+                    "url" => "pedidos.index"
+                ];
+            }
         }
 
 

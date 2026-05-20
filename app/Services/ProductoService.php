@@ -20,7 +20,9 @@ class ProductoService
 
     public function listado(): Collection
     {
-        $productos = Producto::select("productos.*")->get();
+        $productos = Producto::select("productos.*")
+            ->with(["presentacion_productos"])
+            ->where("estado", 1)->get();
         return $productos;
     }
     /**
@@ -166,5 +168,62 @@ class ProductoService
         $nombre = $producto->id . time();
         $producto->imagen = $this->cargarArchivoService->cargarArchivo($imagen, public_path("imgs/productos"), $nombre);
         $producto->save();
+    }
+
+    public function incrementarStock(int $producto_id, int $cantidad = 1)
+    {
+        $producto = Producto::findOrFail($producto_id);
+        $producto->stock_actual = (float)$producto->stock_actual + $cantidad;
+        $producto->save();
+        return $producto;
+    }
+    public function decrementarStock(int $producto_id, int $cantidad = 1)
+    {
+        $producto = Producto::findOrFail($producto_id);
+        // validar stock
+        if (!$this->verificaStock($producto_id, $cantidad)) {
+            throw new Exception("Stock insuficiente del producto " . $producto->nombre . ", disponible " . $producto->stock_actual);
+        }
+
+        $producto->stock_actual = (float)$producto->stock_actual - $cantidad;
+        $producto->save();
+
+        return $producto;
+    }
+
+    public function verificaStock($producto_id, $cantidad): bool
+    {
+        $producto = Producto::findOrFail($producto_id);
+        $disponible = false;
+        if ($producto->stock_actual >= $cantidad) {
+            $disponible = true;
+        }
+
+        return $disponible;
+    }
+
+    public function verificaStockCantidad($producto_id, $cantidad): array
+    {
+        $producto = Producto::findOrFail($producto_id);
+        $disponible = false;
+        if ($producto->stock_actual >= $cantidad) {
+            $disponible = true;
+        }
+
+        return [$disponible, $producto->stock_actual];
+    }
+
+    public function validaStockCantidad($producto_id, $cantidad)
+    {
+        $producto = Producto::findOrFail($producto_id);
+        $disponible = false;
+        if ($producto->stock_actual >= $cantidad) {
+            $disponible = true;
+        }
+        if (!$disponible) {
+            throw new Exception("Stock insuficiente del producto $producto->nombre, stock actual " . $producto->stock_actual, 422);
+            return false;
+        }
+        return true;
     }
 }

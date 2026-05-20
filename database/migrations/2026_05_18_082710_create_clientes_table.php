@@ -20,7 +20,12 @@ return new class extends Migration
             $table->string("dir", 900);
             $table->string("latitud");
             $table->string("longitud");
+            $table->unsignedBigInteger("user_id");
+            $table->date("fecha_registro")->nullable();
+            $table->integer("status");
             $table->timestamps();
+
+            $table->foreign("user_id")->on("users")->references("id");
         });
     }
 

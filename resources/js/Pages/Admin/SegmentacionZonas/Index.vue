@@ -42,6 +42,11 @@ const headers = [
         sortable: true,
     },
     {
+        label: "ZONA",
+        key: "zona",
+        sortable: true,
+    },
+    {
         label: "COLOR",
         key: "color",
         sortable: true,

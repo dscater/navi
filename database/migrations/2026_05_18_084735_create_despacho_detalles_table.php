@@ -19,7 +19,6 @@ return new class extends Migration
             $table->unsignedBigInteger("categoria_producto_id");
             $table->unsignedBigInteger("producto_id");
             $table->unsignedBigInteger("presentacion_producto_id");
-            $table->unsignedBigInteger("venta_id")->nullable();
             $table->double("cantidad", 8, 2);
             $table->double("cantidad_despacho", 8, 2);
             $table->double("cantidad_entregado", 8, 2);
@@ -34,7 +33,6 @@ return new class extends Migration
             $table->foreign("categoria_producto_id")->on("categoria_productos")->references("id");
             $table->foreign("producto_id")->on("productos")->references("id");
             $table->foreign("presentacion_producto_id")->on("presentacion_productos")->references("id");
-            $table->foreign("venta_id")->on("ventas")->references("id");
         });
     }
 

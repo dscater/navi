@@ -1,29 +1,36 @@
 import { useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 
-export const useClientes = () => {
+export const usePedidos = () => {
     const initialState = {
         id: 0,
-        nombre: "",
-        fono: "",
-        razon_social: "",
-        nit_ci: "",
-        dir: "",
-        latitud: null,
-        longitud: null,
+        user_id: "",
+        segmentacion_zona_id: "",
+        cliente_id: "",
+        despacho_id: "",
+        subtotal: "",
+        descuento: 0,
+        total: "",
+        fecha: "",
+        hora: "",
+        observacion: "",
+        estado: "",
+        status: "",
+        pedido_detalles: [],
+        eliminados: [],
         _method: "POST",
     };
 
     const form = useForm({ ...initialState });
 
-    const setCliente = (item = null, ver = false) => {
+    const setPedido = (item = null, ver = false) => {
         form.clearErrors();
         form.reset();
         Object.assign(form, item);
         form._method = "PUT";
     };
 
-    const limpiarCliente = () => {
+    const limpiarPedido = () => {
         form.clearErrors();
         form.reset();
         form.defaults({ ...initialState });
@@ -33,7 +40,7 @@ export const useClientes = () => {
 
     return {
         form,
-        setCliente,
-        limpiarCliente,
+        setPedido,
+        limpiarPedido,
     };
 };

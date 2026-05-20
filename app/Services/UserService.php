@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Certificado;
+use App\Models\SegmentacionZona;
 use App\Models\User;
 use App\Models\Venta;
 use Exception;
@@ -277,5 +278,14 @@ class UserService
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN PERMANENTE", "ELIMINÓ PERMANENTEMENTE EL REGISTRO DE UN USUARIO " . $old_user->usuario, $old_user);
         return true;
+    }
+
+    public function getSegmentacionZona($user_id)
+    {
+        $segmentacion_zona = SegmentacionZona::whereHas("asignacion_zonas", function ($q) use ($user_id) {
+            $q->where("user_id", $user_id);
+        })->get()->first();
+
+        return $segmentacion_zona;
     }
 }

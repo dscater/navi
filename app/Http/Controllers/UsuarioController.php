@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserPasswordRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Models\AsignacionZona;
 use App\Models\HistorialAccion;
+use App\Models\SegmentacionZona;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -313,5 +315,14 @@ class UsuarioController extends Controller
                 'error' =>  $e->getMessage(),
             ]);
         }
+    }
+
+    public function segmentacion_zonas_asignadas()
+    {
+        $segmentacion_zonas = SegmentacionZona::whereHas("asignacion_zonas", function ($q) {
+            if (Auth::user()->tipo != 'ADMINISTRADOR')
+                $q->where("user_id", Auth::user()->id);
+        })->get();
+        return response()->JSON($segmentacion_zonas);
     }
 }

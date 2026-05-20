@@ -47,7 +47,9 @@ class ProductoController extends Controller
 
     public function listadoStockBajo(Request $request)
     {
-        $productos  = Producto::select("productos.*");
+        $productos  = Producto::select("productos.*")
+            ->with(["categoria_producto:id,nombre"])
+            ->where("estado", 1);
 
         if (isset($request->categoria_producto_id) || isset($request->producto_id)) {
             $productos->when($request->categoria_producto_id, function ($q) use ($request) {

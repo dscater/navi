@@ -7,13 +7,17 @@ use App\Http\Controllers\CategoriaEnfermedadController;
 use App\Http\Controllers\CategoriaProductoController;
 use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PresentacionProductoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
@@ -81,6 +85,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("usuarios/listado", [UsuarioController::class, 'listado'])->name("usuarios.listado");
     Route::get("usuarios/listadoAsignacions", [UsuarioController::class, 'listadoAsignacions'])->name("usuarios.listadoAsignacions");
     Route::get("usuarios/listado/byTipo", [UsuarioController::class, 'byTipo'])->name("usuarios.byTipo");
+    Route::get("usuarios/segmentacion_zonas_asignadas", [UsuarioController::class, 'segmentacion_zonas_asignadas'])->name("usuarios.segmentacion_zonas_asignadas");
     Route::get("usuarios/show/{user}", [UsuarioController::class, 'show'])->name("usuarios.show");
     Route::put("usuarios/update/{user}", [UsuarioController::class, 'update'])->name("usuarios.update");
     Route::delete("usuarios/{user}", [UsuarioController::class, 'destroy'])->name("usuarios.destroy");
@@ -138,10 +143,48 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 
-    // COMRPAS
+    // COMPRAS
     Route::get("compras/paginado", [CompraController::class, 'paginado'])->name("compras.paginado");
     Route::get("compras/listado", [CompraController::class, 'listado'])->name("compras.listado");
     Route::resource("compras", CompraController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // CLIENTES
+    Route::get("clientes/paginado", [ClienteController::class, 'paginado'])->name("clientes.paginado");
+    Route::get("clientes/listado", [ClienteController::class, 'listado'])->name("clientes.listado");
+    Route::get("clientes/listadoSegmentacion", [ClienteController::class, 'listadoSegmentacion'])->name("clientes.listadoSegmentacion");
+    Route::resource("clientes", ClienteController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // PEDIDOS
+    Route::get("pedidos/paginado", [PedidoController::class, 'paginado'])->name("pedidos.paginado");
+    Route::get("pedidos/listado", [PedidoController::class, 'listado'])->name("pedidos.listado");
+    Route::get("pedidos/pedidos_distruibidor", [PedidoController::class, 'pedidos_distruibidor'])->name("pedidos.pedidos_distruibidor");
+
+    Route::resource("pedidos", PedidoController::class)->only(
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // DESPACHOS
+    Route::get("despachos/paginado", [DespachoController::class, 'paginado'])->name("despachos.paginado");
+    Route::get("despachos/listado", [DespachoController::class, 'listado'])->name("despachos.listado");
+    Route::resource("despachos", DespachoController::class)->only(
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // CONSOLIDADOS
+    Route::get("consolidados/paginado", [ConsolidadoController::class, 'paginado'])->name("consolidados.paginado");
+    Route::get("consolidados/listado", [ConsolidadoController::class, 'listado'])->name("consolidados.listado");
+    Route::resource("consolidados", ConsolidadoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // COMISIONES
+    Route::get("comisions/paginado", [ComisionController::class, 'paginado'])->name("comisions.paginado");
+    Route::get("comisions/listado", [ComisionController::class, 'listado'])->name("comisions.listado");
+    Route::resource("comisions", ComisionController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 

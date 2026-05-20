@@ -2,9 +2,8 @@
 import Content from "@/Components/Content.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import { useClientes } from "@/composables/clientes/useClientes";
+import { usePedidos } from "@/composables/pedidos/usePedidos";
 import { ref, onMounted, onBeforeMount } from "vue";
-import Formulario from "./Formulario.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
 const { props: props_page } = usePage();
@@ -15,54 +14,44 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setCliente, limpiarCliente, form } = useClientes();
+const { setPedido, limpiarPedido, form } = usePedidos();
 
 const miTable = ref(null);
 const headers = [
     {
-        label: "",
+        label: "Código",
         key: "id",
         sortable: true,
         width: "3%",
     },
     {
-        label: "NOMBRE",
-        key: "nombre",
+        label: "CLIENTE",
+        key: "cliente.nombre",
         sortable: true,
     },
     {
-        label: "TELÉFONO",
-        key: "fono",
+        label: "ZONA",
+        key: "segmentacion_zona.zona",
         sortable: true,
     },
     {
-        label: "RAZÓN SOCIAL",
-        key: "razon_social",
+        label: "SUBTOTAL Bs.",
+        key: "subtotal",
         sortable: true,
     },
     {
-        label: "NIT/C.I.",
-        key: "nit_ci",
+        label: "DESCUENTO Bs.",
+        key: "descuento",
         sortable: true,
     },
     {
-        label: "DIRECCIÓN",
-        key: "dir",
+        label: "TOTAL Bs.",
+        key: "total",
         sortable: true,
     },
     {
-        label: "LATITUD",
-        key: "latitud",
-        sortable: true,
-    },
-    {
-        label: "LONGITUD",
-        key: "longitud",
-        sortable: true,
-    },
-    {
-        label: "FECHA REGISTRO",
-        key: "fecha_registro_t",
+        label: "FECHA",
+        key: "fecha",
         sortable: true,
     },
     {
@@ -78,23 +67,15 @@ const multiSearch = ref({
     filtro: [],
 });
 
-const muestra_formulario = ref(false);
-const muestra_formulario_pass = ref(false);
-
-const agregarRegistro = () => {
-    limpiarCliente();
-    muestra_formulario.value = true;
-};
-
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
-        limpiarCliente();
+        limpiarPedido();
         muestra_formulario.value = false;
     }
 };
 
-const eliminarCliente = (item) => {
+const eliminarPedido = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
         html: `<strong>${item.nombre}</strong>`,
@@ -110,7 +91,7 @@ const eliminarCliente = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("clientes.destroy", item.id),
+                route("pedidos.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -124,14 +105,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <Head title="Clientes"></Head>
+    <Head title="Pedidos"></Head>
 
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h3 class="m-0">
-                        <i class="fa fa-user-friends"></i> Clientes
+                        <i class="fa fa-clipboard-check"></i> Pedidos
                     </h3>
                 </div>
                 <!-- /.col -->
@@ -140,7 +121,8 @@ onMounted(async () => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">Clientes</li>
+
+                        <li class="breadcrumb-item active">Nuevo</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -152,19 +134,19 @@ onMounted(async () => {
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
-                        <button
+                        <Link
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'clientes.create',
+                                    'pedidos.create',
                                 )
                             "
                             type="button"
                             class="btn btn-primary text-sm"
-                            @click="agregarRegistro"
+                            :href="route('pedidos.create')"
                         >
-                            <i class="fa fa-plus"></i> Nuevo Cliente
-                        </button>
+                            <i class="fa fa-plus"></i> Nuevo Pedido
+                        </Link>
                     </div>
                     <div class="col-md-8 my-1">
                         <div class="row justify-content-end">
@@ -196,7 +178,7 @@ onMounted(async () => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('clientes.paginado')"
+                            :url="route('pedidos.paginado')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -205,12 +187,8 @@ onMounted(async () => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
-                            <template #foto="{ item }">
-                                <img
-                                    class="direct-chat-img"
-                                    :src="item.url_foto"
-                                    alt="Foto"
-                                />
+                            <template #fecha="{ item }">
+                                <div>{{ item.fecha_t }} {{ item.hora }}</div>
                             </template>
 
                             <template #acceso="{ item }">
@@ -232,10 +210,11 @@ onMounted(async () => {
                             <template #accion="{ item }">
                                 <template
                                     v-if="
-                                        props_page.auth?.user.permisos == '*' ||
+                                    !item.despacho_id &&
+                                        (props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'clientes.edit',
-                                        )
+                                            'pedidos.edit',
+                                        ))
                                     "
                                 >
                                     <el-tooltip
@@ -244,22 +223,20 @@ onMounted(async () => {
                                         content="Editar"
                                         placement="left-start"
                                     >
-                                        <button
+                                        <Link
                                             class="btn btn-warning"
-                                            @click="
-                                                setCliente(item);
-                                                muestra_formulario = true;
-                                            "
+                                            :href="route('pedidos.edit',item.id)"
                                         >
-                                            <i class="fa fa-pen"></i></button
+                                            <i class="fa fa-pen"></i></LinK
                                     ></el-tooltip>
                                 </template>
                                 <template
                                     v-if="
-                                        props_page.auth?.user.permisos == '*' ||
+                                    !item.despacho_id &&
+                                        (props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'clientes.destroy',
-                                        )
+                                            'pedidos.destroy',
+                                        ))
                                     "
                                 >
                                     <el-tooltip
@@ -270,7 +247,7 @@ onMounted(async () => {
                                     >
                                         <button
                                             class="btn btn-danger"
-                                            @click="eliminarCliente(item)"
+                                            @click="eliminarPedido(item)"
                                         >
                                             <i
                                                 class="fa fa-trash-alt"
@@ -284,12 +261,4 @@ onMounted(async () => {
             </div>
         </div>
     </Content>
-
-    <Formulario
-        v-if="muestra_formulario"
-        :muestra_formulario="muestra_formulario"
-        :form="form"
-        @envio-formulario="updateDatatable"
-        @cerrar-formulario="muestra_formulario = false"
-    ></Formulario>
 </template>

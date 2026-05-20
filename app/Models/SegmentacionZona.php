@@ -41,4 +41,9 @@ class SegmentacionZona extends Model
             'segmentacion' => 'json',
         ];
     }
+
+    public function asignacion_zonas()
+    {
+        return $this->hasMany(AsignacionZona::class, 'segmentacion_zona_id');
+    }
 }

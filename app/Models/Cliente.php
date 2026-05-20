@@ -9,39 +9,33 @@ class Cliente extends Model
 {
     protected $fillable = [
         "nombre",
-        "paterno",
-        "materno",
-        "ci",
-        "ci_exp",
-        "complemento",
-        "fecha_nac",
-        "edad",
-        "cel",
+        "fono",
+        "razon_social",
+        "nit_ci",
+        "dir",
+        "latitud",
+        "longitud",
+        "segmentacion_zona_id",
+        "user_id",
         "fecha_registro",
         "status",
     ];
 
-    protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t", "full_name"];
-
-    public function getFullNameAttribute()
-    {
-        return $this->nombre . ' ' . $this->paterno . ($this->materno ? ' ' . $this->materno : '');
-    }
-    public function getFechaNacTAttribute()
-    {
-        if ($this->fecha_nac) {
-            return date("d/m/Y", strtotime($this->fecha_nac));
-        }
-        return "";
-    }
-    public function getFullCiAttribute()
-    {
-        return $this->ci . ($this->complemento ? '-' . $this->complemento : '') . ' ' . $this->ci_exp;
-    }
+    protected $appends = ["fecha_registro_t"];
 
     public function getFechaRegistroTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha_registro));
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function segmentacion_zona()
+    {
+        return $this->belongsTo(SegmentacionZona::class, 'segmentacion_zona_id');
     }
 
     public function scopeBuscarNombre($query, $texto)
@@ -53,9 +47,7 @@ class Cliente extends Model
         foreach ($palabras as $palabra) {
             $query->where(function ($q) use ($palabra) {
                 $q->where('nombre', 'like', "%$palabra%")
-                    ->orWhere('paterno', 'like', "%$palabra%")
-                    ->orWhere('materno', 'like', "%$palabra%")
-                    ->orWhere('ci', 'like', "%$palabra%");
+                    ->orWhere('razon_social', 'like', "%$palabra%");
             });
         }
 

@@ -9,4 +9,11 @@ class CategoriaProducto extends Model
     protected $fillable = [
         "nombre"
     ];
+
+
+
+    public function pedido_detalles()
+    {
+        return $this->hasMany(PedidoDetalle::class, 'categoria_producto_id');
+    }
 }

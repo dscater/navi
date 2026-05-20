@@ -15,13 +15,15 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("user_id");
             $table->unsignedBigInteger("cliente_id");
+            $table->unsignedBigInteger("despacho_id")->nullable();
             $table->decimal("subtotal", 24, 2);
             $table->decimal("descuento", 24, 2);
             $table->decimal("total", 24, 2);
             $table->date("fecha");
-            $table->date("hora");
+            $table->time("hora");
             $table->text("observacion")->nullable();
-            $table->string("esado")->default("PENDIENTE"); // PENDIENTE, ENTREGADO
+            $table->string("estado")->default("PENDIENTE"); // PENDIENTE, ENTREGADO
+            $table->integer("status")->default(1);
             $table->timestamps();
 
             $table->foreign("user_id")->on("users")->references("id");
