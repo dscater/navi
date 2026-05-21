@@ -12,15 +12,16 @@ class Despacho extends Model
         "observacion",
         "fecha",
         "hora",
+        "estado",
+        "comision",
     ];
 
     protected $appends = ["fecha_t"];
 
     public function getFechaTAttribute()
     {
-        return date("d/m/Y", strtotime($this->fecha_registro));
+        return date("d/m/Y", strtotime($this->fecha));
     }
-
 
     public function distribuidor()
     {

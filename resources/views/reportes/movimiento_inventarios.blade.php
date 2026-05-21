@@ -3,16 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Certificados</title>
+    <title>Movimiento de Inventarios</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
         }
 
         @page {
-            margin-top: 1.5cm;
+            margin-top: 1cm;
             margin-bottom: 0.3cm;
-            margin-left: 0.3cm;
+            margin-left: 1.3cm;
             margin-right: 0.3cm;
         }
 
@@ -54,6 +54,7 @@
             width: 450px;
             margin: auto;
             margin-top: 0PX;
+            margin-bottom: 15px;
             text-align: center;
             font-size: 14pt;
         }
@@ -62,6 +63,7 @@
             width: 250px;
             text-align: center;
             margin: auto;
+            margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -70,6 +72,7 @@
             width: 250px;
             text-align: center;
             margin: auto;
+            margin-top: 15px;
             font-weight: normal;
             font-size: 0.85em;
         }
@@ -97,11 +100,27 @@
             text-align: center;
         }
 
+        .datos {
+            margin-left: 15px;
+            border-top: solid 1px;
+            border-collapse: collapse;
+            width: 250px;
+        }
+
+        .txt {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 5px;
+        }
+
         .txt_center {
             font-weight: bold;
             text-align: center;
         }
 
+        .b_top {
+            border-top: solid 1px black;
+        }
 
         .gray {
             background: rgb(202, 202, 202);
@@ -115,22 +134,6 @@
         .img_celda img {
             width: 45px;
         }
-
-        .derecha {
-            text-align: right;
-        }
-
-        .lista {
-            border: solid 1px;
-            padding-left: 4px;
-            margin-left: 0px;
-        }
-
-        table.total {
-            width: 60%;
-            margin: auto;
-            margin-top: 20px;
-        }
     </style>
 </head>
 
@@ -143,57 +146,34 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">DIARIO DE CERTIFICADOS EMITIDOS</h4>
+        <h4 class="texto">MOVIMIENTO DE INVENTARIO</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="5%">N°</th>
-                <th>PACIENTE</th>
-                <th>C.I.</th>
-                <th width="6%">CATEGORÍA</th>
-                <th>TIPO</th>
-                <th>TIPO CERTIFICADO</th>
-                <th>MÉDICO</th>
-                <th>SUCURSAL</th>
-                <th>FECHA Y HORA INICIO</th>
-                <th>FECHA Y HORA FIN</th>
+                <th width="3%">N°</th>
+                <th width="10%">FECHA</th>
+                <th>PRODUCTO</th>
+                <th>DETALLE</th>
+                <th>CANTIDAD INGRESO</th>
+                <th>CANTIDAD SALIDA</th>
+                <th>SALDO</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $cont = 1;
             @endphp
-            @foreach ($certificado_detalles as $item)
+            @foreach ($movimiento_inventarios as $key => $item)
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
-                    <td>{{ $item->certificado->cliente->full_name }}</td>
-                    <td>{{ $item->certificado->cliente->full_ci }}</td>
-                    <td class="centreado">{{ $item->categoria }}</td>
-                    <td>{{ $item->certificado->tipo }}</td>
-                    <td>{{ $item->tipo_certificado->nombre }}</td>
-                    <td>{{ $item->user->full_name }}</td>
-                    <td>{{ $item->sucursal->nombre }}</td>
-                    <td>{{ $item->fecha_inicio_t }} {{ $item->hora_inicio }}</td>
-                    <td>{{ $item->fecha_fin_t }} {{ $item->hora_fin }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <table border="1" class="total">
-        <thead class="bg-principal">
-            <tr>
-                <th>Tipo de Certificado</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($tipo_certificados as $tipo)
-                <tr>
-                    <td>{{ $tipo->nombre }}</td>
-                    <td>{{ $suma_cantidad[$tipo->id] }}</td>
+                    <td class="">{{ $item->fecha_t }}</td>
+                    <td class="">{{ $item->producto->nombre }}</td>
+                    <td class="">{{ $item->detalle ? $item->detalle : $item->tipo_registro }}</td>
+                    <td class="centreado">{{ $item->cantidad_ingreso ?? '' }}</td>
+                    <td class="centreado">{{ $item->cantidad_salida ?? '' }}</td>
+                    <td class="centreado">{{ $item->cantidad_saldo }}</td>
                 </tr>
             @endforeach
         </tbody>

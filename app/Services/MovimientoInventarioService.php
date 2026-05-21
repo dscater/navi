@@ -56,6 +56,10 @@ class MovimientoInventarioService
         if ($ingreso_salida == 'INGRESO') {
             if (!$detalle || $detalle == "") {
                 $detalle = "INGRESO DE PRODUCTO";
+                if ($tipo_registro == "Compra") {
+                    $detalle = "COMPRA DE PRODUCTO";
+                }
+                $datos_movimiento["detalle"] = $detalle;
             }
             if ($ultimo) {
                 $cantidad_saldo = (float)$ultimo->cantidad_saldo + (float)$cantidad;
@@ -70,6 +74,7 @@ class MovimientoInventarioService
             // EGRESO
             if (!$detalle || $detalle == "") {
                 $detalle = "SALIDA DE PRODUCTO";
+                $datos_movimiento["detalle"] = $detalle;
             }
             if ($ultimo) {
                 $cantidad_saldo = (float)$ultimo->cantidad_saldo - (float)$cantidad;
@@ -88,6 +93,7 @@ class MovimientoInventarioService
 
         if ($ingreso_salida == 'INGRESO') {
             // INCREMENTAR STOCK
+            // Log::debug("INCREMENTAR STOCK DEL PRODUCTO " . $producto->id . " CANTIDAD: " . $cantidad);
             $this->productoService->incrementarStock($producto->id, $cantidad);
         } else {
             $this->productoService->decrementarStock($producto->id, $cantidad);

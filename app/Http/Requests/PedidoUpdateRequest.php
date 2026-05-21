@@ -28,6 +28,7 @@ class PedidoUpdateRequest extends FormRequest
             "subtotal" => "required",
             "descuento" => "required",
             "total" => "required",
+            "tipo_pago" => "nullable",
             "observacion" => "nullable",
             "pedido_detalles" => ["required", new PedidoDetalleRule()],
             "eliminados" => "nullable",
@@ -43,6 +44,7 @@ class PedidoUpdateRequest extends FormRequest
             "total.required" => "Debes completar este campo",
             "observacion.required" => "Debes completar este campo",
             "pedido_detalles.required" => "Debes completar este campo",
+            "tipo_pago.required" => "Debes completar este campo",
         ];
     }
 }

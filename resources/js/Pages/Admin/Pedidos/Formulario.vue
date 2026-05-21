@@ -46,9 +46,7 @@ const enviarFormulario = () => {
                     confirmButton: "btn-alert-success",
                 },
             });
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
+
             emits("envio-formulario");
         },
         onError: (err, code) => {
@@ -204,6 +202,10 @@ const modificaCantidad = (e, index) => {
     form.pedido_detalles[index].subtotal =
         parseFloat(value) *
         parseFloat(form.pedido_detalles[index].presentacion_producto.precio);
+
+    form.pedido_detalles[index].subtotal = parseFloat(
+        form.pedido_detalles[index].subtotal,
+    ).toFixed(2);
 };
 
 const verificaExistencia = (producto_id) => {
@@ -231,14 +233,11 @@ const subtotalPedido = computed(() => {
     }, 0);
 });
 const totalPedido = computed(() => {
-    let total = form.pedido_detalles.reduce((total, elem) => {
-        return (total += parseFloat(elem.subtotal));
-    }, 0);
+    let total = parseFloat(subtotalPedido.value);
 
     if (form.descuento) {
-        total = total - parseFloat(form.descuento);
+        total = parseFloat(subtotalPedido.value) - parseFloat(form.descuento);
     }
-
     return total;
 });
 
@@ -396,7 +395,7 @@ onMounted(() => {
             <div class="col-12">
                 <h4 class="h5">Carrito</h4>
                 <div
-                    class="row border-top"
+                    class="row border-top mb-2"
                     v-for="(item, index) in form.pedido_detalles"
                 >
                     <div class="col-12 fw-bold fs-5">
@@ -420,6 +419,7 @@ onMounted(() => {
                                 step="1"
                                 class="form-control text-center"
                                 v-model="item.cantidad"
+                                @keyup="modificaCantidad($event, index)"
                                 @change="modificaCantidad($event, index)"
                             />
                         </div>
@@ -446,7 +446,9 @@ onMounted(() => {
             </div>
         </div>
         <div class="row border-top pt-2 fila_total">
-            <div class="col-6 border rounded pb-0 mb-0">
+            <div
+                class="col-6 border rounded pb-0 mb-0 d-flex align-items-center"
+            >
                 <b>Subtotal Bs.</b> {{ subtotalPedido }}
             </div>
             <div class="col-6 border rounded pb-0 mb-0">

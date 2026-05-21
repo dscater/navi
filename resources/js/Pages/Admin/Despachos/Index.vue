@@ -104,7 +104,7 @@ onMounted(async () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
 
-                        <li class="breadcrumb-item active">Nuevo</li>
+                        <li class="breadcrumb-item active">Despachos</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -190,6 +190,53 @@ onMounted(async () => {
                                 </div>
                             </template>
                             <template #accion="{ item }">
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
+                                            'despachos.ver',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Ver"
+                                        placement="left-start"
+                                    >
+                                        <Link
+                                            class="btn btn-primary"
+                                            :href="
+                                                route('despachos.ver', item.id)
+                                            "
+                                        >
+                                            <i class="fa fa-eye"></i></Link
+                                    ></el-tooltip>
+                                </template>
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
+                                            'despachos.ver',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Imprimir"
+                                        placement="left-start"
+                                    >
+                                        <a
+                                            class="btn btn-light"
+                                            :href="
+                                                route('despachos.pdf', item.id)
+                                            "
+                                            target="_blank"
+                                        >
+                                            <i class="fa fa-print"></i></a
+                                    ></el-tooltip>
+                                </template>
                                 <!-- <template
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
@@ -208,7 +255,7 @@ onMounted(async () => {
                                             class="btn btn-warning"
                                             :href="route('despachos.edit',item.id)"
                                         >
-                                            <i class="fa fa-pen"></i></LinK
+                                            <i class="fa fa-pen"></i></Link
                                     ></el-tooltip>
                                 </template>
                                 <template

@@ -8,6 +8,7 @@ use App\Models\CategoriaProducto;
 use App\Models\Pedido;
 use App\Models\PedidoDetalle;
 use App\Models\Producto;
+use App\Models\Configuracion;
 use App\Models\User;
 use App\Services\PedidoService;
 use App\Services\UserService;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response as ResponseInertia;
+use PDF;
+use App\library\numero_a_letras\src\NumeroALetras;
 
 class PedidoController extends Controller
 {
@@ -49,59 +52,37 @@ class PedidoController extends Controller
         ]);
     }
 
+    public function listadoByCliente(Request $request): JsonResponse
+    {
+        $pedidos = Pedido::where("cliente_id", $request->cliente_id)
+            ->where("estado", "PENDIENTE")
+            ->whereNotNull("despacho_id")
+            ->get();
+        return response()->JSON([
+            "pedidos" => $pedidos
+        ]);
+    }
 
     public function pedidos_distruibidor(Request $request): JsonResponse
     {
         $segmentacion_zona = $this->user_service->getSegmentacionZona($request->distribuidor_id);
 
-        $categoria_productos = CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($segmentacion_zona) {
-            $q->whereHas("pedido", function ($sub) use ($segmentacion_zona) {
-                $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
-                $sub->where("estado", "PENDIENTE");
-                $sub->where("despacho_id", null);
-            });
-        })->groupBy("id")
-            ->orderBy("nombre", "asc")->get()
-            ->map(function ($categoria) use ($segmentacion_zona) {
-                $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $segmentacion_zona) {
-                    $q->where("categoria_producto_id", $categoria->id);
-                    $q->whereHas("pedido", function ($sub) use ($segmentacion_zona) {
-                        $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
-                        $sub->where("estado", "PENDIENTE");
-                        $sub->where("despacho_id", null);
-                    });
-                })->orderBy("nombre", "asc")
-                    ->get()
-                    ->map(function ($producto) use ($segmentacion_zona) {
-                        $producto->ver = false;
-
-                        $producto->pedido_detalles = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona) {
-                            $q->where("segmentacion_zona_id", $segmentacion_zona->id);
-                            $q->where("estado", "PENDIENTE");
-                            $q->where("despacho_id", null);
-                        })
-                            ->where("producto_id", $producto->id)->get();
-
-                        $producto->cantidad_total = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona) {
-                            $q->where("segmentacion_zona_id", $segmentacion_zona->id);
-                            $q->where("estado", "PENDIENTE");
-                            $q->where("despacho_id", null);
-                        })
-                            ->where("producto_id", $producto->id)->sum("cantidad_total");
-
-                        $producto->cantidad_despacho = $producto->cantidad_total;
-                        $producto->stock_previsto = $producto->stock_actual - $producto->cantidad_despacho;
-                        return $producto;
-                    });;
-                return $categoria;
-            });
-
+        $categoria_productos = $this->pedidoService->pedido_distribuidor(null, $segmentacion_zona, "PENDIENTE", true);
         return response()->JSON([
             "categoria_productos" => $categoria_productos,
         ]);
     }
 
+    public function pedidos_despacho(Request $request): JsonResponse
+    {
+        // $segmentacion_zona = $this->user_service->getSegmentacionZona($request->distribuidor_id);
 
+        $categoria_productos = $this->pedidoService->pedidos_despacho(null, null, $request->estado, (bool)$request->detalles);
+
+        return response()->JSON([
+            "categoria_productos" => $categoria_productos,
+        ]);
+    }
 
     public function distribucion()
     {
@@ -155,7 +136,7 @@ class PedidoController extends Controller
         DB::beginTransaction();
         try {
             // crear el Pedido
-            $this->pedidoService->crear($request->validated());
+            $pedido = $this->pedidoService->crear($request->validated());
             DB::commit();
             return redirect()->route("pedidos.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
@@ -174,7 +155,7 @@ class PedidoController extends Controller
      */
     public function show(Pedido $pedido): JsonResponse
     {
-        return response()->JSON($pedido);
+        return response()->JSON($pedido->load(["pedido_detalles.producto", "pedido_detalles.presentacion_producto"]));
     }
     /**
      * Página edit
@@ -186,14 +167,86 @@ class PedidoController extends Controller
         $pedido = $pedido->load(["pedido_detalles.producto", "pedido_detalles.presentacion_producto"]);
         return Inertia::render("Admin/Pedidos/Edit", compact("pedido"));
     }
+    /**
+     * Página ver
+     *
+     * @return Response
+     */
+    public function ver(Pedido $pedido): ResponseInertia
+    {
+        $pedido = $pedido->load(["pedido_detalles.producto", "pedido_detalles.presentacion_producto", "cliente"]);
+        return Inertia::render("Admin/Pedidos/Ver", compact("pedido"));
+    }
+
+    public function pdf(Pedido $pedido)
+    {
+        $pedido = $pedido->load([
+            "pedido_detalles.producto",
+            "pedido_detalles.presentacion_producto",
+            "cliente",
+            "user_distribucion",
+        ]);
+
+        $configuracion = Configuracion::get()->first();
+        // CANTIDAD DE ITEMS
+        $cantidadItems = $pedido->pedido_detalles->count();
+        $baseHeight = 260; // cabecera + totales
+        $itemHeight = 70; // espacio por item
+
+        $alto = $baseHeight + ($cantidadItems * $itemHeight);
+
+        /*
+        |--------------------------------------------------------------------------
+        | TAMAÑO PAPEL TÉRMICO 80mm
+        |--------------------------------------------------------------------------
+        */
+
+        $customPaper = [0, 0, 226.77, $alto];
+
+
+        $convertir = new NumeroALetras();
+        $array_monto = explode('.', number_format($pedido->total, 2, '.', ''));
+        $literal = $convertir->convertir($array_monto[0]);
+        $literal .= " " . $array_monto[1] . "/100." . " BOLIVIANOS";
+        // primero todo a minúsculas
+        $literal = strtolower($literal);
+
+        // luego primera letra mayúscula
+        $literal = ucfirst($literal);
+        $pdf = PDF::loadView(
+            'reportes.pedido_termico',
+            compact('pedido', 'configuracion', 'literal')
+        )->setPaper($customPaper);
+
+        return $pdf->stream('pedido_termico.pdf');
+    }
+
     public function update(Pedido $pedido, PedidoUpdateRequest $request)
     {
         DB::beginTransaction();
         try {
             // actualizar pedido
-            $this->pedidoService->actualizar($request->validated(), $pedido);
+            $pedido = $this->pedidoService->actualizar($request->validated(), $pedido);
             DB::commit();
             return redirect()->route("pedidos.index")->with("bien", "Registro actualizado");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Log::debug($e->getMessage());
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function distribucion_pedido(Pedido $pedido, PedidoUpdateRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            // actualizar pedido
+            $pedido = $this->pedidoService->distribucion_pedido($request->validated(), $pedido);
+            DB::commit();
+            return redirect()->route("pedidos.distribucion")->with("bien", "Registro actualizado")
+                ->with("url_pedido_pdf", route("pedidos.pdf", $pedido->id));
         } catch (\Exception $e) {
             DB::rollBack();
             // Log::debug($e->getMessage());

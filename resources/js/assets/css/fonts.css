@@ -54,3 +54,11 @@ table.table tbody {
 .text-xxs {
     font-size: 0.65rem;
 }
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}

@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("distribuidor_id");
             $table->unsignedBigInteger("despacho_id");
-            $table->string("estado"); //PENDIENTE
+            $table->unsignedBigInteger("user_id");
             $table->date("fecha");
-            $table->date("hora");
+            $table->time("hora");
             $table->timestamps();
 
             $table->foreign("distribuidor_id")->on("users")->references("id");
             $table->foreign("despacho_id")->on("despachos")->references("id");
+            $table->foreign("user_id")->on("users")->references("id");
         });
     }
 

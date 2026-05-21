@@ -3,16 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Certificados</title>
+    <title>Productos</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
         }
 
         @page {
-            margin-top: 1.5cm;
+            margin-top: 1cm;
             margin-bottom: 0.3cm;
-            margin-left: 0.3cm;
+            margin-left: 1.3cm;
             margin-right: 0.3cm;
         }
 
@@ -54,6 +54,7 @@
             width: 450px;
             margin: auto;
             margin-top: 0PX;
+            margin-bottom: 15px;
             text-align: center;
             font-size: 14pt;
         }
@@ -62,6 +63,7 @@
             width: 250px;
             text-align: center;
             margin: auto;
+            margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -70,6 +72,7 @@
             width: 250px;
             text-align: center;
             margin: auto;
+            margin-top: 15px;
             font-weight: normal;
             font-size: 0.85em;
         }
@@ -97,11 +100,27 @@
             text-align: center;
         }
 
+        .datos {
+            margin-left: 15px;
+            border-top: solid 1px;
+            border-collapse: collapse;
+            width: 250px;
+        }
+
+        .txt {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 5px;
+        }
+
         .txt_center {
             font-weight: bold;
             text-align: center;
         }
 
+        .b_top {
+            border-top: solid 1px black;
+        }
 
         .gray {
             background: rgb(202, 202, 202);
@@ -115,16 +134,6 @@
         .img_celda img {
             width: 45px;
         }
-
-        .derecha {
-            text-align: right;
-        }
-
-        .lista {
-            border: solid 1px;
-            padding-left: 4px;
-            margin-left: 0px;
-        }
     </style>
 </head>
 
@@ -137,40 +146,42 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">CERTIFICADOS EMITIDOS</h4>
+        <h4 class="texto">LISTA DE PRODUCTOS</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="5%">N°</th>
-                <th>NRO. C.I.</th>
+                <th width="3%">N°</th>
                 <th>NOMBRE</th>
-                <th>AP. PATERNO</th>
-                <th>AP. MATERNO</th>
-                <th width="6%">EDAD</th>
-                <th width="6%">CATEGORÍA</th>
-                <th>MÉDICO</th>
-                <th>FECHA Y HORA INICIO</th>
-                <th>FECHA Y HORA FIN</th>
+                <th>DESCRIPCIÓN</th>
+                <th>CATEGORÍA</th>
+                <th>PRESENTACIÓN</th>
+                <th>STOCK MIN.</th>
+                <th>STOCK ACTUAL</th>
+                <th>ESTADO</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $cont = 1;
             @endphp
-            @foreach ($certificado_detalles as $item)
+            @foreach ($productos as $key => $producto)
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
-                    <td>{{ $item->certificado->cliente->full_ci }}</td>
-                    <td>{{ $item->certificado->cliente->nombre }}</td>
-                    <td>{{ $item->certificado->cliente->paterno }}</td>
-                    <td>{{ $item->certificado->cliente->materno }}</td>
-                    <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
-                    <td class="centreado">{{ $item->categoria }}</td>
-                    <td>{{ $item->user->full_name }}</td>
-                    <td>{{ $item->fecha_inicio_t }} {{ $item->hora_inicio }}</td>
-                    <td>{{ $item->fecha_fin_t }} {{ $item->hora_fin }}</td>
+                    <td class="">{{ $producto->nombre }}</td>
+                    <td class="">{{ $producto->descripcion }}</td>
+                    <td class="">{{ $producto->categoria_producto->nombre }}</td>
+                    <td class="">
+                        <ul style="margin-left: 10px;padding-left: 0px;">
+                            @foreach ($producto->presentacion_productos as $presentacion)
+                                <li>{{ $presentacion->nombre }} ({{ $presentacion->equivale }})</li>
+                            @endforeach
+                        </ul>
+                    </td>
+                    <td class="centreado">{{ $producto->stock_min }}</td>
+                    <td class="centreado">{{ $producto->stock_actual }}</td>
+                    <td class="">{{ $producto->estado == 1 ? 'HABILITADO' : 'DESHABILITADO' }}</td>
                 </tr>
             @endforeach
         </tbody>

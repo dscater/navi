@@ -3,16 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Certificados</title>
+    <title>Despacho</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
         }
 
         @page {
-            margin-top: 1.5cm;
+            margin-top: 1cm;
             margin-bottom: 0.3cm;
-            margin-left: 0.3cm;
+            margin-left: 1.3cm;
             margin-right: 0.3cm;
         }
 
@@ -20,7 +20,6 @@
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            margin-top: 20px;
             page-break-before: avoid;
         }
 
@@ -104,7 +103,7 @@
 
 
         .gray {
-            background: rgb(202, 202, 202);
+            background: rgb(240, 240, 240);
         }
 
         .bg-principal {
@@ -120,10 +119,17 @@
             text-align: right;
         }
 
+        .bold {
+            font-weight: bold;
+        }
+
         .lista {
-            border: solid 1px;
             padding-left: 4px;
-            margin-left: 0px;
+            margin-left: 8px;
+        }
+
+        .text-md {
+            font-size: 10pt;
         }
     </style>
 </head>
@@ -137,39 +143,59 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">CERTIFICADOS EMITIDOS INTERNO</h4>
+        <h4 class="texto">Despacho por Producto</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
+    <table border="0" style="margin-top: 40px;width:60%;">
+        <tr>
+            <td><strong>Código Despacho:</strong> {{ $despacho->id }}</td>
+        </tr>
+        <tr>
+            <td><strong>Fecha:</strong> {{ $despacho->fecha_t }} {{ $despacho->hora }}</td>
+        </tr>
+        <tr>
+            <td><strong>Distribuidor:</strong> {{ $despacho->distribuidor->nombre }}</td>
+        </tr>
+        <tr>
+            <td><strong>Observacion:</strong> {{ $despacho->observacion }}</td>
+        </tr>
+    </table>
+
     <table border="1">
-        <thead class="bg-principal">
+        <thead>
             <tr>
-                <th width="5%">N°</th>
-                <th>NRO. C.I.</th>
-                <th>NOMBRE</th>
-                <th>AP. PATERNO</th>
-                <th>AP. MATERNO</th>
-                <th>TELÉFONO</th>
-                <th width="6%">EDAD</th>
-                <th width="6%">CATEGORÍA</th>
-                <th>MÉDICO</th>
+                <th class="bg-principal">Producto</th>
+                <th class="bg-principal" style="min-width: 140px">
+                    Cantidad Pedido
+                </th>
+                <!-- <th class="bg-principal" style="min-width: 140px">
+                                Stock Actual
+                            </th> -->
+                <th class="bg-principal" style="min-width: 140px">
+                    Cantidad Despacho
+                </th>
             </tr>
         </thead>
         <tbody>
-            @php
-                $cont = 1;
-            @endphp
-            @foreach ($certificado_detalles as $item)
+
+            @foreach ($categoria_productos as $item)
                 <tr>
-                    <td class="centreado">{{ $cont++ }}</td>
-                    <td>{{ $item->certificado->cliente->full_ci }}</td>
-                    <td>{{ $item->certificado->cliente->nombre }}</td>
-                    <td>{{ $item->certificado->cliente->paterno }}</td>
-                    <td>{{ $item->certificado->cliente->materno }}</td>
-                    <td>{{ $item->certificado->cliente->cel }}</td=>
-                    <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
-                    <td class="centreado">{{ $item->categoria }}</td>
-                    <td>{{ $item->user->full_name }}</td>
+                    <td colspan="3" class="gray bold">Categoría: {{ $item->nombre }}</td>
                 </tr>
+                @foreach ($item['productos'] as $producto_categoria)
+                    <tr>
+                        <td>
+                            <span class="fw-bold fs-6 me-1">
+                                {{ $producto_categoria->nombre }}</span>
+                        </td>
+                        <td class="centreado">
+                            {{ $producto_categoria->cantidad_total }}
+                        </td>
+                        <td class="centreado">
+                            {{ $producto_categoria->cantidad_despacho }}
+                        </td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>

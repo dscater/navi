@@ -8,9 +8,12 @@ class Pedido extends Model
 {
     protected $fillable = [
         "user_id",
+        "user_distribucion_id",
+        "distribuidor_id",
         "segmentacion_zona_id",
         "cliente_id",
         "despacho_id",
+        "consolidado_id",
         "subtotal",
         "descuento",
         "total",
@@ -34,6 +37,11 @@ class Pedido extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function user_distribucion()
+    {
+        return $this->belongsTo(User::class, 'user_distribucion_id');
+    }
+
     public function segmentacion_zona()
     {
         return $this->belongsTo(SegmentacionZona::class, 'segmentacion_zona_id');
@@ -49,8 +57,18 @@ class Pedido extends Model
         return $this->belongsTo(Despacho::class, 'despacho_id');
     }
 
+    public function consolidado()
+    {
+        return $this->belongsTo(Consolidado::class, 'consolidado_id');
+    }
+
     public function pedido_detalles()
     {
         return $this->hasMany(PedidoDetalle::class, 'pedido_id');
+    }
+
+    public function pedido_detalles_venta()
+    {
+        return $this->hasMany(PedidoDetalle::class, 'pedido_id')->where("status", 1);
     }
 }

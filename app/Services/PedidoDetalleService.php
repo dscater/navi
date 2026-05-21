@@ -24,18 +24,17 @@ class PedidoDetalleService
         $cantidad_total = $datos["cantidad_total"];
         $cantidad_despacho = $datos["cantidad_total"];
         $cantidad = $pedido_detalle->cantidad;
-        $subtotal = (float)$cantidad_despacho * (float)$presentacionProducto->precio;
         if ($pedido_detalle->cantidad_total != $datos["cantidad_total"]) {
             $cantidad = ((float)$cantidad_total / (float)$presentacionProducto->equivale);
             $cantidad = round($cantidad, 2);
-            $subtotal = $cantidad * $pedido_detalle->precio;
         }
+        $subtotal = (float)$cantidad * (float)$presentacionProducto->precio;
 
         $datos_detalle = [
             "cantidad" => $cantidad,
-            "cantidad_total" => $cantidad_total,
+            // "cantidad_total" => $cantidad_total,
             "cantidad_despacho" => $cantidad_despacho,
-            "cantidad_entregado" => 0,
+            "cantidad_entregado" => $cantidad_despacho,
             "cantidad_devolucion" => 0,
             "subtotal" => $subtotal,
         ];
@@ -50,5 +49,15 @@ class PedidoDetalleService
         $this->movimiento_inventario_service->registrarMovimiento("Despacho", "EGRESO", $producto, $cantidad_total, $presentacionProducto->precio, "Despacho de producto", "PedidoDetalle", $pedido_detalle->id);
 
         $pedido_detalle->update($datos_detalle);
+    }
+
+    public function ingresoProductoPorConsolidado($datos)
+    {
+        $pedido_detalle = PedidoDetalle::findOrFail($datos["id"]);
+        $producto = Producto::findOrFail($pedido_detalle->producto_id);
+        $presentacionProducto = PresentacionProducto::findOrFail($pedido_detalle->presentacion_producto_id);
+        if ($pedido_detalle->cantidad_devolucion > 0) {
+            $this->movimiento_inventario_service->registrarMovimiento("Consolidado", "INGRESO", $producto, $pedido_detalle->cantidad_devolucion, $presentacionProducto->precio, "Consolidado de Despacho", "PedidoDetalle", $pedido_detalle->id);
+        }
     }
 }

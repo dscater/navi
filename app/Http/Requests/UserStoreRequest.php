@@ -28,6 +28,7 @@ class UserStoreRequest extends FormRequest
             "bloqueo" => "required",
             "password" => "required|min:6",
             "tipo" => "required",
+            "foto" => "nullable",
         ];
     }
 

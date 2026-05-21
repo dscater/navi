@@ -3,18 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DespachoStoreRequest;
+use App\Models\Despacho;
+use App\Models\CategoriaProducto;
+use App\Models\PedidoDetalle;
+use App\Models\PresentacionProducto;
+use App\Models\Producto;
 use App\Services\DespachoService;
+use App\Services\PedidoService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as ResponseInertia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use PDF;
 
 class DespachoController extends Controller
 {
-    public function __construct(private DespachoService $despachoService) {}
+    public function __construct(private DespachoService $despachoService, private PedidoService $pedidoService) {}
     /**
      * Página index
      *
@@ -25,6 +33,166 @@ class DespachoController extends Controller
         return Inertia::render("Admin/Despachos/Index");
     }
 
+    public function listado(Request $request): JsonResponse
+    {
+        $despachos = Despacho::select("despachos.*");
+        if (isset($request->estado)) {
+            $despachos = $despachos->where("estado", $request->estado);
+        }
+        if (isset($request->comision)) {
+            $despachos = $despachos->where("comision", $request->comision);
+        }
+        if (isset($request->distribuidor_id)) {
+            $despachos = $despachos->where("distribuidor_id", $request->distribuidor_id);
+        }
+        $despachos = $despachos->get();
+
+        return response()->JSON([
+            "despachos" => $despachos
+        ]);
+    }
+
+    public function ver(Despacho $despacho): ResponseInertia
+    {
+        $despacho = $despacho->load(["distribuidor"]);
+        $categoria_productos = $this->pedidoService->pedido_distribuidor($despacho->id);
+
+        return Inertia::render("Admin/Despachos/Ver", compact("despacho", "categoria_productos"));
+    }
+
+    public function pdf(Despacho $despacho)
+    {
+        $despacho = $despacho->load(["distribuidor"]);
+        $categoria_productos = $this->pedidoService->pedido_distribuidor($despacho->id);
+
+        $pdf = PDF::loadView('reportes.despacho', compact('despacho', 'categoria_productos'))->setPaper('letter', 'portrait');
+
+        // ENUMERAR LAS PÁGINAS USANDO CANVAS
+        $pdf->output();
+        $dom_pdf = $pdf->getDomPDF();
+        $canvas = $dom_pdf->get_canvas();
+        $alto = $canvas->get_height();
+        $ancho = $canvas->get_width();
+        $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+
+        return $pdf->stream('despacho.pdf');
+    }
+
+    public function pedidos_despacho_comision(Request $request): JsonResponse
+    {
+        $distribuidor_id = $request->distribuidor_id;
+        $estado_despacho = "CONSOLIDADO";
+        $despachos = Despacho::where("distribuidor_id", $distribuidor_id)
+            ->where("comision", 0)
+            ->orderBy("id", "asc")
+            ->get()
+            ->map(function ($despacho) use ($estado_despacho, $distribuidor_id) {
+                $despacho_id = $despacho->id;
+                $despacho->categoria_productos = CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($despacho_id, $estado_despacho) {
+                    $q->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho) {
+                        $sub->where("despacho_id", $despacho_id);
+                        $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                            $sub2->where("estado", $estado_despacho);
+                        });
+                    });
+                })->groupBy("id")
+                    ->orderBy("nombre", "asc")->get()
+                    ->map(function ($categoria) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                        $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria,  $despacho_id, $estado_despacho, $distribuidor_id) {
+                            $q->where("categoria_producto_id", $categoria->id);
+                            $q->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                $sub->where("despacho_id", $despacho_id);
+                                $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                    $sub2->where("estado", $estado_despacho);
+                                });
+                            });
+                        })->orderBy("nombre", "asc")
+                            ->get()
+                            ->map(function ($producto) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                $producto->ver = false;
+
+                                $producto->cantidad_entregado = PedidoDetalle::where("producto_id", $producto->id)
+                                    ->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                        $sub->where("despacho_id", $despacho_id);
+                                        $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                            $sub2->where("estado", $estado_despacho);
+                                        });
+                                    })->sum("cantidad_entregado");
+
+                                $producto->monto_vendido = PedidoDetalle::where("producto_id", $producto->id)
+                                    ->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                        $sub->where("despacho_id", $despacho_id);
+                                        $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                            $sub2->where("estado", $estado_despacho);
+                                        });
+                                    })->sum("subtotal");
+
+                                $producto->comision_distribuidor = 0;
+                                $producto->comision_vendedor = 0;
+
+                                $total_comision_distribuidor = 0;
+                                $total_comision_vendedor = 0;
+
+                                $producto->presentacions = PresentacionProducto::whereHas("pedido_detalles", function ($q) use ($producto,  $despacho_id, $estado_despacho, $distribuidor_id) {
+                                    $q->where("producto_id", $producto->id);
+                                    $q->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                        $sub->where("despacho_id", $despacho_id);
+                                        $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                            $sub2->where("estado", $estado_despacho);
+                                        });
+                                    });
+                                })->orderBy("nombre", "asc")
+                                    ->get()
+                                    ->map(function ($presentacion) use (
+                                        $producto,
+                                        $despacho_id,
+                                        $estado_despacho,
+                                        $distribuidor_id,
+                                        &$total_comision_distribuidor,
+                                        &$total_comision_vendedor
+                                    ) {
+                                        $presentacion->ver = false;
+                                        $presentacion->total_cantidad = PedidoDetalle::where("producto_id", $producto->id)
+                                            ->where("presentacion_producto_id", $presentacion->id)
+                                            ->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                                $sub->where("despacho_id", $despacho_id);
+                                                $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                                    $sub2->where("estado", $estado_despacho);
+                                                });
+                                            })->sum("cantidad");
+                                        $presentacion->cantidad_presentacion = PedidoDetalle::where("producto_id", $producto->id)
+                                            ->where("presentacion_producto_id", $presentacion->id)
+                                            ->whereHas("pedido", function ($sub) use ($despacho_id, $estado_despacho, $distribuidor_id) {
+                                                $sub->where("despacho_id", $despacho_id);
+                                                $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
+                                                    $sub2->where("estado", $estado_despacho);
+                                                });
+                                            })->sum("cantidad");
+
+                                        $presentacion->comision_distribuidor = $presentacion->cantidad_presentacion * $presentacion->comi_distribuidor;
+                                        $presentacion->comision_vendedor = $presentacion->cantidad_presentacion * $presentacion->comi_vendedor;
+                                        // Acumular
+                                        $total_comision_distribuidor += $presentacion->comision_distribuidor;
+                                        $total_comision_vendedor += $presentacion->comision_vendedor;
+                                        return $presentacion;
+                                    });
+                                // Asignar totales al producto
+                                $producto->comision_distribuidor = round($total_comision_distribuidor, 2);
+                                $producto->comision_vendedor = round($total_comision_vendedor, 2);
+
+                                $producto->entrega_distribuidor = round($total_comision_distribuidor, 2);
+                                $producto->entrega_vendedor = round($total_comision_vendedor, 2);
+                                return $producto;
+                            });
+                        return $categoria;
+                    });
+                return $despacho;
+            });
+
+        return response()->JSON([
+            "despachos" => $despachos
+        ]);
+    }
 
     public function paginado(Request $request)
     {

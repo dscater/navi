@@ -23,6 +23,7 @@ return new class extends Migration
             $table->double("cantidad_devolucion", 8, 2)->default(0);
             $table->decimal("precio", 24, 2);
             $table->decimal("subtotal", 24, 2);
+            $table->integer("status")->default(1);
             $table->timestamps();
 
             $table->foreign("pedido_id")->on("pedidos")->references("id");

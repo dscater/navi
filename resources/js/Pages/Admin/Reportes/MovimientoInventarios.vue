@@ -10,23 +10,14 @@ onBeforeMount(() => {
 });
 
 const cargarListas = () => {
-    cargarTipos();
+    cargarProductos();
+    cargarCategoriaProductos();
 };
-
-const listSucursals = ref([]);
-
 onMounted(() => {
     cargarListas();
     appStore.stopLoading();
 });
 
-const getFechaAtual = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-};
 const listFormatos = ref([
     {
         icon: "fa fa-file-pdf",
@@ -40,9 +31,18 @@ const listFormatos = ref([
     },
 ]);
 
+const getFechaActual = () => {
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${anio}-${mes}-${dia}`;
+};
 const form = ref({
-    fecha_ini: getFechaAtual(),
-    fecha_fin: getFechaAtual(),
+    categoria_producto_id: "todos",
+    producto_id: "todos",
+    fecha_ini: getFechaActual(),
+    fecha_fin: getFechaActual(),
     formato: "pdf",
 });
 
@@ -54,25 +54,34 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listTipos = ref([]);
+const listCategoriaProductos = ref([]);
+const listProductos = ref([]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_clientes", form.value);
+    const url = route("reportes.r_movimiento_inventarios", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
     }, 500);
 };
 
-const cargarTipos = () => {
-    axios.get(route("tipo_usuarios.listado")).then((response) => {
-        listTipos.value = response.data.map((item) => ({
-            id: item,
-            nombre: item,
-        }));
+const cargarCategoriaProductos = () => {
+    axios.get(route("categoria_productos.listado")).then((response) => {
+        listCategoriaProductos.value = response.data.categoria_productos;
 
-        listTipos.value.unshift({
+        listCategoriaProductos.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
+const cargarProductos = () => {
+    axios.get(route("productos.listado")).then((response) => {
+        listProductos.value = response.data.productos;
+
+        listProductos.value.unshift({
             id: "todos",
             nombre: "TODOS",
         });
@@ -80,21 +89,21 @@ const cargarTipos = () => {
 };
 </script>
 <template>
-    <Head title="Reporte Clientes"></Head>
+    <Head title="Reporte Movimiento de Inventario"></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Lista de Clientes</h1>
+                    <h4 class="m-0">Movimiento de Inventario</h4>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                    <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Lista de Clientes
+                            Reportes - Movimiento de Inventario
                         </li>
                     </ol>
                 </div>
@@ -109,7 +118,38 @@ const cargarTipos = () => {
                         <form @submit.prevent="generarReporte">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label>Rango de fechas</label>
+                                    <label
+                                        >Seleccionar Categoría de
+                                        producto*</label
+                                    >
+                                    <select
+                                        v-model="form.categoria_producto_id"
+                                        class="form-control"
+                                    >
+                                        <option
+                                            v-for="item in listCategoriaProductos"
+                                            :value="item.id"
+                                        >
+                                            {{ item.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Seleccionar producto*</label>
+                                    <select
+                                        v-model="form.producto_id"
+                                        class="form-control"
+                                    >
+                                        <option
+                                            v-for="item in listProductos"
+                                            :value="item.id"
+                                        >
+                                            {{ item.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <label>Rango de Fechas</label>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input
@@ -126,14 +166,7 @@ const cargarTipos = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div
-                                        class="text-xs text-muted w-100 text-center"
-                                    >
-                                        Para listar todos los clientes dejar
-                                        vacío
-                                    </div>
                                 </div>
-
                                 <div class="col-md-12 text-center mt-2">
                                     <el-radio-group v-model="form.formato">
                                         <el-radio

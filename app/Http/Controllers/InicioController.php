@@ -25,7 +25,7 @@ class InicioController extends Controller
 
     public function inicio()
     {
-        $array_infos = UserController::getInfoBoxUser();
+        $array_infos = app(UserController::class)->getInfoBoxUser();
 
         return Inertia::render('Admin/Home', compact('array_infos'));
     }

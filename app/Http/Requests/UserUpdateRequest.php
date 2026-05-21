@@ -28,6 +28,7 @@ class UserUpdateRequest extends FormRequest
             "bloqueo" => "required",
             "password" => "nullable|min:6",
             "tipo" => "required",
+            "foto" => "nullable",
         ];
     }
 

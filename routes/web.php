@@ -161,8 +161,13 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // PEDIDOS
     Route::get("pedidos/paginado", [PedidoController::class, 'paginado'])->name("pedidos.paginado");
     Route::get("pedidos/listado", [PedidoController::class, 'listado'])->name("pedidos.listado");
+    Route::get("pedidos/listadoByCliente", [PedidoController::class, 'listadoByCliente'])->name("pedidos.listadoByCliente");
     Route::get("pedidos/distribucion", [PedidoController::class, 'distribucion'])->name("pedidos.distribucion");
     Route::get("pedidos/pedidos_distruibidor", [PedidoController::class, 'pedidos_distruibidor'])->name("pedidos.pedidos_distruibidor");
+    Route::get("pedidos/pedidos_despacho", [PedidoController::class, 'pedidos_despacho'])->name("pedidos.pedidos_despacho");
+    Route::put("pedidos/distribucion_pedido/{pedido}", [PedidoController::class, 'distribucion_pedido'])->name("pedidos.distribucion_pedido");
+    Route::get("pedidos/ver/{pedido}", [PedidoController::class, 'ver'])->name("pedidos.ver");
+    Route::get("pedidos/pdf/{pedido}", [PedidoController::class, 'pdf'])->name("pedidos.pdf");
     Route::resource("pedidos", PedidoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
@@ -170,6 +175,9 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // DESPACHOS
     Route::get("despachos/paginado", [DespachoController::class, 'paginado'])->name("despachos.paginado");
     Route::get("despachos/listado", [DespachoController::class, 'listado'])->name("despachos.listado");
+    Route::get("despachos/pedidos_despacho_comision", [DespachoController::class, 'pedidos_despacho_comision'])->name("despachos.pedidos_despacho_comision");
+    Route::get("despachos/ver/{despacho}", [DespachoController::class, 'ver'])->name("despachos.ver");
+    Route::get("despachos/pdf/{despacho}", [DespachoController::class, 'pdf'])->name("despachos.pdf");
     Route::resource("despachos", DespachoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
@@ -177,19 +185,29 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // CONSOLIDADOS
     Route::get("consolidados/paginado", [ConsolidadoController::class, 'paginado'])->name("consolidados.paginado");
     Route::get("consolidados/listado", [ConsolidadoController::class, 'listado'])->name("consolidados.listado");
+    Route::get("consolidados/ver/{consolidado}", [ConsolidadoController::class, 'ver'])->name("consolidados.ver");
+    Route::get("consolidados/pdf/{consolidado}", [ConsolidadoController::class, 'pdf'])->name("consolidados.pdf");
     Route::resource("consolidados", ConsolidadoController::class)->only(
-        ["index", "store", "edit", "show", "update", "destroy"]
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
 
     // COMISIONES
     Route::get("comisions/paginado", [ComisionController::class, 'paginado'])->name("comisions.paginado");
     Route::get("comisions/listado", [ComisionController::class, 'listado'])->name("comisions.listado");
+    Route::get("comisions/ver/{comision}", [ComisionController::class, 'ver'])->name("comisions.ver");
+    Route::get("comisions/pdf/{comision}", [ComisionController::class, 'pdf'])->name("comisions.pdf");
     Route::resource("comisions", ComisionController::class)->only(
-        ["index", "store", "edit", "show", "update", "destroy"]
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
 
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");
     Route::get('reportes/r_usuarios', [ReporteController::class, 'r_usuarios'])->name("reportes.r_usuarios");
+
+    Route::get('reportes/productos', [ReporteController::class, 'productos'])->name("reportes.productos");
+    Route::get('reportes/r_productos', [ReporteController::class, 'r_productos'])->name("reportes.r_productos");
+
+    Route::get('reportes/movimiento_inventarios', [ReporteController::class, 'movimiento_inventarios'])->name("reportes.movimiento_inventarios");
+    Route::get('reportes/r_movimiento_inventarios', [ReporteController::class, 'r_movimiento_inventarios'])->name("reportes.r_movimiento_inventarios");
 });
 require __DIR__ . '/auth.php';

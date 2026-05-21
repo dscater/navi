@@ -174,14 +174,12 @@ class UserService
             "acceso" => $datos["acceso"],
             "bloqueo" => $datos["bloqueo"],
             "tipo" => $datos["tipo"],
-            "sucursal_id" => $datos["sucursal_id"],
         ]);
 
         if (!empty($datos["password"])) {
             $user->password = $datos["password"];
             $user->save();
         }
-
 
         // cargar foto
         if (isset($datos["foto"]) && !is_string($datos["foto"])) {

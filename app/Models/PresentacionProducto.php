@@ -19,4 +19,9 @@ class PresentacionProducto extends Model
     {
         return $this->belongsTo(Producto::class, 'producto_id');
     }
+
+    public function pedido_detalles()
+    {
+        return $this->hasMany(PedidoDetalle::class, 'presentacion_producto_id');
+    }
 }

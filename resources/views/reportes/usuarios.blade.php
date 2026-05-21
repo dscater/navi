@@ -10,9 +10,9 @@
         }
 
         @page {
-            margin-top: 1.5cm;
+            margin-top: 1cm;
             margin-bottom: 0.3cm;
-            margin-left: 0.3cm;
+            margin-left: 1.3cm;
             margin-right: 0.3cm;
         }
 
@@ -31,11 +31,11 @@
         }
 
         table thead tr th {
-            font-size: 7pt;
+            font-size: 9pt;
         }
 
         table tbody tr td {
-            font-size: 6pt;
+            font-size: 8pt;
         }
 
 
@@ -153,16 +153,11 @@
         <thead class="bg-principal">
             <tr>
                 <th width="3%">N°</th>
-                <th width="5%">FOTO</th>
+                <th width="8%">FOTO</th>
                 <th>USUARIO</th>
-                <th>PATERNO</th>
-                <th>MATERNO</th>
-                <th>NOMBRE(S)</th>
-                <th>C.I.</th>
-                <th>DIRECCIÓN</th>
-                <th>CORREO</th>
-                <th>TELÉFONO/CELULAR</th>
+                <th>NOMBRE</th>
                 <th>TIPO</th>
+                <th>BLOQUEO</th>
                 <th>ACCESO</th>
             </tr>
         </thead>
@@ -178,14 +173,9 @@
 
                     </td>
                     <td>{{ $user->usuario }}</td>
-                    <td class="">{{ $user->paterno }}</td>
-                    <td class="">{{ $user->materno }}</td>
                     <td class="">{{ $user->nombre }}</td>
-                    <td class="">{{ $user->full_ci }}</td>
-                    <td class="">{{ $user->dir }}</td>
-                    <td class="">{{ $user->correo }}</td>
-                    <td class="">{{ $user->fono }}</td>
                     <td class="">{{ $user->tipo }}</td>
+                    <td class="centreado">{{ $user->bloqueo == 1 ? 'HABILITADO' : 'DENEGADO' }}</td>
                     <td class="centreado">{{ $user->acceso == 1 ? 'HABILITADO' : 'DENEGADO' }}</td>
                 </tr>
             @endforeach

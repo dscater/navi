@@ -25,8 +25,15 @@ class MovimientoInventario extends Model
         "status",
     ];
 
+    protected $appends = ["fecha_t"];
+
+    public function getFechaTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha));
+    }
+
     public function producto()
     {
-        return $this->belongsTo(Sucursal::class, 'producto_id');
+        return $this->belongsTo(Producto::class, 'producto_id');
     }
 }

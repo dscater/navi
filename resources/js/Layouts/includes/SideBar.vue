@@ -157,11 +157,31 @@ onUnmounted(() => {});
                             permisos.includes('clientes.index') ||
                             permisos.includes('pedidos.index') ||
                             permisos.includes('despachos.index') ||
-                            permisos.includes('pedidos.distribucion')
+                            permisos.includes('pedidos.distribucion') ||
+                            permisos.includes('consolidados.index') ||
+                            permisos.includes('comisions.index')
                         "
                     >
                         ADMINISTRACIÓN
                     </li>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('comisions.index')
+                        "
+                        :label="'Comisiones'"
+                        :ruta="'comisions.index'"
+                        :icon="'fa fa-hand-holding-usd'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('consolidados.index')
+                        "
+                        :label="'Consolidado'"
+                        :ruta="'consolidados.index'"
+                        :icon="'fa fa-list'"
+                    ></ItemMenu>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
@@ -257,7 +277,8 @@ onUnmounted(() => {});
                         v-if="
                             permisos == '*' ||
                             permisos.includes('reportes.usuarios') ||
-                            permisos.includes('reportes.clientes')
+                            permisos.includes('reportes.productos') ||
+                            permisos.includes('reportes.movimiento_inventarios')
                         "
                     >
                         REPORTES
@@ -269,6 +290,24 @@ onUnmounted(() => {});
                         "
                         :label="'Lista de Usuarios'"
                         :ruta="'reportes.usuarios'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.productos')
+                        "
+                        :label="'Lista de Productos'"
+                        :ruta="'reportes.productos'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.movimiento_inventarios')
+                        "
+                        :label="'Movimiento de Inventario'"
+                        :ruta="'reportes.movimiento_inventarios'"
                         :icon="'fa fa-file-pdf'"
                     ></ItemMenu>
                     <li class="nav-header font-weight-bold">OTROS</li>

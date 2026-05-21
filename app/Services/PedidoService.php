@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
+use App\Models\CategoriaProducto;
 use App\Services\HistorialAccionService;
 use App\Models\Pedido;
 use App\Models\PedidoDetalle;
 use App\Models\Producto;
 use App\Models\User;
+use App\Models\Despacho;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class PedidoService
@@ -128,7 +131,7 @@ class PedidoService
         }
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PEDIDO", $pedido);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PEDIDO", $pedido, null, ["pedido_detalles"]);
 
         return $pedido;
     }
@@ -183,10 +186,60 @@ class PedidoService
         }
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PEDIDO", $old_pedido, $pedido->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PEDIDO", $old_pedido, $pedido->withoutRelations(), ["pedido_detalles"]);
 
         return $pedido;
     }
+
+    public function distribucion_pedido(array $datos, Pedido $pedido): Pedido
+    {
+        $old_pedido = clone $pedido;
+
+        $despacho = Despacho::findOrFail($pedido->despacho_id);
+
+        $pedido->update([
+            "distribuidor_id" => $despacho->distribuidor_id,
+            "user_distribucion_id" => Auth::user()->id,
+            "subtotal" => $datos["subtotal"],
+            "descuento" => $datos["descuento"],
+            "total" => $datos["total"],
+            "observacion" => $datos["observacion"],
+            "tipo_pago" => $datos["tipo_pago"],
+            "estado" => "ENTREGADO"
+        ]);
+
+        // DETALLES
+        foreach ($datos["pedido_detalles"] as $item) {
+            $producto = Producto::findOrFail($item["producto_id"]);
+            $datos_detalle = [
+                "producto_id" => $item["producto_id"],
+                "categoria_producto_id" => $producto->categoria_producto_id,
+                "presentacion_producto_id" => $item["presentacion_producto_id"],
+                "cantidad" => $item["cantidad"],
+                "cantidad_entregado" => $item["cantidad_entregado"],
+                "cantidad_devolucion" => (float)$item["cantidad_despacho"] - (float)$item["cantidad_entregado"],
+                "precio" => $item["precio"],
+                "subtotal" => $item["subtotal"],
+            ];
+            $pedido_detalle = PedidoDetalle::find($item["id"]);
+            $pedido_detalle->update($datos_detalle);
+        }
+
+        if (isset($datos["eliminados"])) {
+            foreach ($datos["eliminados"] as $value) {
+                $pedido_detalle = PedidoDetalle::find($value);
+                $pedido_detalle->cantidad_devolucion = $pedido_detalle->cantidad_despacho;
+                $pedido_detalle->status = 2; // ELIMINADO POR DISTRIBUCIÓN
+                $pedido_detalle->save();
+            }
+        }
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ENTREGÓ UN PEDIDO", $old_pedido, $pedido->withoutRelations(), ["pedido_detalles"]);
+
+        return $pedido;
+    }
+
 
     /**
      * Eliminar pedido
@@ -206,5 +259,203 @@ class PedidoService
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN PEDIDO", $old_pedido, $pedido);
 
         return true;
+    }
+
+    public function pedido_distribuidor($despacho_id = null, $segmentacion_zona = null, $estado = null, $valida_despacho = false)
+    {
+        return CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($segmentacion_zona, $estado, $despacho_id, $valida_despacho) {
+            $q->whereHas("pedido", function ($sub) use ($segmentacion_zona, $estado, $despacho_id, $valida_despacho) {
+                if ($despacho_id) {
+                    $sub->where("despacho_id", $despacho_id);
+                }
+                if ($segmentacion_zona) {
+                    $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
+                }
+                if ($estado) {
+                    $sub->where("estado", $estado);
+                }
+                if ($valida_despacho) {
+                    $sub->where("despacho_id", null);
+                }
+            });
+        })->groupBy("id")
+            ->orderBy("nombre", "asc")->get()
+            ->map(function ($categoria) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                    $q->where("categoria_producto_id", $categoria->id);
+                    $q->whereHas("pedido", function ($sub) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                        if ($despacho_id) {
+                            $sub->where("despacho_id", $despacho_id);
+                        }
+                        if ($segmentacion_zona) {
+                            $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
+                        }
+                        if ($estado) {
+                            $sub->where("estado", $estado);
+                        }
+                        if ($valida_despacho) {
+                            $sub->where("despacho_id", null);
+                        }
+                    });
+                })->orderBy("nombre", "asc")
+                    ->get()
+                    ->map(function ($producto) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                        $producto->ver = false;
+
+                        $producto->pedido_detalles = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($segmentacion_zona) {
+                                $q->where("segmentacion_zona_id", $segmentacion_zona->id);
+                            }
+                            if ($estado) {
+                                $q->where("estado", $estado);
+                            }
+                            if ($valida_despacho) {
+                                $q->where("despacho_id", null);
+                            }
+                        })->where("producto_id", $producto->id)->get();
+
+                        $producto->cantidad_total = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($segmentacion_zona) {
+                                $q->where("segmentacion_zona_id", $segmentacion_zona->id);
+                            }
+                            if ($estado) {
+                                $q->where("estado", $estado);
+                            }
+                            if ($valida_despacho) {
+                                $q->where("despacho_id", null);
+                            }
+                        })->where("producto_id", $producto->id)->sum("cantidad_total");
+                        $producto->cantidad_despacho = $producto->cantidad_total;
+                        $producto->stock_previsto = $producto->stock_actual - $producto->cantidad_despacho;
+                        return $producto;
+                    });
+                return $categoria;
+            });
+    }
+
+    public function pedidos_despacho($consolidado_id = null, $despacho_id = null, $estado = "", $detalles = false)
+    {
+        return CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($consolidado_id, $despacho_id, $estado, $detalles) {
+            $q->whereHas("pedido", function ($sub) use ($consolidado_id, $despacho_id, $estado) {
+                if ($consolidado_id) {
+                    $sub->where("consolidado_id", $consolidado_id);
+                }
+                if ($despacho_id) {
+                    $sub->where("despacho_id", $despacho_id);
+                }
+                $sub->whereHas("despacho", function ($sub2) use ($estado) {
+                    if ($estado) {
+                        $sub2->where("estado", $estado);
+                    }
+                });
+            });
+        })->groupBy("id")
+            ->orderBy("nombre", "asc")->get()
+            ->map(function ($categoria) use ($consolidado_id, $despacho_id, $estado, $detalles) {
+                $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $consolidado_id, $despacho_id, $estado, $detalles) {
+                    $q->where("categoria_producto_id", $categoria->id);
+                    $q->whereHas("pedido", function ($sub) use ($consolidado_id, $despacho_id, $estado) {
+                        if ($consolidado_id) {
+                            $sub->where("consolidado_id", $consolidado_id);
+                        }
+                        if ($despacho_id) {
+                            $sub->where("despacho_id", $despacho_id);
+                        }
+                        if ($estado) {
+                            $sub->whereHas("despacho", function ($sub2) use ($estado) {
+                                $sub2->where("estado", $estado);
+                            });
+                        }
+                    });
+                })->orderBy("nombre", "asc")
+                    ->get()
+                    ->map(function ($producto) use ($consolidado_id, $despacho_id, $estado, $detalles) {
+                        $producto->ver = $detalles;
+
+                        $producto->pedido_detalles = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($consolidado_id, $despacho_id, $estado) {
+                            if ($consolidado_id) {
+                                $q->where("consolidado_id", $consolidado_id);
+                            }
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($estado) {
+                                $q->whereHas("despacho", function ($sub2) use ($estado) {
+                                    $sub2->where("estado", $estado);
+                                });
+                            }
+                        })
+                            ->where("producto_id", $producto->id)->get();
+
+                        $producto->cantidad_despacho = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($consolidado_id, $despacho_id, $estado) {
+                            if ($consolidado_id) {
+                                $q->where("consolidado_id", $consolidado_id);
+                            }
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($estado) {
+                                $q->whereHas("despacho", function ($sub2) use ($estado) {
+                                    $sub2->where("estado", $estado);
+                                });
+                            }
+                        })
+                            ->where("producto_id", $producto->id)->sum("cantidad_despacho");
+
+                        $producto->cantidad_entregado = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($consolidado_id, $despacho_id, $estado) {
+                            if ($consolidado_id) {
+                                $q->where("consolidado_id", $consolidado_id);
+                            }
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($estado) {
+                                $q->whereHas("despacho", function ($sub2) use ($estado) {
+                                    $sub2->where("estado", $estado);
+                                });
+                            }
+                        })
+                            ->where("producto_id", $producto->id)->sum("cantidad_entregado");
+
+                        $producto->cantidad_devolucion = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($consolidado_id, $despacho_id, $estado) {
+                            if ($consolidado_id) {
+                                $q->where("consolidado_id", $consolidado_id);
+                            }
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($estado) {
+                                $q->whereHas("despacho", function ($sub2) use ($estado) {
+                                    $sub2->where("estado", $estado);
+                                });
+                            }
+                        })
+                            ->where("producto_id", $producto->id)->sum("cantidad_devolucion");
+
+                        $producto->subtotal = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($consolidado_id, $despacho_id, $estado) {
+                            if ($consolidado_id) {
+                                $q->where("consolidado_id", $consolidado_id);
+                            }
+                            if ($despacho_id) {
+                                $q->where("despacho_id", $despacho_id);
+                            }
+                            if ($estado) {
+                                $q->whereHas("despacho", function ($sub2) use ($estado) {
+                                    $sub2->where("estado", $estado);
+                                });
+                            }
+                        })
+                            ->where("producto_id", $producto->id)->sum("subtotal");
+
+                        return $producto;
+                    });
+                return $categoria;
+            });
     }
 }

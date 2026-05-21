@@ -11,28 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('despacho_detalles', function (Blueprint $table) {
+        Schema::create('comision_detalles', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("comision_id");
             $table->unsignedBigInteger("despacho_id");
-            $table->unsignedBigInteger("cliente_id");
-            $table->unsignedBigInteger("pedido_detalle_id");
             $table->unsignedBigInteger("categoria_producto_id");
             $table->unsignedBigInteger("producto_id");
-            $table->unsignedBigInteger("presentacion_producto_id");
             $table->double("cantidad", 8, 2);
-            $table->double("cantidad_despacho", 8, 2);
-            $table->double("cantidad_entregado", 8, 2);
-            $table->double("cantidad_devolucion", 8, 2)->nullable();
-            $table->decimal("precio", 24, 2);
-            $table->decimal("subtotal", 24, 2);
+            $table->decimal("comision_distribuidor", 24, 2);
+            $table->decimal("comision_vendedor", 24, 2);
+            $table->decimal("entrega_distribuidor", 24, 2);
+            $table->decimal("entrega_vendedor", 24, 2);
             $table->timestamps();
 
+            $table->foreign("comision_id")->on("comisions")->references("id");
             $table->foreign("despacho_id")->on("despachos")->references("id");
-            $table->foreign("cliente_id")->on("clientes")->references("id");
-            $table->foreign("pedido_detalle_id")->on("pedido_detalles")->references("id");
             $table->foreign("categoria_producto_id")->on("categoria_productos")->references("id");
             $table->foreign("producto_id")->on("productos")->references("id");
-            $table->foreign("presentacion_producto_id")->on("presentacion_productos")->references("id");
         });
     }
 
@@ -41,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('despacho_detalles');
+        Schema::dropIfExists('comision_detalles');
     }
 };

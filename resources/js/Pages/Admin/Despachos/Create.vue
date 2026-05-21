@@ -263,12 +263,14 @@ onMounted(async () => {
                                 ) in listCategoriaProductoPedidos"
                                 :key="item.id"
                             >
-                                <td
-                                    class="bg2t text-white fw-bold ps-2"
-                                    colspan="5"
-                                >
-                                    {{ item.nombre }}
-                                </td>
+                                <tr>
+                                    <td
+                                        class="bg2t text-white fw-bold ps-2"
+                                        colspan="5"
+                                    >
+                                        {{ item.nombre }}
+                                    </td>
+                                </tr>
                                 <template
                                     v-for="(
                                         producto_categoria, fila_producto

@@ -18,6 +18,7 @@ class PedidoDetalle extends Model
         "cantidad_devolucion",
         "precio",
         "subtotal",
+        "status",
     ];
 
     public function pedido()

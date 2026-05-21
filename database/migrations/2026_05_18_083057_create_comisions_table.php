@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("distribuidor_id");
             $table->unsignedBigInteger("despacho_id");
+            $table->date("fecha");
+            $table->time("hora");
             $table->timestamps();
         });
     }

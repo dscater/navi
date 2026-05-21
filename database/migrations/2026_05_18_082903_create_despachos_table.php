@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text("observacion")->nullable();
             $table->date("fecha");
             $table->time("hora");
+            $table->string("estado")->default("SIN CONSOLIDAR");
+            $table->integer("comision")->default(0);
             $table->timestamps();
 
             $table->foreign("distribuidor_id")->on("users")->references("id");
