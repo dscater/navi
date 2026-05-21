@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal("subtotal", 24, 2);
             $table->decimal("descuento", 24, 2);
             $table->decimal("total", 24, 2);
+            $table->string("tipo_pago")->nullable();
             $table->date("fecha");
             $table->time("hora");
             $table->text("observacion")->nullable();

@@ -161,8 +161,8 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // PEDIDOS
     Route::get("pedidos/paginado", [PedidoController::class, 'paginado'])->name("pedidos.paginado");
     Route::get("pedidos/listado", [PedidoController::class, 'listado'])->name("pedidos.listado");
+    Route::get("pedidos/distribucion", [PedidoController::class, 'distribucion'])->name("pedidos.distribucion");
     Route::get("pedidos/pedidos_distruibidor", [PedidoController::class, 'pedidos_distruibidor'])->name("pedidos.pedidos_distruibidor");
-
     Route::resource("pedidos", PedidoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );

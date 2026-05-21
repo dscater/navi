@@ -103,11 +103,9 @@ class PedidoController extends Controller
 
 
 
-    public function byCi(Request $request)
+    public function distribucion()
     {
-        $ci = $request->input("ci", "");
-        $pedidos = Pedido::where("ci", $ci)->get();
-        return response()->JSON($pedidos);
+        return Inertia::render("Admin/Distribucions/Index");
     }
 
     public function paginado(Request $request)

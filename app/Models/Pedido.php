@@ -14,6 +14,7 @@ class Pedido extends Model
         "subtotal",
         "descuento",
         "total",
+        "tipo_pago",
         "fecha",
         "hora",
         "observacion",

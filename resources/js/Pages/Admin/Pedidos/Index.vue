@@ -50,6 +50,11 @@ const headers = [
         sortable: true,
     },
     {
+        label: "ESTADO",
+        key: "estado",
+        sortable: true,
+    },
+    {
         label: "FECHA",
         key: "fecha",
         sortable: true,
@@ -187,6 +192,13 @@ onMounted(async () => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
+                            <template #estado="{ item }">
+                                <div
+                                
+                                :class="{
+                                    'text-success fw-bold':item.estado=='ENTREGADO'
+                                }">{{ item.estado }}</div>
+                            </template>
                             <template #fecha="{ item }">
                                 <div>{{ item.fecha_t }} {{ item.hora }}</div>
                             </template>

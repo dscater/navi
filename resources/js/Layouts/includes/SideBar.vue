@@ -156,11 +156,21 @@ onUnmounted(() => {});
                             permisos.includes('compras.index') ||
                             permisos.includes('clientes.index') ||
                             permisos.includes('pedidos.index') ||
-                            permisos.includes('despachos.index')
+                            permisos.includes('despachos.index') ||
+                            permisos.includes('pedidos.distribucion')
                         "
                     >
                         ADMINISTRACIÓN
                     </li>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('pedidos.distribucion')
+                        "
+                        :label="'Distribución'"
+                        :ruta="'pedidos.distribucion'"
+                        :icon="'fa fa-truck'"
+                    ></ItemMenu>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||

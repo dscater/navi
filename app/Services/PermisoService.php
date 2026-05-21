@@ -186,6 +186,7 @@ class PermisoService
             "pedidos.update",
             "pedidos.destroy",
             "pedidos.pedidos_distruibidor",
+            "pedidos.distribucion",
 
             "despachos.paginado",
             "despachos.index",
@@ -240,6 +241,7 @@ class PermisoService
             "pedidos.update",
             // "pedidos.destroy",
             "pedidos.pedidos_distruibidor",
+            "pedidos.distribucion",
 
             "consolidados.paginado",
             "consolidados.index",

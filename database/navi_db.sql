@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 20-05-2026 a las 22:20:43
+-- Tiempo de generación: 21-05-2026 a las 00:46:02
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -476,6 +476,7 @@ CREATE TABLE `pedidos` (
   `subtotal` decimal(24,2) NOT NULL,
   `descuento` decimal(24,2) NOT NULL,
   `total` decimal(24,2) NOT NULL,
+  `tipo_pago` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
   `observacion` text COLLATE utf8mb4_unicode_ci,
@@ -489,12 +490,12 @@ CREATE TABLE `pedidos` (
 -- Volcado de datos para la tabla `pedidos`
 --
 
-INSERT INTO `pedidos` (`id`, `user_id`, `segmentacion_zona_id`, `cliente_id`, `despacho_id`, `subtotal`, `descuento`, `total`, `fecha`, `hora`, `observacion`, `estado`, `status`, `created_at`, `updated_at`) VALUES
-(1, 5, 1, 1, 3, 1195.00, 0.00, 1195.00, '2026-05-20', '15:46:36', NULL, 'PENDIENTE', 1, '2026-05-20 19:46:36', '2026-05-20 22:12:14'),
-(2, 5, 1, 2, 3, 200.00, 0.00, 200.00, '2026-05-20', '15:55:51', NULL, 'PENDIENTE', 1, '2026-05-20 19:55:51', '2026-05-20 22:12:14'),
-(3, 5, 1, 3, 3, 65.00, 0.00, 65.00, '2026-05-20', '15:56:00', NULL, 'PENDIENTE', 1, '2026-05-20 19:56:00', '2026-05-20 22:12:14'),
-(4, 6, 2, 4, 4, 400.00, 0.00, 400.00, '2026-05-20', '16:05:48', NULL, 'PENDIENTE', 1, '2026-05-20 20:05:48', '2026-05-20 22:19:36'),
-(5, 6, 2, 5, 4, 65.00, 0.00, 65.00, '2026-05-20', '16:05:57', NULL, 'PENDIENTE', 1, '2026-05-20 20:05:57', '2026-05-20 22:19:36');
+INSERT INTO `pedidos` (`id`, `user_id`, `segmentacion_zona_id`, `cliente_id`, `despacho_id`, `subtotal`, `descuento`, `total`, `tipo_pago`, `fecha`, `hora`, `observacion`, `estado`, `status`, `created_at`, `updated_at`) VALUES
+(1, 5, 1, 1, 3, 1195.00, 0.00, 1195.00, NULL, '2026-05-20', '15:46:36', NULL, 'PENDIENTE', 1, '2026-05-20 19:46:36', '2026-05-20 22:12:14'),
+(2, 5, 1, 2, 3, 200.00, 0.00, 200.00, NULL, '2026-05-20', '15:55:51', NULL, 'PENDIENTE', 1, '2026-05-20 19:55:51', '2026-05-20 22:12:14'),
+(3, 5, 1, 3, 3, 65.00, 0.00, 65.00, NULL, '2026-05-20', '15:56:00', NULL, 'PENDIENTE', 1, '2026-05-20 19:56:00', '2026-05-20 22:12:14'),
+(4, 6, 2, 4, 4, 400.00, 0.00, 400.00, NULL, '2026-05-20', '16:05:48', NULL, 'PENDIENTE', 1, '2026-05-20 20:05:48', '2026-05-20 22:19:36'),
+(5, 6, 2, 5, 4, 65.00, 0.00, 65.00, NULL, '2026-05-20', '16:05:57', NULL, 'PENDIENTE', 1, '2026-05-20 20:05:57', '2026-05-20 22:19:36');
 
 -- --------------------------------------------------------
 
