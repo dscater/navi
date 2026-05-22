@@ -5,6 +5,7 @@ import { ref, onMounted, onBeforeMount, watch } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
 import axios from "axios";
+import VerZona from "./VerZona.vue";
 // TOAST
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -106,6 +107,14 @@ const updateAsignacion = async (e, user_id) => {
     }
 };
 
+const muestra_formulario = ref(false);
+const zonaSeleccionadaVer = ref(null);
+
+const verSegmentacionZona = (item) => {
+    zonaSeleccionadaVer.value = item;
+    muestra_formulario.value = true;
+};
+
 onMounted(async () => {
     cargarZonas();
     cargarDistribuidors();
@@ -176,7 +185,20 @@ onMounted(async () => {
                                             <td>
                                                 {{ item.id }}
                                             </td>
-                                            <td>{{ item.zona }}</td>
+                                            <td>
+                                                {{ item.zona }}
+                                                <button
+                                                    class="btn btn-sm btn-outline-primary ms-1"
+                                                    @click.stop="
+                                                        verSegmentacionZona(
+                                                            item,
+                                                        )
+                                                    "
+                                                    title="Ver Segmentación"
+                                                >
+                                                    <i class="fa fa-map"></i>
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -187,6 +209,12 @@ onMounted(async () => {
                                     <i class="fa fa-spin fa-spinner fa-2x"></i>
                                 </div>
                             </div>
+                            <VerZona
+                                v-if="muestra_formulario"
+                                :muestra_formulario="muestra_formulario"
+                                :form="zonaSeleccionadaVer"
+                                @cerrar-formulario="muestra_formulario = false"
+                            ></VerZona>
                         </div>
                     </div>
                     <div class="col-md-4">

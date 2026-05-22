@@ -60,7 +60,7 @@ class UserController extends Controller
             if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
                 $clientes = Cliente::where('status', 1);
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
-                    $clientes->where('segmentacion_zona_id', $this->segmentacion_zona->id);
+                    $clientes->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
                 }
                 $clientes = $clientes->count();
                 $array_infos[] = [
@@ -75,7 +75,7 @@ class UserController extends Controller
             if ($permisos == '*' || (is_array($permisos) && in_array('pedidos.index', $permisos))) {
                 $pedidos = Pedido::where('status', 1);
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
-                    $pedidos->where('segmentacion_zona_id', $this->segmentacion_zona->id);
+                    $pedidos->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
                 }
                 $array_infos[] = [
                     'label' => 'PEDIDOS',

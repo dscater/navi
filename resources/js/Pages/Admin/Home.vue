@@ -10,6 +10,7 @@ import { useAppStore } from "@/stores/aplicacion/appStore";
 import Highcharts from "highcharts";
 import "highcharts/modules/exporting";
 import "highcharts/modules/accessibility";
+import MapZonasClientes from "@/Components/MapZonasClientes.vue";
 Highcharts.setOptions({
     lang: {
         downloadPNG: "Descargar PNG",
@@ -39,216 +40,37 @@ onBeforeMount(() => {
 
 const { props } = usePage();
 
-const filtroGrafico1 = ref([
-    {
-        value: "semanal",
-        label: "Ultimos 7 días",
-    },
-    {
-        value: "meses",
-        label: "Por meses",
-    },
-    {
-        value: "gestion",
-        label: "Por Años",
-    },
-]);
-
-const form1 = ref({
-    tipo: "semanal",
-});
-
-const generarReporte1 = () => {
+const listSegmentacions = ref([]);
+const cargaSegmentacion = ref(false);
+const cargarSegmentacions = () => {
+    cargaSegmentacion.value = false;
     axios
-        .get(route("certificadosEmitidosLinea"), {
-            params: form1.value,
-        })
+        .get(route("segmentacion_zonas.listado"))
         .then((response) => {
-            nextTick(() => {
-                const containerId = `container`;
-                const container = document.getElementById(containerId);
-                // Verificar que el contenedor exista y tenga un tamaño válido
-                if (container) {
-                    renderChart1(
-                        containerId,
-                        response.data.categories,
-                        response.data.total_final,
-                        response.data.data,
-                    );
-                } else {
-                    console.error(`Contenedor ${containerId} no válido.`);
-                }
-            });
-            // Create the chart
+            listSegmentacions.value = response.data.segmentacion_zonas;
+        })
+        .finally(() => {
+            cargaSegmentacion.value = true;
         });
 };
 
-const renderChart1 = (containerId, categories, total_final, data) => {
-    Highcharts.chart(containerId, {
-        chart: {
-            type: "line",
-        },
-        title: {
-            align: "center",
-            text: `CERTIFICADOS EMITIDOS`,
-        },
-        subtitle: {
-            align: "center",
-            text: `Total emitidos: ${total_final}`,
-        },
-        accessibility: {
-            announceNewData: {
-                enabled: true,
-            },
-        },
-        xAxis: {
-            categories: categories,
-        },
-        yAxis: {
-            title: {
-                text: "TOTAL",
-            },
-        },
-        legend: {
-            enabled: true,
-        },
-        plotOptions: {
-            series: {
-                depth: 100,
-                borderWidth: 0,
-                dataLabels: {
-                    enabled: true,
-                    // format: "{point.y}",
-                    style: {
-                        fontSize: "11px",
-                        fontWeight: "bold",
-                    },
-                },
-            },
-        },
-        tooltip: {
-            useHTML: true,
-            formatter: function () {
-                return `
-                    <div style="text-align:center;">
-                        <div style="display:inline-block; width:12px; height:12px; background:${this.point.color}; border-radius:50%; margin-right:5px;"></div>
-                        <strong style="color:${this.point.color};">${this.point.series.name}</strong>
-                        <br>
-                        <span class="text-md"><strong>Total:</strong> ${this.point.y}</span>
-                    </div>
-                    `;
-            },
-        },
-
-        series: [
-            {
-                name: "Certificados emitidos",
-                data: data,
-            },
-        ],
-    });
-};
-
-const generarReporte2 = () => {
-    axios.get(route("cantidadTramitesNormal")).then((response) => {
-        nextTick(() => {
-            const containerId = `container2`;
-            const container = document.getElementById(containerId);
-            // Verificar que el contenedor exista y tenga un tamaño válido
-            if (container) {
-                renderChart2(
-                    containerId,
-                    response.data.categories,
-                    response.data.total_final,
-                    response.data.data,
-                );
-            } else {
-                console.error(`Contenedor ${containerId} no válido.`);
-            }
+const listCLientes = ref([]);
+const cargaClientes = ref(false);
+const cargarClientes = () => {
+    cargaClientes.value = false;
+    axios
+        .get(route("clientes.listado"))
+        .then((response) => {
+            listCLientes.value = response.data.clientes;
+        })
+        .finally(() => {
+            cargaClientes.value = true;
         });
-        // Create the chart
-    });
-};
-
-const renderChart2 = (containerId, categories, total_final, data) => {
-    Highcharts.chart(containerId, {
-        chart: {
-            type: "pie",
-        },
-        title: {
-            align: "center",
-            text: `NORMAL/TRÁMITE`,
-        },
-        subtitle: {
-            align: "center",
-            text: `Total: ${total_final}`,
-        },
-        accessibility: {
-            announceNewData: {
-                enabled: true,
-            },
-        },
-        yAxis: {
-            title: {
-                text: "TOTAL",
-            },
-        },
-        legend: {
-            enabled: true,
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: "pointer",
-                dataLabels: [
-                    {
-                        enabled: true,
-                        distance: 20,
-                    },
-                    {
-                        enabled: true,
-                        distance: -25,
-                        format: "{point.percentage:.1f}%",
-                        style: {
-                            fontSize: "0.75em",
-                            textOutline: "none",
-                            opacity: 1,
-                        },
-                        filter: {
-                            operator: ">",
-                            property: "percentage",
-                            value: 10,
-                        },
-                    },
-                ],
-            },
-        },
-        tooltip: {
-            useHTML: true,
-            formatter: function () {
-                return `
-                    <div style="text-align:center;">
-                        <div style="display:inline-block; width:12px; height:12px; background:${this.point.color}; border-radius:50%; margin-right:5px;"></div>
-                        <strong style="color:${this.point.color};">${this.point.series.name}</strong>
-                        <br>
-                        <span class="text-md"><strong>Total:</strong> ${this.point.y}</span>
-                    </div>
-                    `;
-            },
-        },
-
-        series: [
-            {
-                name: "Certificados emitidos",
-                data: data,
-            },
-        ],
-    });
 };
 
 onMounted(() => {
-    // generarReporte1();
-    // generarReporte2();
+    cargarSegmentacions();
+    cargarClientes();
     appStore.stopLoading();
 });
 </script>
@@ -289,6 +111,32 @@ onMounted(() => {
                         >Ver más <i class="fa fa-arrow-alt-circle-right"></i
                     ></Link>
                 </div>
+            </div>
+        </div>
+        <div
+            class="row"
+            v-if="
+                !auth?.user.asignacion_zona &&
+                auth?.user.tipo != 'ADMINISTRADOR'
+            "
+        >
+            <div class="alert alert-danger col-12 text-white">
+                <h5 class="text-white fw-bold">
+                    <i class="icon fas fa-ban"></i> Sin asignación de zona
+                </h5>
+                No se ha asignado una zona a su usuario, por lo tanto no podrá
+                realizar ningún registro. Por favor, contacte con el
+                administrador del sistema para que le asigne una zona.
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <MapZonasClientes
+                    v-if="cargaClientes && cargaSegmentacion"
+                    :clientes="listCLientes"
+                    :zonas="listSegmentacions"
+                ></MapZonasClientes>
             </div>
         </div>
 

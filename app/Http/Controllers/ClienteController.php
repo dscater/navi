@@ -49,7 +49,7 @@ class ClienteController extends Controller
     public function listadoSegmentacion(Request $request)
     {
         $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-        $clientes = Cliente::where("segmentacion_zona_id", $segmentacion_zona->id)
+        $clientes = Cliente::with(["segmentacion_zona"])->where("segmentacion_zona_id", $segmentacion_zona->id)
             ->get();
         return response()->JSON([
             "clientes" => $clientes

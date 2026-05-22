@@ -7,6 +7,7 @@ import { ref, onMounted, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
+import VerZona from "@/Pages/Admin/AsignacionZonas/VerZona.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 const { axiosDelete } = useAxios();
@@ -65,7 +66,7 @@ const multiSearch = ref({
 });
 
 const muestra_formulario = ref(false);
-const muestra_formulario_pass = ref(false);
+const muestra_formulario_ver = ref(false);
 
 const agregarRegistro = () => {
     limpiarSegmentacionZona();
@@ -212,6 +213,30 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
+                                            'segmentacion_zonas.index',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Ver"
+                                        placement="left-start"
+                                    >
+                                        <button
+                                            class="btn btn-primary"
+                                            @click="
+                                                setSegmentacionZona(item);
+                                                muestra_formulario_ver = true;
+                                            "
+                                        >
+                                            <i class="fa fa-eye"></i></button
+                                    ></el-tooltip>
+                                </template>
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
                                             'segmentacion_zonas.edit',
                                         )
                                     "
@@ -272,4 +297,11 @@ onMounted(async () => {
         @envio-formulario="updateDatatable"
         @cerrar-formulario="muestra_formulario = false"
     ></Formulario>
+
+    <VerZona
+        v-if="muestra_formulario_ver"
+        :muestra_formulario="muestra_formulario_ver"
+        :form="form"
+        @cerrar-formulario="muestra_formulario_ver = false"
+    ></VerZona>
 </template>

@@ -127,7 +127,7 @@ onMounted(async () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
 
-                        <li class="breadcrumb-item active">Nuevo</li>
+                        <li class="breadcrumb-item active">Pedidos</li>
                     </ol>
                 </div>
                 <!-- /.col -->

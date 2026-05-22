@@ -2,6 +2,18 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+});
+
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw";
 
@@ -43,6 +55,10 @@ const props = defineProps({
     longitud: {
         type: Number,
         default: null,
+    },
+    editable: {
+        type: Boolean,
+        default: true,
     },
 });
 
@@ -227,7 +243,6 @@ const iniciarMapa = (lat, lng) => {
                 fillOpacity: 0.4,
             },
         );
-
         drawnItems.addLayer(polygon);
     });
     // ir a la ubicación del area
@@ -240,38 +255,42 @@ const iniciarMapa = (lat, lng) => {
     /**
      * CONTROLES
      */
-    crearControles();
+    if (props.editable) {
+        crearControles();
+    }
 
     /**
      * CREAR
      */
-    map.on(L.Draw.Event.CREATED, (event) => {
-        const layer = event.layer;
+    if (props.editable) {
+        map.on(L.Draw.Event.CREATED, (event) => {
+            const layer = event.layer;
 
-        layer.setStyle({
-            color: props.color,
-            fillColor: props.color,
-            fillOpacity: 0.4,
+            layer.setStyle({
+                color: props.color,
+                fillColor: props.color,
+                fillOpacity: 0.4,
+            });
+
+            drawnItems.addLayer(layer);
+
+            obtenerDatos();
         });
 
-        drawnItems.addLayer(layer);
+        /**
+         * EDITAR
+         */
+        map.on(L.Draw.Event.EDITED, () => {
+            obtenerDatos();
+        });
 
-        obtenerDatos();
-    });
-
-    /**
-     * EDITAR
-     */
-    map.on(L.Draw.Event.EDITED, () => {
-        obtenerDatos();
-    });
-
-    /**
-     * ELIMINAR
-     */
-    map.on(L.Draw.Event.DELETED, () => {
-        obtenerDatos();
-    });
+        /**
+         * ELIMINAR
+         */
+        map.on(L.Draw.Event.DELETED, () => {
+            obtenerDatos();
+        });
+    }
 };
 
 onMounted(() => {

@@ -7,20 +7,27 @@ use App\Models\SegmentacionZona;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Exception;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class SegmentacionZonaService
 {
     private $modulo = "SEGMENTACIÓN DE ZONAS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private UserService $user_service) {}
 
     public function listado(): Collection
     {
-        $segmentacion_zonas = SegmentacionZona::select("segmentacion_zonas.*")->get();
+        $segmentacion_zonas = SegmentacionZona::select("segmentacion_zonas.*");
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $segmentacion_zonas->where("id", $segmentacion_zona?->id);
+        }
+
+        $segmentacion_zonas = $segmentacion_zonas->get();
         return $segmentacion_zonas;
     }
     /**

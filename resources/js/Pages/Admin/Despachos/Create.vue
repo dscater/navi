@@ -155,6 +155,11 @@ const enviarFormulario = () => {
 
 onMounted(async () => {
     cargarDistribuidors();
+    if (props_page.auth?.user.tipo == "DISTRIBUIDOR") {
+        distribuidor_id.value = props_page.auth?.user.id;
+        cargarPedidosDistribuidor();
+    }
+
     appStore.stopLoading();
 });
 </script>
@@ -207,7 +212,10 @@ onMounted(async () => {
             <div class="col-md-8 my-1"></div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div
+                class="col-md-12"
+                v-if="props_page.auth?.user.tipo == 'ADMINISTRADOR'"
+            >
                 <label>Distribuidor</label>
                 <el-select
                     v-model="distribuidor_id"

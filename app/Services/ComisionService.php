@@ -152,7 +152,7 @@ class ComisionService
                     $q->whereHas("pedido", function ($sub) use ($despacho_id) {
                         $sub->where("despacho_id", $despacho_id);
                     });
-                })->groupBy("id")
+                })->distinct()
                     ->orderBy("nombre", "asc")->get()
                     ->map(function ($categoria) use ($despacho_id, $comision_id) {
                         $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria,  $despacho_id,) {

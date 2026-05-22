@@ -49,7 +49,54 @@ class PedidoService
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
             $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $pedidos->where("segmentacion_zona_id", $segmentacion_zona->id);
+            $pedidos->where("segmentacion_zona_id", $segmentacion_zona?->id);
+        }
+
+        // Filtros exactos
+        foreach ($columnsFilter as $key => $value) {
+            if (!is_null($value)) {
+                $pedidos->where("pedidos.$key", $value);
+            }
+        }
+
+        // Filtros por rango
+        foreach ($columnsBetweenFilter as $key => $value) {
+            if (isset($value[0], $value[1])) {
+                $pedidos->whereBetween("pedidos.$key", $value);
+            }
+        }
+
+        // Búsqueda en múltiples columnas con LIKE
+        if (!empty($search) && !empty($columnsSerachLike)) {
+            $pedidos->where(function ($query) use ($search, $columnsSerachLike) {
+                foreach ($columnsSerachLike as $col) {
+                    $query->orWhere("$col", "LIKE", "%$search%");
+                }
+            });
+        }
+
+        // Ordenamiento
+        foreach ($orderBy as $value) {
+            if (isset($value[0], $value[1])) {
+                $pedidos->orderBy($value[0], $value[1]);
+            }
+        }
+
+
+        $pedidos = $pedidos->paginate($length, ['*'], 'page', $page);
+        return $pedidos;
+    }
+
+    public function listadoPaginadoDistribucion(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
+    {
+        $pedidos = Pedido::select("pedidos.*")
+            ->with(["cliente:id,nombre,razon_social", "segmentacion_zona:id,zona"])
+            ->where("status", 1)
+            ->where("estado", "ENTREGADO");
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->where("segmentacion_zona_id", $segmentacion_zona?->id);
         }
 
         // Filtros exactos
@@ -269,7 +316,7 @@ class PedidoService
                     $sub->where("despacho_id", $despacho_id);
                 }
                 if ($segmentacion_zona) {
-                    $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
+                    $sub->where("segmentacion_zona_id", $segmentacion_zona?->id);
                 }
                 if ($estado) {
                     $sub->where("estado", $estado);
@@ -288,7 +335,7 @@ class PedidoService
                             $sub->where("despacho_id", $despacho_id);
                         }
                         if ($segmentacion_zona) {
-                            $sub->where("segmentacion_zona_id", $segmentacion_zona->id);
+                            $sub->where("segmentacion_zona_id", $segmentacion_zona?->id);
                         }
                         if ($estado) {
                             $sub->where("estado", $estado);
@@ -307,7 +354,7 @@ class PedidoService
                                 $q->where("despacho_id", $despacho_id);
                             }
                             if ($segmentacion_zona) {
-                                $q->where("segmentacion_zona_id", $segmentacion_zona->id);
+                                $q->where("segmentacion_zona_id", $segmentacion_zona?->id);
                             }
                             if ($estado) {
                                 $q->where("estado", $estado);
@@ -322,7 +369,7 @@ class PedidoService
                                 $q->where("despacho_id", $despacho_id);
                             }
                             if ($segmentacion_zona) {
-                                $q->where("segmentacion_zona_id", $segmentacion_zona->id);
+                                $q->where("segmentacion_zona_id", $segmentacion_zona?->id);
                             }
                             if ($estado) {
                                 $q->where("estado", $estado);
@@ -355,7 +402,7 @@ class PedidoService
                     }
                 });
             });
-        })->groupBy("id")
+        })->distinct()
             ->orderBy("nombre", "asc")->get()
             ->map(function ($categoria) use ($consolidado_id, $despacho_id, $estado, $detalles) {
                 $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $consolidado_id, $despacho_id, $estado, $detalles) {

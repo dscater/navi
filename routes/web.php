@@ -14,6 +14,7 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\DespachoController;
+use App\Http\Controllers\DistribucionController;
 use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\PacienteController;
@@ -162,15 +163,19 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("pedidos/paginado", [PedidoController::class, 'paginado'])->name("pedidos.paginado");
     Route::get("pedidos/listado", [PedidoController::class, 'listado'])->name("pedidos.listado");
     Route::get("pedidos/listadoByCliente", [PedidoController::class, 'listadoByCliente'])->name("pedidos.listadoByCliente");
-    Route::get("pedidos/distribucion", [PedidoController::class, 'distribucion'])->name("pedidos.distribucion");
     Route::get("pedidos/pedidos_distruibidor", [PedidoController::class, 'pedidos_distruibidor'])->name("pedidos.pedidos_distruibidor");
     Route::get("pedidos/pedidos_despacho", [PedidoController::class, 'pedidos_despacho'])->name("pedidos.pedidos_despacho");
-    Route::put("pedidos/distribucion_pedido/{pedido}", [PedidoController::class, 'distribucion_pedido'])->name("pedidos.distribucion_pedido");
     Route::get("pedidos/ver/{pedido}", [PedidoController::class, 'ver'])->name("pedidos.ver");
     Route::get("pedidos/pdf/{pedido}", [PedidoController::class, 'pdf'])->name("pedidos.pdf");
     Route::resource("pedidos", PedidoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
+
+    // DISTRIBUCION
+    Route::get("distribucions", [DistribucionController::class, 'index'])->name("distribucions.index");
+    Route::get("distribucions/paginado", [DistribucionController::class, 'paginado'])->name("distribucions.paginado");
+    Route::get("distribucions/create", [DistribucionController::class, 'create'])->name("distribucions.create");
+    Route::put("distribucions/distribucion_pedido/{pedido}", [DistribucionController::class, 'store'])->name("distribucions.store");
 
     // DESPACHOS
     Route::get("despachos/paginado", [DespachoController::class, 'paginado'])->name("despachos.paginado");

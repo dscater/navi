@@ -81,13 +81,13 @@ onMounted(() => {
 
         <template #body>
             <div class="row">
-                <div class="col-12">
-                    <!-- {{ oCliente }} -->
+                <div class="col-12" v-if="oCliente">
                     <MapMarkerCliente
                         :latitud="Number(oCliente.latitud)"
                         :longitud="Number(oCliente.longitud)"
                         :nombre-cliente="oCliente.nombre"
                         :readonly="true"
+                        :areas="oCliente.segmentacion_zona.segmentacion"
                     ></MapMarkerCliente>
                 </div>
             </div>

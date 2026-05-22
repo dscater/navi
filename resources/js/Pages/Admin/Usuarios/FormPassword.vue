@@ -80,6 +80,8 @@ watch(muestra_form, (newVal) => {
     }
 });
 
+const verPassword = ref(false);
+
 const cerrarFormulario = () => {
     muestra_form.value = false;
 };
@@ -116,13 +118,29 @@ const cerrarFormulario = () => {
                 <div class="row">
                     <div class="col-md-12">
                         <label>Ingresa la nueva contraseña:</label>
-                        <input
-                            placeholder="Ingresa la nueva contraseña"
-                            class="form-control"
-                            autocomplete="false"
-                            v-model="form.password"
-                            type="password"
-                        />
+                        <div class="input-group">
+                            <input
+                                placeholder="Ingresa la nueva contraseña"
+                                class="form-control"
+                                autocomplete="false"
+                                v-model="form.password"
+                                :type="verPassword ? 'text' : 'password'"
+                            />
+                            <button
+                                class="btn btn-ligth"
+                                @click.prevent="verPassword = !verPassword"
+                                type="button"
+                            >
+                                <i
+                                    class="fa"
+                                    :class="[
+                                        verPassword
+                                            ? 'fa fa-eye'
+                                            : 'fa fa-eye-slash',
+                                    ]"
+                                ></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>

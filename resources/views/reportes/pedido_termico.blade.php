@@ -172,6 +172,10 @@
                 <td>{{ $pedido->cliente->nombre }}</td>
             </tr>
             <tr>
+                <td><strong>Tipo de Pago:</strong></td>
+                <td>{{ $pedido->tipo_pago }}</td>
+            </tr>
+            <tr>
                 <td><strong>Usuario:</strong></td>
                 <td>{{ $pedido->user_distribucion->usuario }}</td>
             </tr>

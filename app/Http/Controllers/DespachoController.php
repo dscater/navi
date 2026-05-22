@@ -95,7 +95,7 @@ class DespachoController extends Controller
                             $sub2->where("estado", $estado_despacho);
                         });
                     });
-                })->groupBy("id")
+                })->distinct()
                     ->orderBy("nombre", "asc")->get()
                     ->map(function ($categoria) use ($despacho_id, $estado_despacho, $distribuidor_id) {
                         $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria,  $despacho_id, $estado_despacho, $distribuidor_id) {

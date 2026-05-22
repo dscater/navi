@@ -7,6 +7,7 @@ import { ref, onMounted, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
+import UbicacionCliente from "@/Pages/Admin/Distribucions/UbicacionCliente.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 const { axiosDelete } = useAxios();
@@ -51,13 +52,8 @@ const headers = [
         sortable: true,
     },
     {
-        label: "LATITUD",
-        key: "latitud",
-        sortable: true,
-    },
-    {
-        label: "LONGITUD",
-        key: "longitud",
+        label: "ZONA",
+        key: "segmentacion_zona.zona",
         sortable: true,
     },
     {
@@ -79,7 +75,7 @@ const multiSearch = ref({
 });
 
 const muestra_formulario = ref(false);
-const muestra_formulario_pass = ref(false);
+const muestra_ubicacion = ref(false);
 
 const agregarRegistro = () => {
     limpiarCliente();
@@ -234,6 +230,30 @@ onMounted(async () => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
+                                            'clientes.index',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Ver"
+                                        placement="left-start"
+                                    >
+                                        <button
+                                            class="btn btn-primary"
+                                            @click="
+                                                setCliente(item);
+                                                muestra_ubicacion = true;
+                                            "
+                                        >
+                                            <i class="fa fa-eye"></i></button
+                                    ></el-tooltip>
+                                </template>
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
                                             'clientes.edit',
                                         )
                                     "
@@ -292,4 +312,10 @@ onMounted(async () => {
         @envio-formulario="updateDatatable"
         @cerrar-formulario="muestra_formulario = false"
     ></Formulario>
+    <UbicacionCliente
+        v-if="muestra_ubicacion"
+        :muestra_formulario="muestra_ubicacion"
+        :cliente="form"
+        @cerrar-formulario="muestra_ubicacion = false"
+    ></UbicacionCliente>
 </template>

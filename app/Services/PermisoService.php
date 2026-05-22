@@ -119,11 +119,14 @@ class PermisoService
             "pedidos.update",
             "pedidos.destroy",
             "pedidos.pedidos_distruibidor",
-            // "pedidos.distribucion",
             // "pedidos.distribucion_pedido",
             "pedidos.pedidos_despacho",
             "pedidos.ver",
             "pedidos.pdf",
+
+            "distribucions.index",
+            "distribucions.paginado",
+            // "distribucions.create",
 
             "despachos.paginado",
             "despachos.index",
@@ -206,11 +209,15 @@ class PermisoService
             "pedidos.update",
             "pedidos.destroy",
             "pedidos.pedidos_distruibidor",
-            "pedidos.distribucion",
             "pedidos.distribucion_pedido",
             "pedidos.pedidos_despacho",
             "pedidos.ver",
             "pedidos.pdf",
+
+            "distribucions.index",
+            "distribucions.paginado",
+            "distribucions.create",
+            "distribucions.store",
 
             "despachos.paginado",
             "despachos.index",
@@ -235,6 +242,10 @@ class PermisoService
             "consolidados.destroy",
             "consolidados.ver",
             "consolidados.pdf",
+
+            "segmentacion_zonas.index",
+            "segmentacion_zonas.listado",
+            "segmentacion_zonas.listadoSegmentacion",
         ],
         "VENDEDOR" => [
             "usuarios.segmentacion_zonas_asignadas",
@@ -270,10 +281,18 @@ class PermisoService
             "pedidos.update",
             // "pedidos.destroy",
             "pedidos.pedidos_distruibidor",
-            "pedidos.distribucion",
             "pedidos.distribucion_pedido",
             "pedidos.ver",
             "pedidos.pdf",
+
+            "distribucions.index",
+            "distribucions.paginado",
+            "distribucions.create",
+            "distribucions.store",
+
+            "segmentacion_zonas.index",
+            "segmentacion_zonas.listado",
+            "segmentacion_zonas.listadoSegmentacion",
         ],
     ];
 

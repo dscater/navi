@@ -84,11 +84,6 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function distribucion()
-    {
-        return Inertia::render("Admin/Distribucions/Index");
-    }
-
     public function paginado(Request $request)
     {
         $perPage = $request->perPage;
@@ -229,24 +224,6 @@ class PedidoController extends Controller
             $pedido = $this->pedidoService->actualizar($request->validated(), $pedido);
             DB::commit();
             return redirect()->route("pedidos.index")->with("bien", "Registro actualizado");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            // Log::debug($e->getMessage());
-            throw ValidationException::withMessages([
-                'error' =>  $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function distribucion_pedido(Pedido $pedido, PedidoUpdateRequest $request)
-    {
-        DB::beginTransaction();
-        try {
-            // actualizar pedido
-            $pedido = $this->pedidoService->distribucion_pedido($request->validated(), $pedido);
-            DB::commit();
-            return redirect()->route("pedidos.distribucion")->with("bien", "Registro actualizado")
-                ->with("url_pedido_pdf", route("pedidos.pdf", $pedido->id));
         } catch (\Exception $e) {
             DB::rollBack();
             // Log::debug($e->getMessage());

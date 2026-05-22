@@ -22,10 +22,11 @@ class ClienteService
 
     public function listado(): Collection
     {
-        $clientes = Cliente::select("clientes.*");
+        $clientes = Cliente::select("clientes.*")
+            ->with(["segmentacion_zona"]);
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
             $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $clientes->where("segmentacion_zona_id", $segmentacion_zona->id);
+            $clientes->where("segmentacion_zona_id", $segmentacion_zona?->id);
         }
         $clientes = $clientes->where("status", 1)->get();
         return $clientes;
@@ -43,11 +44,12 @@ class ClienteService
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $clientes = Cliente::select("clientes.*")
+            ->with(["segmentacion_zona"])
             ->where("status", 1);
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
             $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $clientes->where("segmentacion_zona_id", $segmentacion_zona->id);
+            $clientes->where("segmentacion_zona_id", $segmentacion_zona?->id);
         }
 
         // Filtros exactos
@@ -96,6 +98,11 @@ class ClienteService
 
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
 
+        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        if (!$segmentacion_zona) {
+            throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
+        }
+
         $cliente = Cliente::create([
             "nombre" => $datos["nombre"],
             "fono" => $datos["fono"],
@@ -105,7 +112,7 @@ class ClienteService
             "latitud" => $datos["latitud"],
             "longitud" => $datos["longitud"],
             "user_id" => Auth::user()->id,
-            "segmentacion_zona_id" => $this->user_service->getSegmentacionZona(Auth::user()->id)->id,
+            "segmentacion_zona_id" => $segmentacion_zona?->id,
             "fecha_registro" => $fecha_actual,
         ]);
 
@@ -126,6 +133,11 @@ class ClienteService
     {
         $old_cliente = clone $cliente;
 
+        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        if (!$segmentacion_zona) {
+            throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
+        }
+
         $cliente->update([
             "nombre" => $datos["nombre"],
             "fono" => $datos["fono"],
@@ -134,7 +146,7 @@ class ClienteService
             "dir" => $datos["dir"],
             "latitud" => $datos["latitud"],
             "longitud" => $datos["longitud"],
-            "segmentacion_zona_id" => $this->user_service->getSegmentacionZona(Auth::user()->id)->id,
+            "segmentacion_zona_id" => $segmentacion_zona?->id,
         ]);
 
         // registrar accion
