@@ -33,8 +33,10 @@ const cargarDistribuidors = () => {
 const distribuidor_id = ref(null);
 const observacion = ref("");
 
+const cargandoPedidos = ref(false);
 const listCategoriaProductoPedidos = ref([]);
 const cargarPedidosDistribuidor = () => {
+    cargandoPedidos.value = true;
     axios
         .get(route("pedidos.pedidos_distruibidor"), {
             params: {
@@ -44,6 +46,9 @@ const cargarPedidosDistribuidor = () => {
         .then((response) => {
             listCategoriaProductoPedidos.value =
                 response.data.categoria_productos;
+        })
+        .finally(() => {
+            cargandoPedidos.value = false;
         });
 };
 
@@ -263,7 +268,10 @@ onMounted(async () => {
                     </thead>
                     <tbody>
                         <template
-                            v-if="listCategoriaProductoPedidos.length > 0"
+                            v-if="
+                                listCategoriaProductoPedidos.length > 0 &&
+                                !cargandoPedidos
+                            "
                         >
                             <template
                                 v-for="(
@@ -371,7 +379,21 @@ onMounted(async () => {
                             </template>
                         </template>
                         <tr v-else>
-                            <td colspan="6" class="text-center text-muted">
+                            <td
+                                colspan="6"
+                                v-if="cargandoPedidos"
+                                class="text-center"
+                            >
+                                <div class="my-3">
+                                    Cargando
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </td>
+                            <td
+                                colspan="6"
+                                class="text-center text-muted"
+                                v-else
+                            >
                                 <span v-if="!distribuidor_id">
                                     Selecciona un Distribuidor
                                 </span>

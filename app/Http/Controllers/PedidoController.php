@@ -169,7 +169,7 @@ class PedidoController extends Controller
      */
     public function ver(Pedido $pedido): ResponseInertia
     {
-        $pedido = $pedido->load(["pedido_detalles.producto", "pedido_detalles.presentacion_producto", "cliente"]);
+        $pedido = $pedido->load(["pedido_detalles.producto", "pedido_detalles.presentacion_producto", "cliente.segmentacion_zona"]);
         return Inertia::render("Admin/Pedidos/Ver", compact("pedido"));
     }
 

@@ -325,7 +325,7 @@ class PedidoService
                     $sub->where("despacho_id", null);
                 }
             });
-        })->groupBy("id")
+        })->distinct()
             ->orderBy("nombre", "asc")->get()
             ->map(function ($categoria) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
                 $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $segmentacion_zona, $estado, $valida_despacho, $despacho_id) {

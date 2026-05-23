@@ -9,6 +9,7 @@ const muestra_login_user = ref(false);
 const accion_login_user = ref(0);
 
 const { props } = usePage();
+const permisos = ref([]);
 const { toggleSidebar } = useSideBar();
 
 const salir = () => {
@@ -35,8 +36,13 @@ const salir = () => {
         }
     });
 };
+const recargarPagina = () => {
+    window.location.reload();
+};
 
-onMounted(() => {});
+onMounted(() => {
+    permisos.value = props.auth.user.permisos;
+});
 
 onUnmounted(() => {});
 </script>
@@ -55,17 +61,23 @@ onUnmounted(() => {});
                     ><i class="fas fa-bars"></i
                 ></a>
             </li>
-            <!-- <li class="nav-item d-none d-sm-inline-block"></li> -->
-            <!-- <li class="nav-item d-none d-sm-inline-block">
-                <Link :href="route('pagos.create')" class="nav-link">Nuevo Pago</Link>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <Link :href="route('trabajos.create')" class="nav-link">Nuevo Trabajo</Link>
+            <!-- <li
+                class="nav-item d-sm-inline-block"
+                v-if="permisos == '*' || permisos.includes('pedidos.index')"
+            >
+                <Link :href="route('pedidos.index')" class="nav-link"
+                    >Pedidos</Link
+                >
             </li> -->
         </ul>
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ms-auto">
+            <li class="nav-item d-sm-none">
+                <a href="#" class="nav-link" @click="recargarPagina"
+                    ><i class="fa fa-sync"></i
+                ></a>
+            </li>
             <li class="nav-item">
                 <a
                     class="nav-link"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DistribucionStoreRequest;
 use App\Http\Requests\PedidoStoreRequest;
 use App\Http\Requests\PedidoUpdateRequest;
 use App\Models\Pedido;
@@ -62,7 +63,7 @@ class DistribucionController extends Controller
     {
         return Inertia::render("Admin/Distribucions/Create");
     }
-    public function store(Pedido $pedido, PedidoUpdateRequest $request)
+    public function store(Pedido $pedido, DistribucionStoreRequest $request)
     {
         DB::beginTransaction();
         try {

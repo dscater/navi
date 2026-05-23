@@ -30,6 +30,7 @@ class ClienteUpdateRequest extends FormRequest
             "dir" => "required",
             "latitud" => "required",
             "longitud" => "required",
+            "segmentacion_zona_id" => "required"
         ];
     }
 
@@ -42,8 +43,9 @@ class ClienteUpdateRequest extends FormRequest
             "razon_social.required" => "Debes completar este campo",
             "nit_ci.required" => "Debes completar este campo",
             "dir.required" => "Debes completar este campo",
-            "latitud.required" => "Debes completar este campo",
-            "longitud.required" => "Debes completar este campo",
+            "latitud.required" => "Debes indicar la ubicación del cliente en una zona valida",
+            // "longitud.required" => "Debes indicar la ubicación",
+            "segmentacion_zona_id.required" => "No se envio una zona valida, por favor indicar la ubicación del cliente dentro de una zona asignada",
 
         ];
     }

@@ -84,6 +84,7 @@ class DespachoController extends Controller
         $estado_despacho = "CONSOLIDADO";
         $despachos = Despacho::where("distribuidor_id", $distribuidor_id)
             ->where("comision", 0)
+            ->where("estado", "CONSOLIDADO")
             ->orderBy("id", "asc")
             ->get()
             ->map(function ($despacho) use ($estado_despacho, $distribuidor_id) {

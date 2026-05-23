@@ -201,31 +201,16 @@ onMounted(async () => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
-                            <template #foto="{ item }">
-                                <img
-                                    class="direct-chat-img"
-                                    :src="item.url_foto"
-                                    alt="Foto"
-                                />
-                            </template>
-
-                            <template #acceso="{ item }">
-                                <div
-                                    class="badge text-sm"
-                                    :class="[
-                                        item.acceso == 1
-                                            ? 'bg-success'
-                                            : 'bg-danger',
-                                    ]"
-                                >
-                                    {{
-                                        item.acceso == 1
-                                            ? "HABILITADO"
-                                            : "DESHABILITADO"
-                                    }}
-                                </div>
-                            </template>
                             <template #accion="{ item }">
+                                <!-- llevar a whatsapp -->
+                                <a
+                                    class="btn btn-success"
+                                    :href="`https://wa.me/+591${item.fono}?text=Hola%20${item.nombre}`"
+                                    target="_blank"
+                                >
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+
                                 <template
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||

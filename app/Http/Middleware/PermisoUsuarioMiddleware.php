@@ -19,7 +19,16 @@ class PermisoUsuarioMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check()) {
+
+        $bloqueoService = new \App\Services\BloqueoService();
+
+        // Log::debug($bloqueoService->verificaBloqueoUsuario());
+        if ($bloqueoService->verificaBloqueoUsuario()) {
+            Auth::logout();
+            return redirect()->route('login')->withErrors(['usuario' => 'Acceso denegado por horario']);
+        }
+
+        if (Auth::check() && !$bloqueoService->verificaBloqueoUsuario()) {
             $permisos = Auth::user()->permisos;
             // Log::debug($request->route()->getName());
             // Log::debug($request->route()->getPrefix());

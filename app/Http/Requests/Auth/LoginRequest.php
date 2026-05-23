@@ -78,36 +78,11 @@ class LoginRequest extends FormRequest
         }
 
         if (Auth::user()->bloqueo == 1) {
-            $configuracion = Configuracion::first();
-
-            // Horario por defecto
-            $hora_inicio = "08:00";
-            $hora_fin = "18:00";
-
-            if (Auth::user()->tipo == 'ADMINISTRADOR') {
-                $hora_inicio = $configuracion->b_hora_inicio_admin;
-                $hora_fin = $configuracion->b_hora_fin_admin;
-            }
-
-            if (Auth::user()->tipo == 'DISTRIBUIDOR') {
-                $hora_inicio = $configuracion->b_hora_inicio_dist;
-                $hora_fin = $configuracion->b_hora_fin_dist;
-            }
-
-            if (Auth::user()->tipo == 'VENDEDOR') {
-                $hora_inicio = $configuracion->b_hora_inicio_ven;
-                $hora_fin = $configuracion->b_hora_fin_ven;
-            }
-
-            // Solo hora actual
-            $hora_actual = Carbon::now()->format('H:i');
-
-            if ($hora_actual < $hora_inicio || $hora_actual > $hora_fin) {
-
+            $bloqueoService = new \App\Services\BloqueoService();
+            if ($bloqueoService->verificaBloqueoUsuario()) {
                 Auth::logout();
-
                 throw ValidationException::withMessages([
-                    'usuario' => 'Acceso denegado por horario',
+                    'usuario' => "Acceso denegado por horario",
                 ]);
             }
         }

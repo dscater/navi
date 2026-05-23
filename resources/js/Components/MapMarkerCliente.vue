@@ -34,6 +34,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    muestraNombre: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(["update:latitud", "update:longitud"]);
@@ -205,7 +209,9 @@ onMounted(() => {
     <div class="row">
         <div class="col-12">
             <!-- NOMBRE CLIENTE -->
-            <div class="mb-2 fw-bold">Cliente: {{ nombreCliente }}</div>
+            <div class="mb-2 fw-bold" v-if="muestraNombre">
+                Cliente: {{ nombreCliente }}
+            </div>
 
             <!-- BOTONES -->
             <template v-if="!readonly">

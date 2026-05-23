@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\Despacho;
 use App\Models\LoginUser;
 use App\Models\Pedido;
 use App\Models\User;
@@ -48,15 +49,15 @@ class UserController extends Controller
         if (Auth::check()) {
             $oUser = new User();
             $permisos = $oUser->permisos;
-            if ($permisos == '*' || (is_array($permisos) && in_array('usuarios.index', $permisos))) {
-                $array_infos[] = [
-                    'label' => 'USUARIOS',
-                    'cantidad' => User::where('id', '!=', 1)->count(),
-                    'color' => 'bgWhite',
-                    'icon' => "fa-users",
-                    "url" => "usuarios.index"
-                ];
-            }
+            // if ($permisos == '*' || (is_array($permisos) && in_array('usuarios.index', $permisos))) {
+            //     $array_infos[] = [
+            //         'label' => 'USUARIOS',
+            //         'cantidad' => User::where('id', '!=', 1)->count(),
+            //         'color' => 'bgWhite',
+            //         'icon' => "fa-users",
+            //         "url" => "usuarios.index"
+            //     ];
+            // }
             if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
                 $clientes = Cliente::where('status', 1);
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
@@ -83,6 +84,36 @@ class UserController extends Controller
                     'color' => 'bgWhite',
                     'icon' => "fa-clipboard-list",
                     "url" => "pedidos.index"
+                ];
+            }
+
+            if ($permisos == '*' || (is_array($permisos) && in_array('distribucions.index', $permisos))) {
+                $distribucions = Pedido::where('status', 1)
+                    ->where("estado", "ENTREGADO");
+                if (Auth::user()->tipo != 'ADMINISTRADOR') {
+                    $distribucions->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
+                }
+                $array_infos[] = [
+                    'label' => 'DISTRIBUCIÓN',
+                    'cantidad' => $distribucions->count(),
+                    'color' => 'bgWhite',
+                    'icon' => "fa-clipboard-list",
+                    "url" => "distribucions.index"
+                ];
+            }
+
+            if ($permisos == '*' || (is_array($permisos) && in_array('despachos.index', $permisos))) {
+                $despachos = Despacho::select('despachos.*');
+                if (Auth::user()->tipo == 'DISTRIBUIDOR') {
+                    $despachos->where("distribuidor_id", Auth::user()->id);
+                }
+
+                $array_infos[] = [
+                    'label' => 'DESPACHO',
+                    'cantidad' => $despachos->count(),
+                    'color' => 'bgWhite',
+                    'icon' => "fa-clipboard-list",
+                    "url" => "despachos.index"
                 ];
             }
         }

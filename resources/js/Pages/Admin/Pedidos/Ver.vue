@@ -5,7 +5,7 @@ import { usePedidos } from "@/composables/pedidos/usePedidos";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
-import Formulario from "./Formulario.vue";
+import MapMarkerCliente from "@/Components/MapMarkerCliente.vue";
 const props = defineProps({
     pedido: null,
 });
@@ -184,6 +184,28 @@ onMounted(async () => {
                                         class="col-12 border rounded mt-2 pt-2 pb-2"
                                     >
                                         <b>Total Bs.</b> {{ pedido.total }}
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <MapMarkerCliente
+                                            :latitud="
+                                                Number(pedido?.cliente.latitud)
+                                            "
+                                            :longitud="
+                                                Number(pedido?.cliente.longitud)
+                                            "
+                                            :nombre-cliente="
+                                                pedido?.cliente.nombre
+                                            "
+                                            :readonly="true"
+                                            :areas="
+                                                pedido?.cliente
+                                                    .segmentacion_zona
+                                                    .segmentacion
+                                            "
+                                            :muestra-nombre="false"
+                                        ></MapMarkerCliente>
                                     </div>
                                 </div>
                             </div>

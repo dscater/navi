@@ -98,10 +98,10 @@ class ClienteService
 
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
 
-        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-        if (!$segmentacion_zona) {
-            throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
-        }
+        // $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        // if (!$segmentacion_zona) {
+        //     throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
+        // }
 
         $cliente = Cliente::create([
             "nombre" => $datos["nombre"],
@@ -112,7 +112,7 @@ class ClienteService
             "latitud" => $datos["latitud"],
             "longitud" => $datos["longitud"],
             "user_id" => Auth::user()->id,
-            "segmentacion_zona_id" => $segmentacion_zona?->id,
+            "segmentacion_zona_id" => $datos["segmentacion_zona_id"],
             "fecha_registro" => $fecha_actual,
         ]);
 
@@ -133,10 +133,10 @@ class ClienteService
     {
         $old_cliente = clone $cliente;
 
-        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-        if (!$segmentacion_zona) {
-            throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
-        }
+        // $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        // if (!$segmentacion_zona) {
+        //     throw ValidationException::withMessages(["error" => "El usuario no tiene una segmentación de zona asignada."]);
+        // }
 
         $cliente->update([
             "nombre" => $datos["nombre"],
@@ -146,7 +146,8 @@ class ClienteService
             "dir" => $datos["dir"],
             "latitud" => $datos["latitud"],
             "longitud" => $datos["longitud"],
-            "segmentacion_zona_id" => $segmentacion_zona?->id,
+            "segmentacion_zona_id" => $datos["segmentacion_zona_id"],
+            // "segmentacion_zona_id" => $segmentacion_zona?->id,
         ]);
 
         // registrar accion

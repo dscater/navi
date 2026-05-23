@@ -101,11 +101,11 @@ class PermisoService
             "clientes.index",
             "clientes.listado",
             "clientes.listadoSegmentacion",
-            // "clientes.create",
-            // "clientes.store",
-            // "clientes.edit",
+            "clientes.create",
+            "clientes.store",
+            "clientes.edit",
             "clientes.show",
-            // "clientes.update",
+            "clientes.update",
             "clientes.destroy",
 
             "pedidos.paginado",
@@ -244,6 +244,7 @@ class PermisoService
             "consolidados.pdf",
 
             "segmentacion_zonas.index",
+            "segmentacion_zonas.paginado",
             "segmentacion_zonas.listado",
             "segmentacion_zonas.listadoSegmentacion",
         ],
@@ -292,6 +293,7 @@ class PermisoService
 
             "segmentacion_zonas.index",
             "segmentacion_zonas.listado",
+            "segmentacion_zonas.paginado",
             "segmentacion_zonas.listadoSegmentacion",
         ],
     ];

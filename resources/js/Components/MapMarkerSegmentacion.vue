@@ -33,7 +33,9 @@ const props = defineProps({
         type: Number,
         default: 16,
     },
-
+    segmentacion_zona_id: {
+        type: Number,
+    },
     /**
      * ZONAS ASIGNADAS
      */
@@ -43,7 +45,12 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["update:latitud", "update:longitud"]);
+const emit = defineEmits([
+    "update:latitud",
+    "update:longitud",
+    "update:segmentacion_zona_id",
+]);
+console.log(props.segmentacion_zona_id);
 
 const mapa = ref(null);
 
@@ -111,11 +118,14 @@ const dibujarSegmentaciones = () => {
 const validarUbicacion = (lat, lng) => {
     const point = turf.point([lng, lat]);
 
-    let valido = false;
+    let resultado = {
+        valido: false,
+        segmentacion_zona_id: null,
+        zona: null,
+    };
 
     props.segmentaciones.forEach((segmentacion) => {
         if (!segmentacion.segmentacion) return;
-
         segmentacion.segmentacion.forEach((area) => {
             const coords = area.coordenadas.map((p) => [
                 Number(p.lng),
@@ -132,14 +142,20 @@ const validarUbicacion = (lat, lng) => {
             });
 
             if (turf.booleanPointInPolygon(point, bufferedPolygon)) {
-                valido = true;
+                resultado = {
+                    valido: true,
+                    segmentacion_zona_id: segmentacion.id,
+                    zona: segmentacion.zona,
+                };
             }
         });
     });
 
-    dentroZona.value = valido;
+    dentroZona.value = resultado.valido;
 
-    return valido;
+    console.log("RESS");
+    console.log(resultado);
+    return resultado;
 };
 
 /**
@@ -153,15 +169,15 @@ const moverMapa = (lat, lng) => {
  * ACTUALIZAR UBICACION
  */
 const actualizarUbicacion = (lat, lng) => {
-    const valido = validarUbicacion(lat, lng);
+    const resultado = validarUbicacion(lat, lng);
 
-    // SI NO TIENE ZONAS
+    // SIN ZONAS
     if (props.segmentaciones.length <= 0) {
         dentroZona.value = true;
     }
 
     // FUERA DE ZONA
-    if (!valido && props.segmentaciones.length > 0) {
+    if (!resultado.valido && props.segmentaciones.length > 0) {
         if (ultimaPosicionValida) {
             marker.setLatLng(ultimaPosicionValida);
         }
@@ -180,6 +196,10 @@ const actualizarUbicacion = (lat, lng) => {
     emit("update:latitud", lat);
 
     emit("update:longitud", lng);
+
+    emit("update:segmentacion_zona_id", resultado.segmentacion_zona_id);
+
+    console.log("Zona:", resultado.zona);
 };
 
 /**
@@ -244,9 +264,9 @@ onMounted(() => {
     /**
      * COORDENADAS INICIALES
      */
-    const lat = props.latitud ?? -16.125102;
+    const lat = props.latitud ?? -16.491539;
 
-    const lng = props.longitud ?? -67.196268;
+    const lng = props.longitud ?? -68.144165;
 
     /**
      * MAPA

@@ -135,8 +135,8 @@ const enviarFormulario = () => {
 const totalFinal = computed(() => {
     // total monto_vendido redondeado a 2 decimales
     return parseFloat(
-        props.comision_detalles.reduce((total, comision_detalle) => {
-            const totalDespacho = comision_detalle.categoria_productos.reduce(
+        listDespachosConsolidadosData.value.reduce((total, despacho) => {
+            const totalDespacho = despacho.categoria_productos.reduce(
                 (totalCategoria, categoria) => {
                     const totalCategoriaProductos = categoria.productos.reduce(
                         (totalProducto, producto) => {

@@ -263,6 +263,9 @@ onMounted(() => {
                             :segmentaciones="listZonaAsignadas"
                             v-model:latitud="form.latitud"
                             v-model:longitud="form.longitud"
+                            v-model:segmentacion_zona_id="
+                                form.segmentacion_zona_id
+                            "
                         ></MapMarkerSegmentacion>
                         <ul
                             v-if="form.errors?.latitud"
@@ -272,12 +275,20 @@ onMounted(() => {
                                 {{ form.errors?.latitud }}
                             </li>
                         </ul>
-                        <ul
+                        <!-- <ul
                             v-if="form.errors?.longitud"
                             class="list-unstyled text-danger"
                         >
                             <li class="parsley-required">
                                 {{ form.errors?.longitud }}
+                            </li>
+                        </ul> -->
+                        <ul
+                            v-if="form.errors?.longitud"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.segmentacion_zona_id }}
                             </li>
                         </ul>
                     </div>

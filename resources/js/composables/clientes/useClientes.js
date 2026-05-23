@@ -11,6 +11,7 @@ export const useClientes = () => {
         dir: "",
         latitud: null,
         longitud: null,
+        segmentacion_zona_id: null,
         _method: "POST",
     };
 
