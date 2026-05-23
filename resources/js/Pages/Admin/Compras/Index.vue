@@ -274,8 +274,11 @@ onMounted(async () => {
                     <div class="col-md-8 my-1"></div>
                 </div>
                 <div class="row">
-                    <div class="col-12">
-                        <table class="table table-bordered">
+                    <div class="col-12 overflow-auto">
+                        <table
+                            class="table table-bordered"
+                            style="min-width: 600px"
+                        >
                             <thead>
                                 <tr>
                                     <th class="bg-principal">Producto</th>

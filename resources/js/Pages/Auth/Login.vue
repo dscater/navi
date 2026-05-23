@@ -136,7 +136,7 @@ onMounted(() => {
                                     </div>
                                     <ul
                                         v-if="errors?.usuario"
-                                        class="alert alert-danger text-xs p-1 list-unstyled mb-0"
+                                        class="alert alert-danger text-white text-xs p-1 list-unstyled mb-0"
                                     >
                                         <li class="parsley-required">
                                             {{ errors?.usuario[0] }}
@@ -188,7 +188,7 @@ onMounted(() => {
                                     </div>
                                     <ul
                                         v-if="errors?.password"
-                                        class="alert alert-danger text-xs p-1 list-unstyled"
+                                        class="alert alert-danger text-white text-xs p-1 list-unstyled"
                                     >
                                         <li class="parsley-required">
                                             {{ errors?.password[0] }}
