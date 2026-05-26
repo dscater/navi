@@ -165,7 +165,11 @@
             </tr>
             <tr>
                 <td><strong>Fecha:</strong></td>
-                <td>{{ $pedido->fecha_t }} {{ $pedido->hora }}</td>
+                <td>{{ $pedido->fecha_t }}</td>
+            </tr>
+            <tr>
+                <td><strong>Hora:</strong></td>
+                <td>{{ $pedido->hora }}</td>
             </tr>
             <tr>
                 <td><strong>Cliente:</strong></td>
@@ -173,11 +177,15 @@
             </tr>
             <tr>
                 <td><strong>Tipo de Pago:</strong></td>
-                <td>{{ $pedido->tipo_pago }}</td>
+                <td>CONTADO</td>
             </tr>
             <tr>
-                <td><strong>Usuario:</strong></td>
-                <td>{{ $pedido->user_distribucion->usuario }}</td>
+                <td><strong>Vendedor:</strong></td>
+                <td>{{ $pedido->user_distribucion->full_name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Distribuidor:</strong></td>
+                <td>{{ $pedido->distribuidor->full_name }}</td>
             </tr>
         </table>
 
@@ -189,7 +197,7 @@
                 <tr>
                     <th width="38%">Producto</th>
                     <th width="12%">Cant.</th>
-                    <th width="15%">Unid.</th>
+                    {{-- <th width="15%">Unid.</th> --}}
                     <th width="15%">Precio</th>
                     <th width="20%">Subt.</th>
                 </tr>
@@ -200,19 +208,20 @@
                     <tr>
                         <td class="producto-nombre">
                             {{ $item->producto->nombre }}
-                            <br>
+                            {{-- <br>
                             <span style="font-size: 9px; font-weight: normal;">
                                 {{ $item->presentacion_producto->nombre }}
-                            </span>
+                            </span> --}}
                         </td>
 
                         <td class="center-text">
-                            {{ number_format($item->cantidad, 0) }}
+                            {{ number_format($item->cantidad, 0) }}<br />
+                            {{ $item->presentacion_producto->nombre }}
                         </td>
 
-                        <td class="center-text">
+                        {{-- <td class="center-text">
                             {{ number_format($item->cantidad_total, 0) }}
-                        </td>
+                        </td> --}}
 
                         <td class="right">
                             {{ number_format($item->precio, 2) }}
@@ -226,11 +235,11 @@
             </tbody>
         </table>
 
-        <div class="linea"></div>
+        {{-- <div class="linea"></div> --}}
 
         {{-- TOTALES --}}
         <table class="totales">
-            <tr>
+            {{-- <tr>
                 <td><strong>Subtotal Bs.</strong></td>
                 <td class="right">
                     {{ number_format($pedido->subtotal, 2) }}
@@ -242,7 +251,7 @@
                 <td class="right">
                     {{ number_format($pedido->descuento, 2) }}
                 </td>
-            </tr>
+            </tr> --}}
 
             <tr>
                 <td class="total-final">

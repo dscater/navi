@@ -37,6 +37,12 @@ class Pedido extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+
+    public function distribuidor()
+    {
+        return $this->belongsTo(User::class, 'distribuidor_id');
+    }
+
     public function user_distribucion()
     {
         return $this->belongsTo(User::class, 'user_distribucion_id');

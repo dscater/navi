@@ -34,7 +34,9 @@ const cargarDistribuidors = () => {
 const listDespachos = ref([]);
 const despacho_id = ref(null);
 const cargarDespachos = () => {
+    despacho_id.value = null;
     listDespachos.value = [];
+    listCategoriaProductoPedidos.value = [];
     if (!distribuidor_id.value) return;
     axios
         .get(route("despachos.listado"), {

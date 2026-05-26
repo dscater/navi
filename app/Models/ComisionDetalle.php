@@ -12,11 +12,25 @@ class ComisionDetalle extends Model
         "categoria_producto_id",
         "producto_id",
         "cantidad",
+        "total",
         "comision_distribuidor",
         "comision_vendedor",
         "entrega_distribuidor",
         "entrega_vendedor",
+        "detalle_presentacion"
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'detalle_presentacion' => 'array',
+        ];
+    }
 
     public function comision()
     {
@@ -36,10 +50,5 @@ class ComisionDetalle extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');
-    }
-
-    public function presentacion_producto()
-    {
-        return $this->belongsTo(PresentacionProducto::class, 'presentacion_producto_id');
     }
 }

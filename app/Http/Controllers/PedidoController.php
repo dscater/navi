@@ -25,6 +25,7 @@ use Inertia\Inertia;
 use Inertia\Response as ResponseInertia;
 use PDF;
 use App\library\numero_a_letras\src\NumeroALetras;
+use App\Models\PresentacionProducto;
 
 class PedidoController extends Controller
 {
@@ -206,11 +207,25 @@ class PedidoController extends Controller
         // primero todo a minúsculas
         $literal = strtolower($literal);
 
+        $presentacions = PresentacionProducto::whereHas("pedido_detalles", function ($q) use ($pedido) {
+            $q->whereHas("pedido", function ($sub) use ($pedido) {
+                $sub->where("id", $pedido->id);
+            });
+            $q->where("status", 1);
+        })->distinct()->get()->map(function ($presentacion) use ($pedido) {
+            $presentacion->pedido_detalles = PedidoDetalle::where("pedido_id", $pedido->id)
+                ->where("presentacion_producto_id", $presentacion->id)
+                ->where("status", 1)
+                ->get();
+
+            return $presentacion;
+        });
+
         // luego primera letra mayúscula
         $literal = ucfirst($literal);
         $pdf = PDF::loadView(
             'reportes.pedido_termico',
-            compact('pedido', 'configuracion', 'literal')
+            compact('pedido', 'presentacions', 'configuracion', 'literal')
         )->setPaper($customPaper);
 
         return $pdf->stream('pedido_termico.pdf');

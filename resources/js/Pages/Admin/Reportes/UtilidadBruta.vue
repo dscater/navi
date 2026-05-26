@@ -59,7 +59,7 @@ const listProductos = ref([]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_movimiento_inventarios", form.value);
+    const url = route("reportes.r_utilidad_bruta", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
@@ -89,12 +89,12 @@ const cargarProductos = () => {
 };
 </script>
 <template>
-    <Head title="Reporte Movimiento de Inventario"></Head>
+    <Head title="Reporte Utilidad bruta por Producto"></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4 class="m-0">Movimiento de Inventario</h4>
+                    <h4 class="m-0">Utilidad bruta por Producto</h4>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -103,7 +103,7 @@ const cargarProductos = () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Movimiento de Inventario
+                            Reportes - Utilidad bruta por Producto
                         </li>
                     </ol>
                 </div>

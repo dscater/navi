@@ -170,8 +170,12 @@ class DespachoController extends Controller
                                                 });
                                             })->sum("cantidad");
 
-                                        $presentacion->comision_distribuidor = $presentacion->cantidad_presentacion * $presentacion->comi_distribuidor;
-                                        $presentacion->comision_vendedor = $presentacion->cantidad_presentacion * $presentacion->comi_vendedor;
+                                        $presentacion->total = round($presentacion->cantidad_presentacion * $presentacion->precio, 2);
+                                        $presentacion->comision_distribuidor = round(($presentacion->cantidad_presentacion * $presentacion->precio) * ($presentacion->comi_distribuidor / 100), 2);
+                                        $presentacion->comision_vendedor = round(($presentacion->cantidad_presentacion * $presentacion->precio) * ($presentacion->comi_vendedor / 100), 2);
+                                        // porcentajes
+                                        $presentacion->p_distribuidor = $presentacion->comi_distribuidor;
+                                        $presentacion->p_vendedor = $presentacion->comi_vendedor;
                                         // Acumular
                                         $total_comision_distribuidor += $presentacion->comision_distribuidor;
                                         $total_comision_vendedor += $presentacion->comision_vendedor;

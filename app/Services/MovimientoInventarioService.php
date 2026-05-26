@@ -26,7 +26,7 @@ class MovimientoInventarioService
      * @param integer $registro_id  : id del modelo
      * @return void
      */
-    public function registrarMovimiento(string $tipo_registro, string $ingreso_salida, Producto $producto, float $cantidad, float $precio, string $detalle = "", string $modulo = "", int $registro_id = 0): void
+    public function registrarMovimiento(string $tipo_registro, string $ingreso_salida, Producto $producto, float $cantidad, float $precio, string $detalle = "", string $modulo = "", int $registro_id = 0, $presentacion_producto_id = null): void
     {
         //buscar el ultimo registro y usar sus valores
         $ultimo = MovimientoInventario::where('producto_id', $producto->id)
@@ -45,6 +45,7 @@ class MovimientoInventarioService
             'registro_id' => $registro_id != 0 ? $registro_id : NULL,
             "modulo" => $modulo,
             'producto_id' => $producto->id,
+            'presentacion_producto_id' => $presentacion_producto_id ?? null,
             'detalle' => $detalle,
             'precio' => $precio,
             'tipo_is' => $ingreso_salida,

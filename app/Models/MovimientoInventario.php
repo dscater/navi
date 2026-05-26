@@ -11,6 +11,7 @@ class MovimientoInventario extends Model
         "registro_id",
         "modulo",
         "producto_id",
+        "presentacion_producto_id",
         "detalle",
         "precio",
         "tipo_is",
@@ -35,5 +36,10 @@ class MovimientoInventario extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');
+    }
+
+    public function presentacion_producto()
+    {
+        return $this->belongsTo(PresentacionProducto::class, 'presentacion_producto_id');
     }
 }

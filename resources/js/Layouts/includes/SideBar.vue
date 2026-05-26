@@ -248,6 +248,15 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
+                            permisos.includes('presentacions.index')
+                        "
+                        :label="'Presentación de Productos'"
+                        :ruta="'presentacions.index'"
+                        :icon="'fa fa-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
                             permisos.includes('asignacion_zonas.index')
                         "
                         :label="'Asignación de Zonas'"
@@ -278,7 +287,10 @@ onUnmounted(() => {});
                             permisos == '*' ||
                             permisos.includes('reportes.usuarios') ||
                             permisos.includes('reportes.productos') ||
-                            permisos.includes('reportes.movimiento_inventarios')
+                            permisos.includes(
+                                'reportes.movimiento_inventarios',
+                            ) ||
+                            permisos.includes('reportes.liquidacion')
                         "
                     >
                         REPORTES
@@ -308,6 +320,24 @@ onUnmounted(() => {});
                         "
                         :label="'Movimiento de Inventario'"
                         :ruta="'reportes.movimiento_inventarios'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.liquidacion')
+                        "
+                        :label="'Liquidación de ventas por vendedor o distribuidor'"
+                        :ruta="'reportes.liquidacion'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.utilidad_bruta')
+                        "
+                        :label="'Utilidad bruta por producto'"
+                        :ruta="'reportes.utilidad_bruta'"
                         :icon="'fa fa-file-pdf'"
                     ></ItemMenu>
                     <li class="nav-header font-weight-bold">OTROS</li>

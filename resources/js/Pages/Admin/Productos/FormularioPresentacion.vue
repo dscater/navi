@@ -210,10 +210,10 @@ onMounted(() => {
                                         Precio Bs.
                                     </th>
                                     <th class="bg-principal" width="180px">
-                                        Comisión Distribuidor Bs.
+                                        Comisión Distribuidor (0-100%)
                                     </th>
                                     <th class="bg-principal" width="180px">
-                                        Comisión Vendedor Bs.
+                                        Comisión Vendedor (0-100%)
                                     </th>
                                     <th class="bg-principal">Acción</th>
                                 </tr>
@@ -281,6 +281,8 @@ onMounted(() => {
                                         <input
                                             type="number"
                                             step="0.01"
+                                            min="0"
+                                            max="100"
                                             class="form-control text-center"
                                             v-model="
                                                 formNuevo.comi_distribuidor
@@ -301,6 +303,8 @@ onMounted(() => {
                                         <input
                                             type="number"
                                             step="0.01"
+                                            min="0"
+                                            max="100"
                                             class="form-control text-center"
                                             v-model="formNuevo.comi_vendedor"
                                         />

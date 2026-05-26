@@ -202,8 +202,8 @@
                                 <ul class="lista">
                                     @foreach ($producto_categoria['presentacions'] as $presentacion)
                                         <li class="text-left" v-for="presentacion in producto_categoria.presentacions">
-                                            {{ $presentacion->nombre }}
-                                            ({{ $presentacion->total_cantidad }})
+                                            {{ $presentacion['nombre'] }}
+                                            ({{ $presentacion['total_cantidad'] }})
                                         </li>
                                     @endforeach
                                 </ul>

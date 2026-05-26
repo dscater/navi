@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger("registro_id")->nullable();
             $table->string("modulo")->nullable();
             $table->unsignedBigInteger("producto_id");
+            $table->unsignedBigInteger("presentacion_producto_id");
             $table->text("detalle");
             $table->decimal("precio", 24, 2)->nullable();
             $table->string("tipo_is");

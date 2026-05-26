@@ -171,7 +171,10 @@ class PermisoService
             "reportes.r_productos",
             "reportes.movimiento_inventarios",
             "reportes.r_movimiento_inventarios",
-
+            "reportes.liquidacion",
+            "reportes.r_liquidacion",
+            "reportes.utilidad_bruta",
+            "reportes.r_utilidad_bruta",
         ],
         "DISTRIBUIDOR" => [
             "usuarios.segmentacion_zonas_asignadas",

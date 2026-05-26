@@ -121,10 +121,12 @@ class ComisionService
                         "categoria_producto_id" => $producto["categoria_producto_id"],
                         "producto_id" => $producto["id"],
                         "cantidad" => $producto["cantidad_entregado"],
+                        "total" => $producto["monto_vendido"],
                         "comision_distribuidor" => $producto["comision_distribuidor"],
                         "comision_vendedor" => $producto["comision_vendedor"],
                         "entrega_distribuidor" => $producto["entrega_distribuidor"],
                         "entrega_vendedor" => $producto["entrega_vendedor"],
+                        "detalle_presentacion" => $producto["presentacions"]
                     ]);
                 }
             }
@@ -154,7 +156,7 @@ class ComisionService
                     });
                 })->distinct()
                     ->orderBy("nombre", "asc")->get()
-                    ->map(function ($categoria) use ($despacho_id, $comision_id) {
+                    ->map(function ($categoria) use ($despacho_id, $comision_id, $comision_detalle) {
                         $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria,  $despacho_id,) {
                             $q->where("categoria_producto_id", $categoria->id);
                             $q->whereHas("pedido", function ($sub) use ($despacho_id) {
@@ -162,7 +164,7 @@ class ComisionService
                             });
                         })->orderBy("nombre", "asc")
                             ->get()
-                            ->map(function ($producto) use ($despacho_id, $comision_id) {
+                            ->map(function ($producto) use ($despacho_id, $comision_id, $comision_detalle) {
                                 $producto->cantidad_entregado = PedidoDetalle::where("producto_id", $producto->id)
                                     ->whereHas("pedido", function ($sub) use ($despacho_id) {
                                         $sub->where("despacho_id", $despacho_id);
@@ -173,6 +175,11 @@ class ComisionService
                                         $sub->where("despacho_id", $despacho_id);
                                     })->sum("subtotal");
 
+                                // $producto->presentacions = PresentacionProducto::whereHas("pedido_detalles", function ($q) use ($producto,  $despacho_id) {
+                                //     $q->where("producto_id", $producto->id);
+                                //     $q->whereHas("pedido", function ($sub) use ($despacho_id) {
+                                //         $sub->where("despacho_id", $despacho_id);
+                                //     });
                                 $producto->presentacions = PresentacionProducto::whereHas("pedido_detalles", function ($q) use ($producto,  $despacho_id) {
                                     $q->where("producto_id", $producto->id);
                                     $q->whereHas("pedido", function ($sub) use ($despacho_id) {
@@ -198,6 +205,11 @@ class ComisionService
 
                                         return $presentacion;
                                     });
+
+                                $producto->presentacions = ComisionDetalle::where("comision_id", $comision_id)
+                                    ->where("despacho_id", $despacho_id)
+                                    ->where("producto_id", $producto->id)
+                                    ->get()->first()->detalle_presentacion;
                                 // Asignar totales al producto
                                 $producto->comision_distribuidor = ComisionDetalle::where("comision_id", $comision_id)
                                     ->where("despacho_id", $despacho_id)
@@ -207,7 +219,6 @@ class ComisionService
                                     ->where("despacho_id", $despacho_id)
                                     ->where("producto_id", $producto->id)
                                     ->sum("comision_vendedor");
-
 
                                 $producto->entrega_distribuidor = ComisionDetalle::where("comision_id", $comision_id)
                                     ->where("despacho_id", $despacho_id)
@@ -225,6 +236,7 @@ class ComisionService
                 return $comision_detalle;
             });
     }
+
 
     /**
      * Eliminar comision

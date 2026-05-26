@@ -1,33 +1,25 @@
 <?php
 
-use App\Http\Controllers\AlertaEpidemiologicaController;
 use App\Http\Controllers\AsignacionZonaController;
-use App\Http\Controllers\CasoEpidemiologicoController;
-use App\Http\Controllers\CategoriaEnfermedadController;
 use App\Http\Controllers\CategoriaProductoController;
 use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\CompraController;
-use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\DistribucionController;
-use App\Http\Controllers\EnfermedadController;
 use App\Http\Controllers\InicioController;
-use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PresentacionController;
 use App\Http\Controllers\PresentacionProductoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReporteController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SegmentacionZonaController;
-use App\Http\Controllers\SucursalController;
-use App\Http\Controllers\TipoTransmisionController;
 use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
@@ -129,6 +121,13 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 
+    // PRESENTACIONS
+    Route::get("presentacions/paginado", [PresentacionController::class, 'paginado'])->name("presentacions.paginado");
+    Route::get("presentacions/listado", [PresentacionController::class, 'listado'])->name("presentacions.listado");
+    Route::resource("presentacions", PresentacionController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
     // PRODUCTOS
     Route::get("productos/paginado", [ProductoController::class, 'paginado'])->name("productos.paginado");
     Route::get("productos/listado", [ProductoController::class, 'listado'])->name("productos.listado");
@@ -214,5 +213,11 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
 
     Route::get('reportes/movimiento_inventarios', [ReporteController::class, 'movimiento_inventarios'])->name("reportes.movimiento_inventarios");
     Route::get('reportes/r_movimiento_inventarios', [ReporteController::class, 'r_movimiento_inventarios'])->name("reportes.r_movimiento_inventarios");
+
+    Route::get('reportes/liquidacion', [ReporteController::class, 'liquidacion'])->name("reportes.liquidacion");
+    Route::get('reportes/r_liquidacion', [ReporteController::class, 'r_liquidacion'])->name("reportes.r_liquidacion");
+
+    Route::get('reportes/utilidad_bruta', [ReporteController::class, 'utilidad_bruta'])->name("reportes.utilidad_bruta");
+    Route::get('reportes/r_utilidad_bruta', [ReporteController::class, 'r_utilidad_bruta'])->name("reportes.r_utilidad_bruta");
 });
 require __DIR__ . '/auth.php';

@@ -17,8 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger("despacho_id");
             $table->unsignedBigInteger("categoria_producto_id");
             $table->unsignedBigInteger("producto_id");
+            $table->unsignedBigInteger("presentacion_producto_id");
             $table->double("cantidad", 8, 2);
+            $table->doube("p_distribuidor", 8, 2);
             $table->decimal("comision_distribuidor", 24, 2);
+            $table->doube("p_vendedor", 8, 2);
             $table->decimal("comision_vendedor", 24, 2);
             $table->decimal("entrega_distribuidor", 24, 2);
             $table->decimal("entrega_vendedor", 24, 2);
@@ -28,6 +31,7 @@ return new class extends Migration
             $table->foreign("despacho_id")->on("despachos")->references("id");
             $table->foreign("categoria_producto_id")->on("categoria_productos")->references("id");
             $table->foreign("producto_id")->on("productos")->references("id");
+            $table->foreign("presentacion_producto_id")->on("produpresentacion_productos")->references("id");
         });
     }
 

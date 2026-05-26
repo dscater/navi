@@ -34,6 +34,7 @@ const cargarDistribuidors = () => {
 const listDespachos = ref([]);
 const despacho_id = ref(null);
 const cargarDespachos = () => {
+    listDespachosConsolidadosData.value = [];
     listDespachos.value = [];
     if (!distribuidor_id.value) return;
     axios
@@ -407,7 +408,7 @@ onMounted(async () => {
                                             <td class="text-center">
                                                 <ul>
                                                     <li
-                                                        class="text-left"
+                                                        class="text-left border-bottom"
                                                         v-for="presentacion in producto_categoria.presentacions"
                                                     >
                                                         {{
@@ -415,7 +416,35 @@ onMounted(async () => {
                                                         }}
                                                         ({{
                                                             presentacion.total_cantidad
-                                                        }})
+                                                        }}) <br />
+                                                        <span class="text-xxs"
+                                                            >C.D. =
+                                                            {{
+                                                                presentacion.total
+                                                            }}
+                                                            Bs. *
+                                                            {{
+                                                                presentacion.p_distribuidor
+                                                            }}% =
+                                                            {{
+                                                                presentacion.comision_distribuidor
+                                                            }}
+                                                            Bs.</span
+                                                        ><br />
+                                                        <span class="text-xxs"
+                                                            >C.V. =
+                                                            {{
+                                                                presentacion.total
+                                                            }}
+                                                            Bs. *
+                                                            {{
+                                                                presentacion.p_vendedor
+                                                            }}% =
+                                                            {{
+                                                                presentacion.comision_vendedor
+                                                            }}
+                                                            Bs.</span
+                                                        >
                                                     </li>
                                                 </ul>
                                             </td>

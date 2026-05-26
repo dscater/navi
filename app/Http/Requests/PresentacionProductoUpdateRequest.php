@@ -27,8 +27,8 @@ class PresentacionProductoUpdateRequest extends FormRequest
             "nombre" => "required",
             "equivale" => "required",
             "precio" => "required",
-            "comi_distribuidor" => "required",
-            "comi_vendedor" => "required",
+            "comi_distribuidor" => "required|numeric|between:0,100",
+            "comi_vendedor" => "required|numeric|between:0,100",
         ];
     }
 
@@ -41,7 +41,11 @@ class PresentacionProductoUpdateRequest extends FormRequest
             "equivale.required" => "Debes completar este campo",
             "precio.required" => "Debes completar este campo",
             "comi_distribuidor.required" => "Debes completar este campo",
+            "comi_distribuidor.numeric" => "Debes ingresar un valor númerico",
+            "comi_distribuidor.between" => "Debes ingresar un valor entre 0 y 100",
             "comi_vendedor.required" => "Debes completar este campo",
+            "comi_vendedor.numeric" => "Debes ingresar un valor númerico",
+            "comi_vendedor.between" => "Debes ingresar un valor entre 0 y 100",
         ];
     }
 }

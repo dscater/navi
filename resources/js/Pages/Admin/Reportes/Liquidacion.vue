@@ -10,8 +10,7 @@ onBeforeMount(() => {
 });
 
 const cargarListas = () => {
-    cargarProductos();
-    cargarCategoriaProductos();
+    cargarUsers();
 };
 onMounted(() => {
     cargarListas();
@@ -39,8 +38,7 @@ const getFechaActual = () => {
     return `${anio}-${mes}-${dia}`;
 };
 const form = ref({
-    categoria_producto_id: "todos",
-    producto_id: "todos",
+    user_id: "todos",
     fecha_ini: getFechaActual(),
     fecha_fin: getFechaActual(),
     formato: "pdf",
@@ -54,56 +52,52 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listCategoriaProductos = ref([]);
-const listProductos = ref([]);
+const listUsers = ref([]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_movimiento_inventarios", form.value);
+    const url = route("reportes.r_liquidacion", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
     }, 500);
 };
 
-const cargarCategoriaProductos = () => {
-    axios.get(route("categoria_productos.listado")).then((response) => {
-        listCategoriaProductos.value = response.data.categoria_productos;
-
-        listCategoriaProductos.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
+const cargarUsers = () => {
+    axios
+        .get(route("usuarios.listado"), {
+            params: { tipo: ["DISTRIBUIDOR", "VENDEDOR"] },
+        })
+        .then((response) => {
+            listUsers.value = response.data.usuarios;
+            listUsers.value.unshift({
+                id: "todos",
+                nombre: "TODOS",
+            });
         });
-    });
-};
-
-const cargarProductos = () => {
-    axios.get(route("productos.listado")).then((response) => {
-        listProductos.value = response.data.productos;
-
-        listProductos.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
 };
 </script>
 <template>
-    <Head title="Reporte Movimiento de Inventario"></Head>
+    <Head
+        title="Reporte Liquidación de Ventas por Distribuidor o Vendedor"
+    ></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4 class="m-0">Movimiento de Inventario</h4>
+                    <h4 class="m-0 fs-5">
+                        Liquidación de Ventas por Distribuidor o Vendedor
+                    </h4>
                 </div>
                 <!-- /.col -->
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-xs">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Movimiento de Inventario
+                            Reportes - Liquidación de Ventas por Distribuidor o
+                            Vendedor
                         </li>
                     </ol>
                 </div>
@@ -119,37 +113,20 @@ const cargarProductos = () => {
                             <div class="row">
                                 <div class="col-md-12">
                                     <label
-                                        >Seleccionar Categoría de
-                                        producto*</label
+                                        >Seleccionar
+                                        Distribuidor/Vendedor*</label
                                     >
                                     <el-select
-                                        v-model="form.categoria_producto_id"
+                                        v-model="form.user_id"
                                         filterable
                                         no-data-text="Sin datos"
                                         no-match-text="Sin resultados"
                                     >
                                         <el-option
-                                            v-for="item in listCategoriaProductos"
+                                            v-for="item in listUsers"
                                             :key="item.id"
                                             :value="item.id"
-                                            :label="item.nombre"
-                                        >
-                                        </el-option>
-                                    </el-select>
-                                </div>
-                                <div class="col-md-12">
-                                    <label>Seleccionar producto*</label>
-                                    <el-select
-                                        v-model="form.producto_id"
-                                        filterable
-                                        no-data-text="Sin datos"
-                                        no-match-text="Sin resultados"
-                                    >
-                                        <el-option
-                                            v-for="item in listProductos"
-                                            :key="item.id"
-                                            :value="item.id"
-                                            :label="item.nombre"
+                                            :label="`${item.nombre} ${item.tipo ? '(' + item.tipo + ')' : ''}`"
                                         >
                                         </el-option>
                                     </el-select>
