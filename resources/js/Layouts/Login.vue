@@ -1,6 +1,8 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from "vue";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 
+const { props: props_page } = usePage();
 onMounted(() => {
     document.getElementsByTagName("body")[0].classList.add("login");
 });

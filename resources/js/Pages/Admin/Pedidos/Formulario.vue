@@ -4,6 +4,7 @@ import { watch, ref, computed, defineEmits, onMounted, nextTick } from "vue";
 // TOAST
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+const { props: props_page } = usePage();
 const props = defineProps({
     form: {
         type: Object,
@@ -87,10 +88,28 @@ const enviarFormulario = () => {
 
 const emits = defineEmits(["envio-formulario"]);
 
+const listDistribuidors = ref([]);
+const cargarDistribuidors = () => {
+    axios
+        .get(route("usuarios.listado"), {
+            params: {
+                tipo: "DISTRIBUIDOR",
+            },
+        })
+        .then((response) => {
+            listDistribuidors.value = response.data.usuarios;
+        })
+        .finally(() => {});
+};
+
 const listClientes = ref([]);
 const cargarClientes = () => {
     axios
-        .get(route("clientes.listadoSegmentacion"))
+        .get(route("clientes.listadoSegmentacion"), {
+            params: {
+                distribuidor_id: form.distribuidor_id,
+            },
+        })
         .then((response) => {
             listClientes.value = response.data.clientes;
         })
@@ -106,6 +125,7 @@ const cargarProductos = () => {
 
 const cargarListas = () => {
     cargarClientes();
+    cargarDistribuidors();
     cargarProductos();
 };
 
@@ -254,13 +274,47 @@ watch([subtotalPedido, totalPedido], () => {
     form.total = totalPedido.value.toFixed(2);
 });
 onMounted(() => {
-    cargarListas();
+    nextTick(() => {
+        cargarListas();
+    });
 });
 </script>
 
 <template>
     <form @submit.prevent="enviarFormulario()" class="container-fluid">
         <div class="row">
+            <div
+                class="col-md-12 mt-2"
+                v-if="props_page.auth?.user.tipo == 'ADMINISTRADOR'"
+            >
+                <label class="required">Seleccionar Distribuidor</label>
+                <el-select
+                    v-model="form.distribuidor_id"
+                    no-data-text="Sin datos"
+                    no-match-text="Sin resultados"
+                    placeholder="- Seleccione -"
+                    filterable
+                    @change="
+                        cargarClientes();
+                        form.cliente_id = '';
+                    "
+                >
+                    <el-option
+                        v-for="item in listDistribuidors"
+                        :key="item.id"
+                        :value="item.id"
+                        :label="item.full_name"
+                    ></el-option>
+                </el-select>
+                <ul
+                    v-if="form.errors?.distribuidor_id"
+                    class="list-unstyled text-danger"
+                >
+                    <li class="parsley-required">
+                        {{ form.errors?.distribuidor_id }}
+                    </li>
+                </ul>
+            </div>
             <div class="col-md-6 mt-2">
                 <label class="required">Seleccionar Cliente</label>
                 <el-select

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\Configuracion;
+use App\Services\BloqueoService;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -78,7 +79,7 @@ class LoginRequest extends FormRequest
         }
 
         if (Auth::user()->bloqueo == 1) {
-            $bloqueoService = new \App\Services\BloqueoService();
+            $bloqueoService = new BloqueoService();
             if ($bloqueoService->verificaBloqueoUsuario()) {
                 Auth::logout();
                 throw ValidationException::withMessages([

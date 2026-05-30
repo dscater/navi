@@ -205,6 +205,16 @@ onMounted(() => {
                                     </span>
                                 </div>
                             </div>
+                            <div class="row my-2">
+                                <div class="col-12">
+                                    <div
+                                        class="alert alert-danger text-white"
+                                        v-if="props.errors?.usuario"
+                                    >
+                                        {{ props.errors?.usuario }}
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row my-3">
                                 <div class="col-12">
                                     <button

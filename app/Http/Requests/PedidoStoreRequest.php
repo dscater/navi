@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Rules\PedidoDetalleRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PedidoStoreRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class PedidoStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             "cliente_id" => "required",
             "subtotal" => "required",
             "descuento" => "required",
@@ -32,12 +33,19 @@ class PedidoStoreRequest extends FormRequest
             "pedido_detalles" => ["required", new PedidoDetalleRule()],
             "eliminados" => "nullable",
         ];
+
+        if (Auth::user()->tipo == 'ADMINISTRADOR') {
+            $rules["distribuidor_id"] = "required";
+        }
+
+        return $rules;
     }
 
     public function messages()
     {
         return [
             "cliente_id.required" => "Debes completar este campo",
+            "distribuidor_id.required" => "Debes completar este campo",
             "subtotal.required" => "Debes completar este campo",
             "descuento.required" => "Debes completar este campo",
             "total.required" => "Debes completar este campo",

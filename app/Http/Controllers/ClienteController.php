@@ -48,9 +48,15 @@ class ClienteController extends Controller
 
     public function listadoSegmentacion(Request $request)
     {
-        $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-        $clientes = Cliente::with(["segmentacion_zona"])->where("segmentacion_zona_id", $segmentacion_zona->id)
-            ->get();
+        $clientes = Cliente::with(["segmentacion_zona"]);
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+        } else {
+            $segmentacion_zona = $this->user_service->getSegmentacionZona($request->distribuidor_id);
+        }
+        $clientes->where("segmentacion_zona_id", $segmentacion_zona->id);
+
+        $clientes = $clientes->get();
         return response()->JSON([
             "clientes" => $clientes
         ]);

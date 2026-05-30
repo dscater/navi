@@ -23,7 +23,8 @@ class PedidoUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
+
             "cliente_id" => "required",
             "subtotal" => "required",
             "descuento" => "required",
@@ -33,6 +34,12 @@ class PedidoUpdateRequest extends FormRequest
             "pedido_detalles" => ["required", new PedidoDetalleRule()],
             "eliminados" => "nullable",
         ];
+
+        if (Auth::user()->tipo == 'ADMINISTRADOR') {
+            $rules["distribuidor_id"] = "required";
+        }
+
+        return $rules;
     }
 
     public function messages()

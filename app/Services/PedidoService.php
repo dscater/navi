@@ -146,14 +146,21 @@ class PedidoService
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
 
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona(Auth::user()->id)->id;
+        } else {
+            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        }
+
         $pedido = Pedido::create([
+            "distribuidor_id" => $datos["distribuidor_id"] ?? null,
             "cliente_id" => $datos["cliente_id"],
             "subtotal" => $datos["subtotal"],
             "descuento" => $datos["descuento"],
             "total" => $datos["total"],
             "observacion" => $datos["observacion"],
             "user_id" => Auth::user()->id,
-            "segmentacion_zona_id" => $this->user_service->getSegmentacionZona(Auth::user()->id)->id,
+            "segmentacion_zona_id" => $segmentacion_zona_id,
             "fecha" => $fecha_actual,
             "hora" => $hora_actual,
         ]);
@@ -194,11 +201,17 @@ class PedidoService
     {
         $old_pedido = clone $pedido;
 
+        if (Auth::user()->tipo == 'ADMINISTRADOR') {
+            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        }
+
         $pedido->update([
+            "distribuidor_id" => $datos["distribuidor_id"] ?? null,
             "cliente_id" => $datos["cliente_id"],
             "subtotal" => $datos["subtotal"],
             "descuento" => $datos["descuento"],
             "total" => $datos["total"],
+            "segmentacion_zona_id" => $segmentacion_zona_id,
             "observacion" => $datos["observacion"],
         ]);
 
