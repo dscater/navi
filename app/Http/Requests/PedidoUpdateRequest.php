@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Rules\PedidoDetalleRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PedidoUpdateRequest extends FormRequest
 {
