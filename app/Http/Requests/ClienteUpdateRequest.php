@@ -28,6 +28,7 @@ class ClienteUpdateRequest extends FormRequest
             "razon_social" => "nullable",
             "nit_ci" => "nullable",
             "dir" => "required",
+            "tipo_negocio_id" => "required",
             "latitud" => "required",
             "longitud" => "required",
             "segmentacion_zona_id" => "required"
@@ -41,6 +42,7 @@ class ClienteUpdateRequest extends FormRequest
             "nombre.unique" => "Este nombre no esta disponible",
             "fono.required" => "Debes completar este campo",
             "razon_social.required" => "Debes completar este campo",
+            "tipo_negocio_id.required" => "Debes seleccionar un tipo de negocio",
             "nit_ci.required" => "Debes completar este campo",
             "dir.required" => "Debes completar este campo",
             "latitud.required" => "Debes indicar la ubicación del cliente en una zona valida",

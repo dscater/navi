@@ -35,25 +35,17 @@ const headers = [
         sortable: true,
     },
     {
-        label: "SUBTOTAL Bs.",
-        key: "subtotal",
+        label: "VENDEDOR",
+        key: "user.full_name",
         sortable: true,
     },
-    {
-        label: "DESCUENTO Bs.",
-        key: "descuento",
-        sortable: true,
-    },
+
     {
         label: "TOTAL Bs.",
         key: "total",
         sortable: true,
     },
-    {
-        label: "TIPO DE PAGO",
-        key: "tipo_pago",
-        sortable: true,
-    },
+
     {
         label: "ESTADO",
         key: "estado",
@@ -81,16 +73,16 @@ const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
         limpiarPedido();
-        muestra_formulario.value = false;
+        // muestra_formulario.value = false;
     }
 };
 
-const eliminarPedido = (item) => {
+const anularPedido = (item) => {
     Swal.fire({
-        title: "¿Quierés eliminar este registro?",
-        html: `<strong>${item.nombre}</strong>`,
+        title: "¿Quierés anular este registro?",
+        html: `<strong>${item.cliente.nombre} | Código: ${item.id}</strong>`,
         showCancelButton: true,
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Si, anular",
         cancelButtonText: "No, cancelar",
         denyButtonText: `No, cancelar`,
         customClass: {
@@ -101,7 +93,7 @@ const eliminarPedido = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("pedidos.destroy", item.id),
+                route("distribucions.anular", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -115,14 +107,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <Head title="Distribución"></Head>
+    <Head title="Pedidos por Entregar"></Head>
 
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h3 class="m-0">
-                        <i class="fa fa-truck"></i> Distribución
+                        <i class="fa fa-truck"></i> Pedidos por Entregar
                     </h3>
                 </div>
                 <!-- /.col -->
@@ -132,7 +124,9 @@ onMounted(async () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
 
-                        <li class="breadcrumb-item active">Distribución</li>
+                        <li class="breadcrumb-item active">
+                            Pedidos por Entregar
+                        </li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -142,7 +136,7 @@ onMounted(async () => {
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <Link
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
@@ -154,10 +148,24 @@ onMounted(async () => {
                             class="btn btn-primary text-sm"
                             :href="route('distribucions.create')"
                         >
-                            <i class="fa fa-plus"></i> Nueva Distribución
+                            <i class="fa fa-plus"></i> Nueva Entrega de Pedido
                         </Link>
+                        <a
+                            v-if="
+                                props_page.auth?.user.permisos == '*' ||
+                                props_page.auth?.user.permisos.includes(
+                                    'pedidos.pdf_pendientes',
+                                )
+                            "
+                            type="button"
+                            class="btn btn-outline-primary text-sm ms-1"
+                            :href="route('pedidos.pdf_pendientes')"
+                            target="_blank"
+                        >
+                            <i class="fa fa-print"></i> Tickets Pendientes
+                        </a>
                     </div>
-                    <div class="col-md-8 my-1">
+                    <div class="col-md-6 my-1">
                         <div class="row justify-content-end">
                             <div class="col-md-5">
                                 <div
@@ -204,6 +212,12 @@ onMounted(async () => {
                                     }"
                                 >
                                     {{ item.estado }}
+                                    <br />
+                                    <small
+                                        class="text-muted text-xxs"
+                                        v-if="!item.despacho_id"
+                                        >(Sin despacho)</small
+                                    >
                                 </div>
                             </template>
                             <template #fecha="{ item }">
@@ -255,6 +269,32 @@ onMounted(async () => {
                                                 target="_blank"
                                             >
                                                 <i class="fa fa-print"></i></a
+                                        ></el-tooltip>
+                                    </template>
+                                    <template
+                                        v-if="
+                                            item.estado == 'PENDIENTE' &&
+                                            item.despacho_id &&
+                                            (props_page.auth?.user.permisos ==
+                                                '*' ||
+                                                props_page.auth?.user.permisos.includes(
+                                                    'distribucions.anular',
+                                                ))
+                                        "
+                                    >
+                                        <el-tooltip
+                                            class="box-item"
+                                            effect="dark"
+                                            content="Anular"
+                                            placement="left-start"
+                                        >
+                                            <button
+                                                class="btn btn-danger"
+                                                @click="anularPedido(item)"
+                                            >
+                                                <i
+                                                    class="fa fa-ban"
+                                                ></i></button
                                         ></el-tooltip>
                                     </template>
                                     <!-- <template

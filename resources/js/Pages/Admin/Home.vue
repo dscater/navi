@@ -54,14 +54,41 @@ const cargarSegmentacions = () => {
         });
 };
 
-const listCLientes = ref([]);
+const listEstados = ref([
+    {
+        value: "PENDIENTE",
+        label: "PENDIENTES",
+    },
+    {
+        value: "ENTREGADO",
+        label: "ENTREGADOS",
+    },
+]);
+
+const getFechaActual = () => {
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${anio}-${mes}-${dia}`;
+};
+
+const filtro_mapa = ref({
+    estado: "PENDIENTE",
+    fecha: getFechaActual(),
+});
+const totalPedidos = ref(0);
+const listClientes = ref([]);
 const cargaClientes = ref(false);
 const cargarClientes = () => {
     cargaClientes.value = false;
     axios
-        .get(route("clientes.listado"))
+        .get(route("clientes.listado_pedido"), {
+            params: filtro_mapa.value,
+        })
         .then((response) => {
-            listCLientes.value = response.data.clientes;
+            listClientes.value = response.data.clientes;
+            totalPedidos.value = response.data.total_pedidos;
         })
         .finally(() => {
             cargaClientes.value = true;
@@ -116,7 +143,7 @@ onMounted(() => {
         <div
             class="row"
             v-if="
-                !auth?.user.asignacion_zona &&
+                !auth?.user.asignacion_zonas.length &&
                 auth?.user.tipo != 'ADMINISTRADOR'
             "
         >
@@ -132,11 +159,87 @@ onMounted(() => {
 
         <div class="row">
             <div class="col-12">
-                <MapZonasClientes
-                    v-if="cargaClientes && cargaSegmentacion"
-                    :clientes="listCLientes"
-                    :zonas="listSegmentacions"
-                ></MapZonasClientes>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    <!-- <div class="col-md-4">
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            v-model="filtro_mapa.fecha"
+                                            @keyup="cargarClientes"
+                                            @change="cargarClientes"
+                                        />
+                                    </div> -->
+                                    <div class="col-md-4">
+                                        <el-select
+                                            v-model="filtro_mapa.estado"
+                                            placeholder="Seleccione un estado"
+                                            @change="cargarClientes()"
+                                            clearable
+                                        >
+                                            <el-option
+                                                v-for="item in listEstados"
+                                                :key="item.value"
+                                                :value="item.value"
+                                                :label="item.label"
+                                            ></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div
+                                            class="small-box bg-principal my-2"
+                                        >
+                                            <div class="inner">
+                                                <p
+                                                    class="text-sm mb-0 text-white"
+                                                >
+                                                    Total Pedidos: Bs.
+                                                    <span
+                                                        class="fs-6 fw-bold"
+                                                        >{{
+                                                            totalPedidos
+                                                        }}</span
+                                                    >
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div
+                                            class="small-box bg-principal my-2"
+                                        >
+                                            <div class="inner">
+                                                <p
+                                                    class="text-sm mb-0 text-white"
+                                                >
+                                                    Pendientes:
+                                                    <span
+                                                        class="fs-6 fw-bold"
+                                                        >{{
+                                                            listClientes.length
+                                                        }}</span
+                                                    >
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <MapZonasClientes
+                                    v-if="cargaClientes && cargaSegmentacion"
+                                    :clientes="listClientes"
+                                    :zonas="listSegmentacions"
+                                ></MapZonasClientes>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

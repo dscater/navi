@@ -115,6 +115,37 @@ const verSegmentacionZona = (item) => {
     muestra_formulario.value = true;
 };
 
+const tieneZonaAsignada = (item) => {
+    if (item.tipo == "VENDEDOR") {
+        return item.asignados.length > 0;
+    }
+    return (
+        item.asignados?.some(
+            (asignacion) =>
+                asignacion.segmentacion_zona_id == zona_selecionada.value?.id,
+        ) || false
+    );
+};
+
+const verificaDisabled = (item) => {
+    if (!zona_selecionada.value) {
+        return true;
+    }
+
+    if (item.tipo == "VENDEDOR") {
+        if (!item.asignados.length) {
+            return false;
+        }
+
+        return (
+            zona_selecionada.value.id !=
+            item.asignados?.[0]?.segmentacion_zona_id
+        );
+    }
+
+    return false;
+};
+
 onMounted(async () => {
     cargarZonas();
     cargarDistribuidors();
@@ -254,7 +285,9 @@ onMounted(async () => {
                                                 <input
                                                     type="checkbox"
                                                     class="checkboxForm"
-                                                    :checked="item.asignado"
+                                                    :checked="
+                                                        tieneZonaAsignada(item)
+                                                    "
                                                     @click="
                                                         updateAsignacion(
                                                             $event,
@@ -262,9 +295,7 @@ onMounted(async () => {
                                                         )
                                                     "
                                                     :disabled="
-                                                        item.segmentacion_zona_id &&
-                                                        zona_selecionada?.id !=
-                                                            item.segmentacion_zona_id
+                                                        verificaDisabled(item)
                                                     "
                                                 />
                                             </td>
@@ -317,7 +348,9 @@ onMounted(async () => {
                                                 <input
                                                     type="checkbox"
                                                     class="checkboxForm"
-                                                    :checked="item.asignado"
+                                                    :checked="
+                                                        tieneZonaAsignada(item)
+                                                    "
                                                     @click="
                                                         updateAsignacion(
                                                             $event,
@@ -325,9 +358,7 @@ onMounted(async () => {
                                                         )
                                                     "
                                                     :disabled="
-                                                        item.segmentacion_zona_id &&
-                                                        zona_selecionada?.id !=
-                                                            item.segmentacion_zona_id
+                                                        verificaDisabled(item)
                                                     "
                                                 />
                                             </td>

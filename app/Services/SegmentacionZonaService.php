@@ -23,8 +23,8 @@ class SegmentacionZonaService
         $segmentacion_zonas = SegmentacionZona::select("segmentacion_zonas.*");
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $segmentacion_zonas->where("id", $segmentacion_zona?->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $segmentacion_zonas->whereIn("id", $segmentacion_zona_ids);
         }
 
         $segmentacion_zonas = $segmentacion_zonas->get();

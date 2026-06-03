@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\User;
 use App\Services\ClienteService;
 use App\Services\UserService;
+use App\Services\PedidoService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +23,7 @@ use Inertia\Response as ResponseInertia;
 
 class ClienteController extends Controller
 {
-    public function __construct(private ClienteService $clienteService, private UserService $user_service) {}
+    public function __construct(private ClienteService $clienteService, private UserService $user_service, private PedidoService $pedidoService) {}
 
     /**
      * Página index
@@ -46,16 +47,41 @@ class ClienteController extends Controller
         ]);
     }
 
+    public function listado_pedido(Request $request): JsonResponse
+    {
+        $estado_pedido = $request->input("estado", "");
+        $fecha = $request->input("fecha", "");
+        return response()->JSON([
+            "clientes" => $this->clienteService->listado_pedido($estado_pedido, $fecha),
+            "total_pedidos" => $this->pedidoService->totalPedidos($estado_pedido)
+        ]);
+    }
+
     public function listadoSegmentacion(Request $request)
     {
         $clientes = Cliente::with(["segmentacion_zona"]);
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
         } else {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona($request->distribuidor_id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona($request->distribuidor_id);
         }
-        $clientes->where("segmentacion_zona_id", $segmentacion_zona->id);
 
+        if (!empty($segmentacion_zona_ids) && is_array($segmentacion_zona_ids)) {
+            $clientes->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
+        }
+
+        $estado_pedido = $request->input("estado", "");
+        if ($estado_pedido) {
+            // ULTIMO PEDIDO DE CADA CLIENTE
+            $clientes->whereHas("ultimoPedido", function ($query) use ($estado_pedido) {
+                $query->where("estado", $estado_pedido);
+            });
+            if ($estado_pedido == "PENDIENTE") {
+                $clientes->whereHas("ultimoPedido", function ($query) {
+                    $query->whereNotNull("despacho_id");
+                });
+            }
+        }
         $clientes = $clientes->get();
         return response()->JSON([
             "clientes" => $clientes

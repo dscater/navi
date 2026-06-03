@@ -24,7 +24,11 @@ const listClientes = ref([]);
 const cliente_id = ref(null);
 const cargarClientes = () => {
     axios
-        .get(route("clientes.listadoSegmentacion"))
+        .get(route("clientes.listadoSegmentacion"), {
+            params: {
+                estado: "PENDIENTE",
+            },
+        })
         .then((response) => {
             listClientes.value = response.data.clientes;
         })
@@ -49,6 +53,14 @@ const cargarPedidosCliente = () => {
             oCliente.value = listClientes.value.find(
                 (c) => c.id == cliente_id.value,
             );
+            // verificar cantidad de pedidos
+            // si es 1 mostrar el pedido
+            if (listPedidos.value.length == 1) {
+                pedido_id.value = listPedidos.value[0].id;
+                cargarPedido();
+            } else {
+                limpiarPedido();
+            }
         })
         .finally(() => {});
 };
@@ -63,6 +75,7 @@ const cargarPedido = () => {
         .get(route("pedidos.show", pedido_id.value))
         .then((response) => {
             setPedido(response.data);
+            form.tipo_pago = "EFECTIVO";
         })
         .finally(() => {});
 };
@@ -262,14 +275,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <Head title="Distribución de Pedidos"></Head>
+    <Head title="Entrega de Pedidos"></Head>
 
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h3 class="m-0">
-                        <i class="fa fa-truck"></i> Distribución de Pedidos
+                        <i class="fa fa-truck"></i> Entrega de Pedidos
                     </h3>
                 </div>
                 <!-- /.col -->
@@ -280,11 +293,11 @@ onMounted(async () => {
                         </li>
                         <li class="breadcrumb-item">
                             <Link :href="route('distribucions.index')"
-                                >Distribución</Link
+                                >Pedidos por Entregar</Link
                             >
                         </li>
                         <li class="breadcrumb-item active">
-                            Distribución de Pedidos
+                            Entrega de Pedidos
                         </li>
                     </ol>
                 </div>
@@ -498,7 +511,7 @@ onMounted(async () => {
                         </div>
 
                         <div class="row mt-2">
-                            <div class="col-12 mb-2">
+                            <!-- <div class="col-12 mb-2">
                                 <label class="required">Tipo de Pago</label>
                                 <el-select
                                     v-model="form.tipo_pago"
@@ -519,7 +532,7 @@ onMounted(async () => {
                                         {{ form.errors?.tipo_pago }}
                                     </li>
                                 </ul>
-                            </div>
+                            </div> -->
                             <div class="col-md-6 offset-md-3">
                                 <button
                                     class="btn btn-primary w-100"

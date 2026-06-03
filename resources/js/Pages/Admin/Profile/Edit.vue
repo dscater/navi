@@ -80,7 +80,7 @@ const form = useForm({
     _method: "patch",
 });
 
-const { flash } = usePage().props;
+const { flash, auth } = usePage().props;
 
 const enviaFormulario = () => {
     form.errors = {};
@@ -203,7 +203,7 @@ const enviaFormulario = () => {
                     </div>
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-8" v-if="auth?.user.tipo == 'ADMINISTRADOR'">
                 <div class="card card-inverse pa-3">
                     <div class="card-header">
                         <h4 class="mb-0">Cambiar contraseña</h4>

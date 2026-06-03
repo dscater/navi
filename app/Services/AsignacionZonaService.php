@@ -145,4 +145,17 @@ class AsignacionZonaService
 
         return true;
     }
+
+    public function getDistribuidorPorSegmentacionZona(int $segmentacion_zona_id): ?User
+    {
+        $asignacion_zona = AsignacionZona::where("segmentacion_zona_id", $segmentacion_zona_id)
+            ->whereHas("user", function ($query) {
+                $query->where("tipo", "DISTRIBUIDOR");
+            })
+            ->first();
+        if ($asignacion_zona) {
+            return $asignacion_zona->user;
+        }
+        return null;
+    }
 }

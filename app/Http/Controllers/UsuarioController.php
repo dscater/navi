@@ -67,11 +67,9 @@ class UsuarioController extends Controller
         $usuarios = $usuarios->where("status", 1)
             ->get()
             ->map(function ($usuario) use ($request) {
-                $zonaAsignada = $usuario->asignacion_zona;
-                $usuario->segmentacion_zona_id = $zonaAsignada?->segmentacion_zona_id;
-                $usuario->asignado = $usuario->asignacion_zona()
-                    // ->where('segmentacion_zona_id', $request->zona_id)
-                    ->exists();
+                $usuario->asignados = $usuario->asignacion_zonas()
+                    ->get()
+                    ->toArray();
 
                 return $usuario;
             });

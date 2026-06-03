@@ -191,6 +191,14 @@ const agregarCarrito = () => {
         return;
     }
 
+    if (
+        parseFloat(cantidad_total.value) >
+        parseFloat(productoSeleccionado.value.stock_actual)
+    ) {
+        toast.error("La cantidad solicitada supera el stock actual");
+        return;
+    }
+
     form.pedido_detalles.push({
         id: 0,
         pedido_id: 0,
@@ -340,7 +348,7 @@ onMounted(() => {
                     </li>
                 </ul>
             </div>
-            <div class="col-md-6 mt-2">
+            <!-- <div class="col-md-6 mt-2">
                 <label class="">Observación</label>
                 <el-input
                     type="textarea"
@@ -355,7 +363,7 @@ onMounted(() => {
                         {{ form.errors?.observacion }}
                     </li>
                 </ul>
-            </div>
+            </div> -->
         </div>
         <div class="row mt-2 border-top pt-2">
             <div class="col-12">
@@ -379,6 +387,18 @@ onMounted(() => {
             <div class="col-12 mt-2" v-if="productoSeleccionado">
                 <p class="mb-0 text-sm">Seleccionar presentación</p>
                 <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div
+                                class="card-body border border-primary p-1 rounded text-sm text-center"
+                            >
+                                Unidades disponibles:
+                                <span class="fw-bold fs-6">{{
+                                    productoSeleccionado.stock_actual
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
                     <div
                         v-for="item in listPresentacionProducto"
                         :key="`${item.id}${productoSeleccionado.id}`"

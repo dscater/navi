@@ -644,6 +644,7 @@ class ReporteController extends Controller
                                     $sub2->orWhere("user_distribucion_id", $user->id);
                                 });
                             }
+                            $sub->where("status", 1);
                         });
                     })->distinct()
                         ->get()->map(function ($presentacion) use ($user, $fecha_actual, &$total_pedido, &$total_entregado, &$total_devolucion, &$total_comision) {
@@ -657,6 +658,7 @@ class ReporteController extends Controller
                                         $sub->orWhere("user_distribucion_id", $user->id);
                                     });
                                 }
+                                $q->where("status", 1);
                             })->sum("cantidad_despacho");
                             $presentacion->cantidad_entregado = PedidoDetalle::whereHas("pedido", function ($q) use ($fecha_actual, $user, $presentacion) {
                                 $q->where("estado", "ENTREGADO");
@@ -668,6 +670,7 @@ class ReporteController extends Controller
                                         $sub->orWhere("user_distribucion_id", $user->id);
                                     });
                                 }
+                                $q->where("status", 1);
                             })->sum("cantidad_entregado");
                             $presentacion->cantidad_devolucion = PedidoDetalle::whereHas("pedido", function ($q) use ($fecha_actual, $user, $presentacion) {
                                 $q->where("estado", "ENTREGADO");
@@ -679,6 +682,7 @@ class ReporteController extends Controller
                                         $sub->orWhere("user_distribucion_id", $user->id);
                                     });
                                 }
+                                $q->where("status", 1);
                             })->sum("cantidad_devolucion");
 
                             $cantidad = round($presentacion->cantidad_despacho / $presentacion->equivale, 2);
@@ -902,24 +906,28 @@ class ReporteController extends Controller
                             $q->whereBetween("fecha", [$fecha_ini, $fecha_fin]);
                             $q->where("producto_id", $producto->id);
                             $q->where("presentacion_producto_id", $presentacion->id);
+                            $q->where("status", 1);
                         })->sum("cantidad_total");
                         $presentacion->cantidad_despacho = PedidoDetalle::whereHas("pedido", function ($q) use ($fecha_ini, $fecha_fin, $producto, $presentacion) {
                             $q->where("estado", "ENTREGADO");
                             $q->whereBetween("fecha", [$fecha_ini, $fecha_fin]);
                             $q->where("producto_id", $producto->id);
                             $q->where("presentacion_producto_id", $presentacion->id);
+                            $q->where("status", 1);
                         })->sum("cantidad_despacho");
                         $presentacion->cantidad_entregado = PedidoDetalle::whereHas("pedido", function ($q) use ($fecha_ini, $fecha_fin, $producto, $presentacion) {
                             $q->where("estado", "ENTREGADO");
                             $q->whereBetween("fecha", [$fecha_ini, $fecha_fin]);
                             $q->where("producto_id", $producto->id);
                             $q->where("presentacion_producto_id", $presentacion->id);
+                            $q->where("status", 1);
                         })->sum("cantidad_entregado");
                         $presentacion->cantidad_devolucion = PedidoDetalle::whereHas("pedido", function ($q) use ($fecha_ini, $fecha_fin, $producto, $presentacion) {
                             $q->where("estado", "ENTREGADO");
                             $q->whereBetween("fecha", [$fecha_ini, $fecha_fin]);
                             $q->where("producto_id", $producto->id);
                             $q->where("presentacion_producto_id", $presentacion->id);
+                            $q->where("status", 1);
                         })->sum("cantidad_devolucion");
 
                         $cantidad = round($presentacion->cantidad_despacho / $presentacion->equivale, 2);

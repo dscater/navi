@@ -95,6 +95,7 @@ class DespachoController extends Controller
                         $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                             $sub2->where("estado", $estado_despacho);
                         });
+                        $sub->where("status", 1);
                     });
                 })->distinct()
                     ->orderBy("nombre", "asc")->get()
@@ -106,6 +107,7 @@ class DespachoController extends Controller
                                 $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                     $sub2->where("estado", $estado_despacho);
                                 });
+                                $sub->where("status", 1);
                             });
                         })->orderBy("nombre", "asc")
                             ->get()
@@ -118,6 +120,7 @@ class DespachoController extends Controller
                                         $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                             $sub2->where("estado", $estado_despacho);
                                         });
+                                        $sub->where("status", 1);
                                     })->sum("cantidad_entregado");
 
                                 $producto->monto_vendido = PedidoDetalle::where("producto_id", $producto->id)
@@ -126,6 +129,7 @@ class DespachoController extends Controller
                                         $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                             $sub2->where("estado", $estado_despacho);
                                         });
+                                        $sub->where("status", 1);
                                     })->sum("subtotal");
 
                                 $producto->comision_distribuidor = 0;
@@ -141,6 +145,7 @@ class DespachoController extends Controller
                                         $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                             $sub2->where("estado", $estado_despacho);
                                         });
+                                        $sub->where("status", 1);
                                     });
                                 })->orderBy("nombre", "asc")
                                     ->get()
@@ -160,6 +165,7 @@ class DespachoController extends Controller
                                                 $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                                     $sub2->where("estado", $estado_despacho);
                                                 });
+                                                $sub->where("status", 1);
                                             })->sum("cantidad");
                                         $presentacion->cantidad_presentacion = PedidoDetalle::where("producto_id", $producto->id)
                                             ->where("presentacion_producto_id", $presentacion->id)
@@ -168,6 +174,7 @@ class DespachoController extends Controller
                                                 $sub->whereHas("despacho", function ($sub2) use ($estado_despacho) {
                                                     $sub2->where("estado", $estado_despacho);
                                                 });
+                                                $sub->where("status", 1);
                                             })->sum("cantidad");
 
                                         $presentacion->total = round($presentacion->cantidad_presentacion * $presentacion->precio, 2);
@@ -204,14 +211,11 @@ class DespachoController extends Controller
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
         $search = (string)$request->input("search", "");
+        $producto_id = (string)$request->input("producto_id", "");
+        $cliente_id = (string)$request->input("cliente_id", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
-        $columnsSerachLike = [
-            "id",
-        ];
-        $columnsFilter = [];
-        $columnsBetweenFilter = [];
         $arrayOrderBy = [];
         if ($orderBy && $orderAsc) {
             $arrayOrderBy = [
@@ -219,7 +223,7 @@ class DespachoController extends Controller
             ];
         }
 
-        $clientes = $this->despachoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $clientes = $this->despachoService->listadoPaginado($perPage, $page, $search, $producto_id, $cliente_id, $arrayOrderBy);
         return response()->JSON([
             "data" => $clientes->items(),
             "total" => $clientes->total(),

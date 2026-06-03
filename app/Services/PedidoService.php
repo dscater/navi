@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Models\CategoriaProducto;
+use App\Models\Cliente;
 use App\Services\HistorialAccionService;
 use App\Models\Pedido;
 use App\Models\PedidoDetalle;
 use App\Models\Producto;
+use App\Models\PresentacionProducto;
 use App\Models\User;
 use App\Models\Despacho;
 use Carbon\Carbon;
@@ -22,7 +24,14 @@ class PedidoService
 {
     private $modulo = "PEDIDOS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private MovimientoInventarioService $movimiento_inventario_service, private UserService $user_service, private ProductoService $producto_service) {}
+    public function __construct(
+        private  CargarArchivoService $cargarArchivoService,
+        private HistorialAccionService $historialAccionService,
+        private MovimientoInventarioService $movimiento_inventario_service,
+        private UserService $user_service,
+        private ProductoService $producto_service,
+        private AsignacionZonaService $asignacion_zona_service
+    ) {}
 
     public function listado(): Collection
     {
@@ -30,6 +39,24 @@ class PedidoService
             ->where("status", 1)->get();
         return $pedidos;
     }
+
+    public function totalPedidos($estado_pedido)
+    {
+        $pedidos = Pedido::select("pedidos.*")
+            ->where("status", 1);
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
+        }
+
+        if ($estado_pedido) {
+            $pedidos->where("estado", $estado_pedido);
+        }
+
+        return $pedidos->sum("total");
+    }
+
     /**
      * Lista de pedidos paginado con filtros
      *
@@ -43,13 +70,13 @@ class PedidoService
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $pedidos = Pedido::select("pedidos.*")
-            ->with(["cliente:id,nombre,razon_social", "segmentacion_zona:id,zona"])
+            ->with(["cliente.tipo_negocio", "segmentacion_zona:id,zona"])
             ->where("status", 1);
 
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $pedidos->where("segmentacion_zona_id", $segmentacion_zona?->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
         }
 
         // Filtros exactos
@@ -90,13 +117,19 @@ class PedidoService
     public function listadoPaginadoDistribucion(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $pedidos = Pedido::select("pedidos.*")
-            ->with(["cliente:id,nombre,razon_social", "segmentacion_zona:id,zona"])
-            ->where("status", 1)
-            ->where("estado", "ENTREGADO");
+            ->with([
+                "cliente:id,nombre,razon_social",
+                "cliente.tipo_negocio",
+                "user",
+                "segmentacion_zona:id,zona"
+            ]);
+        // ->where("status", 1)
+        // ->whereNotNull("despacho_id");
+        // ->where("estado", "ENTREGADO");
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $pedidos->where("segmentacion_zona_id", $segmentacion_zona?->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
         }
 
         // Filtros exactos
@@ -146,21 +179,28 @@ class PedidoService
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
 
-        if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona(Auth::user()->id)->id;
-        } else {
-            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        // if (Auth::user()->tipo != 'ADMINISTRADOR') {
+        //     $segmentacion_zona_id =  $this->user_service->getSegmentacionZona(Auth::user()->id)->id;
+        // } else {
+        //     $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        // }
+
+        $cliente = Cliente::findOrFail($datos["cliente_id"]);
+
+        $distribuidor = $this->asignacion_zona_service->getDistribuidorPorSegmentacionZona($cliente->segmentacion_zona_id);
+        if (!$distribuidor) {
+            throw ValidationException::withMessages(['No se encontró un distribuidor en la ubicación del Cliente.']);
         }
 
         $pedido = Pedido::create([
-            "distribuidor_id" => $datos["distribuidor_id"] ?? null,
+            "distribuidor_id" => $distribuidor ? $distribuidor->id : null,
             "cliente_id" => $datos["cliente_id"],
             "subtotal" => $datos["subtotal"],
             "descuento" => $datos["descuento"],
             "total" => $datos["total"],
             "observacion" => $datos["observacion"],
             "user_id" => Auth::user()->id,
-            "segmentacion_zona_id" => $segmentacion_zona_id,
+            "segmentacion_zona_id" => $cliente->segmentacion_zona_id,
             "fecha" => $fecha_actual,
             "hora" => $hora_actual,
         ]);
@@ -201,17 +241,24 @@ class PedidoService
     {
         $old_pedido = clone $pedido;
 
-        if (Auth::user()->tipo == 'ADMINISTRADOR') {
-            $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        // if (Auth::user()->tipo == 'ADMINISTRADOR') {
+        //     $segmentacion_zona_id =  $this->user_service->getSegmentacionZona($datos["distribuidor_id"])->id;
+        // }
+
+        $cliente = Cliente::findOrFail($datos["cliente_id"]);
+
+        $distribuidor = $this->asignacion_zona_service->getDistribuidorPorSegmentacionZona($cliente->segmentacion_zona_id);
+        if (!$distribuidor) {
+            throw ValidationException::withMessages(['No se encontró un distribuidor en la ubicación del Cliente.']);
         }
 
         $pedido->update([
-            "distribuidor_id" => $datos["distribuidor_id"] ?? null,
+            "distribuidor_id" => $distribuidor ? $distribuidor->id : null,
             "cliente_id" => $datos["cliente_id"],
             "subtotal" => $datos["subtotal"],
             "descuento" => $datos["descuento"],
             "total" => $datos["total"],
-            "segmentacion_zona_id" => $segmentacion_zona_id,
+            "segmentacion_zona_id" => $cliente->segmentacion_zona_id,
             "observacion" => $datos["observacion"],
         ]);
 
@@ -321,15 +368,36 @@ class PedidoService
         return true;
     }
 
-    public function pedido_distribuidor($despacho_id = null, $segmentacion_zona = null, $estado = null, $valida_despacho = false)
+    public function anularPedido(Pedido $pedido): Pedido
     {
-        return CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($segmentacion_zona, $estado, $despacho_id, $valida_despacho) {
-            $q->whereHas("pedido", function ($sub) use ($segmentacion_zona, $estado, $despacho_id, $valida_despacho) {
+        $old_pedido = clone $pedido;
+        $pedido->status = 0;
+        $pedido->estado = "ANULADO";
+        $pedido->save();
+
+        // DETALLES
+        foreach ($pedido->pedido_detalles as $item) {
+            $producto = Producto::findOrFail($item->producto_id);
+            $pedido_detalle = PedidoDetalle::find($item->id);
+            $presentacionProducto = PresentacionProducto::findOrFail($pedido_detalle->presentacion_producto_id);
+            $this->movimiento_inventario_service->registrarMovimiento("PedidoDetalle", "INGRESO", $producto, $pedido_detalle->cantidad_despacho, $presentacionProducto->precio, "Por anulación de pedido", "PedidoDetalle", $pedido_detalle->id);
+        }
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ANULÓ UN PEDIDO", $old_pedido, $pedido);
+
+        return $pedido;
+    }
+
+    public function pedido_distribuidor($despacho_id = null, $segmentacion_zona_ids = null, $estado = null, $valida_despacho = false)
+    {
+        return CategoriaProducto::whereHas("pedido_detalles", function ($q) use ($segmentacion_zona_ids, $estado, $despacho_id, $valida_despacho) {
+            $q->whereHas("pedido", function ($sub) use ($segmentacion_zona_ids, $estado, $despacho_id, $valida_despacho) {
                 if ($despacho_id) {
                     $sub->where("despacho_id", $despacho_id);
                 }
-                if ($segmentacion_zona) {
-                    $sub->where("segmentacion_zona_id", $segmentacion_zona?->id);
+                if ($segmentacion_zona_ids !== null) {
+                    $sub->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
                 }
                 if ($estado) {
                     $sub->where("estado", $estado);
@@ -337,18 +405,19 @@ class PedidoService
                 if ($valida_despacho) {
                     $sub->where("despacho_id", null);
                 }
+                $sub->where("status", 1);
             });
         })->distinct()
             ->orderBy("nombre", "asc")->get()
-            ->map(function ($categoria) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
-                $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+            ->map(function ($categoria) use ($segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
+                $categoria->productos = Producto::whereHas("pedido_detalles", function ($q) use ($categoria, $segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
                     $q->where("categoria_producto_id", $categoria->id);
-                    $q->whereHas("pedido", function ($sub) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                    $q->whereHas("pedido", function ($sub) use ($segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
                         if ($despacho_id) {
                             $sub->where("despacho_id", $despacho_id);
                         }
-                        if ($segmentacion_zona) {
-                            $sub->where("segmentacion_zona_id", $segmentacion_zona?->id);
+                        if ($segmentacion_zona_ids !== null) {
+                            $sub->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
                         }
                         if ($estado) {
                             $sub->where("estado", $estado);
@@ -356,18 +425,19 @@ class PedidoService
                         if ($valida_despacho) {
                             $sub->where("despacho_id", null);
                         }
+                        $sub->where("status", 1);
                     });
                 })->orderBy("nombre", "asc")
                     ->get()
-                    ->map(function ($producto) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                    ->map(function ($producto) use ($segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
                         $producto->ver = false;
 
-                        $producto->pedido_detalles = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                        $producto->pedido_detalles = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
                             if ($despacho_id) {
                                 $q->where("despacho_id", $despacho_id);
                             }
-                            if ($segmentacion_zona) {
-                                $q->where("segmentacion_zona_id", $segmentacion_zona?->id);
+                            if ($segmentacion_zona_ids !== null) {
+                                $q->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
                             }
                             if ($estado) {
                                 $q->where("estado", $estado);
@@ -375,14 +445,15 @@ class PedidoService
                             if ($valida_despacho) {
                                 $q->where("despacho_id", null);
                             }
+                            $q->where("status", 1);
                         })->where("producto_id", $producto->id)->get();
 
-                        $producto->cantidad_total = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona, $estado, $valida_despacho, $despacho_id) {
+                        $producto->cantidad_total = PedidoDetalle::with("pedido.cliente")->whereHas("pedido", function ($q) use ($segmentacion_zona_ids, $estado, $valida_despacho, $despacho_id) {
                             if ($despacho_id) {
                                 $q->where("despacho_id", $despacho_id);
                             }
-                            if ($segmentacion_zona) {
-                                $q->where("segmentacion_zona_id", $segmentacion_zona?->id);
+                            if ($segmentacion_zona_ids !== null) {
+                                $q->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
                             }
                             if ($estado) {
                                 $q->where("estado", $estado);
@@ -390,6 +461,7 @@ class PedidoService
                             if ($valida_despacho) {
                                 $q->where("despacho_id", null);
                             }
+                            $q->where("status", 1);
                         })->where("producto_id", $producto->id)->sum("cantidad_total");
                         $producto->cantidad_despacho = $producto->cantidad_total;
                         $producto->stock_previsto = $producto->stock_actual - $producto->cantidad_despacho;
@@ -414,6 +486,7 @@ class PedidoService
                         $sub2->where("estado", $estado);
                     }
                 });
+                $sub->where("status", 1);
             });
         })->distinct()
             ->orderBy("nombre", "asc")->get()
@@ -432,6 +505,7 @@ class PedidoService
                                 $sub2->where("estado", $estado);
                             });
                         }
+                        $sub->where("status", 1);
                     });
                 })->orderBy("nombre", "asc")
                     ->get()
@@ -450,6 +524,7 @@ class PedidoService
                                     $sub2->where("estado", $estado);
                                 });
                             }
+                            $q->where("status", 1);
                         })
                             ->where("producto_id", $producto->id)->get();
 
@@ -465,6 +540,7 @@ class PedidoService
                                     $sub2->where("estado", $estado);
                                 });
                             }
+                            $q->where("status", 1);
                         })
                             ->where("producto_id", $producto->id)->sum("cantidad_despacho");
 
@@ -480,6 +556,7 @@ class PedidoService
                                     $sub2->where("estado", $estado);
                                 });
                             }
+                            $q->where("status", 1);
                         })
                             ->where("producto_id", $producto->id)->sum("cantidad_entregado");
 
@@ -495,6 +572,7 @@ class PedidoService
                                     $sub2->where("estado", $estado);
                                 });
                             }
+                            $q->where("status", 1);
                         })
                             ->where("producto_id", $producto->id)->sum("cantidad_devolucion");
 
@@ -510,6 +588,7 @@ class PedidoService
                                     $sub2->where("estado", $estado);
                                 });
                             }
+                            $q->where("status", 1);
                         })
                             ->where("producto_id", $producto->id)->sum("subtotal");
 

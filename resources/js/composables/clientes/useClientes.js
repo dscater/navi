@@ -9,6 +9,7 @@ export const useClientes = () => {
         razon_social: "",
         nit_ci: "",
         dir: "",
+        tipo_negocio_id: null,
         latitud: null,
         longitud: null,
         segmentacion_zona_id: null,

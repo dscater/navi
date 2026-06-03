@@ -20,6 +20,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SegmentacionZonaController;
+use App\Http\Controllers\TipoNegocioController;
 use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
@@ -98,6 +99,9 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // CIUDADS
     Route::get("ciudads/listado", [CiudadController::class, 'listado'])->name("ciudads.listado");
 
+    // TIPO NEGOCIOS
+    Route::get("tipo_negocios/listado", [TipoNegocioController::class, 'listado'])->name("tipo_negocios.listado");
+
     // SEGMENTACION ZONAS
     Route::get("segmentacion_zonas/paginado", [SegmentacionZonaController::class, 'paginado'])->name("segmentacion_zonas.paginado");
     Route::get("segmentacion_zonas/listado", [SegmentacionZonaController::class, 'listado'])->name("segmentacion_zonas.listado");
@@ -153,6 +157,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // CLIENTES
     Route::get("clientes/paginado", [ClienteController::class, 'paginado'])->name("clientes.paginado");
     Route::get("clientes/listado", [ClienteController::class, 'listado'])->name("clientes.listado");
+    Route::get("clientes/listado_pedido", [ClienteController::class, 'listado_pedido'])->name("clientes.listado_pedido");
     Route::get("clientes/listadoSegmentacion", [ClienteController::class, 'listadoSegmentacion'])->name("clientes.listadoSegmentacion");
     Route::resource("clientes", ClienteController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
@@ -166,6 +171,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("pedidos/pedidos_despacho", [PedidoController::class, 'pedidos_despacho'])->name("pedidos.pedidos_despacho");
     Route::get("pedidos/ver/{pedido}", [PedidoController::class, 'ver'])->name("pedidos.ver");
     Route::get("pedidos/pdf/{pedido}", [PedidoController::class, 'pdf'])->name("pedidos.pdf");
+    Route::get("pedidos/pdf_pendientes", [PedidoController::class, 'pdf_pendientes'])->name("pedidos.pdf_pendientes");
     Route::resource("pedidos", PedidoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
@@ -175,6 +181,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("distribucions/paginado", [DistribucionController::class, 'paginado'])->name("distribucions.paginado");
     Route::get("distribucions/create", [DistribucionController::class, 'create'])->name("distribucions.create");
     Route::put("distribucions/distribucion_pedido/{pedido}", [DistribucionController::class, 'store'])->name("distribucions.store");
+    Route::delete("distribucions/anular/{pedido}", [DistribucionController::class, 'anular'])->name("distribucions.anular");
 
     // DESPACHOS
     Route::get("despachos/paginado", [DespachoController::class, 'paginado'])->name("despachos.paginado");

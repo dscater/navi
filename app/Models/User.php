@@ -127,8 +127,8 @@ class User extends Authenticatable
         return $query;
     }
 
-    public function asignacion_zona()
+    public function asignacion_zonas()
     {
-        return $this->hasOne(AsignacionZona::class, 'user_id');
+        return $this->hasMany(AsignacionZona::class, 'user_id');
     }
 }

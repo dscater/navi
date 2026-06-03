@@ -15,6 +15,7 @@ class Cliente extends Model
         "dir",
         "latitud",
         "longitud",
+        "tipo_negocio_id",
         "segmentacion_zona_id",
         "user_id",
         "fecha_registro",
@@ -52,5 +53,22 @@ class Cliente extends Model
         }
 
         return $query;
+    }
+
+    public function peddidos()
+    {
+        return $this->hasMany(Pedido::class, 'cliente_id');
+    }
+
+    public function tipo_negocio()
+    {
+        return $this->belongsTo(TipoNegocio::class, 'tipo_negocio_id');
+    }
+
+    public function ultimoPedido()
+    {
+        return $this->hasOne(Pedido::class)
+            ->where('status', 1)
+            ->latest(); // ordena por created_at DESC
     }
 }

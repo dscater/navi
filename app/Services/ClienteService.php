@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ClienteService
@@ -23,12 +24,41 @@ class ClienteService
     public function listado(): Collection
     {
         $clientes = Cliente::select("clientes.*")
-            ->with(["segmentacion_zona"]);
+            ->with(["segmentacion_zona", "tipo_negocio"]);
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $clientes->where("segmentacion_zona_id", $segmentacion_zona?->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $clientes->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
         }
         $clientes = $clientes->where("status", 1)->get();
+        return $clientes;
+    }
+
+
+    public function listado_pedido($estado_pedido, $fecha): Collection
+    {
+        $clientes = Cliente::select("clientes.*")
+            ->with(["segmentacion_zona", "tipo_negocio"]);
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $clientes->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
+        }
+
+        if ($estado_pedido) {
+            // ULTIMO PEDIDO DE CADA CLIENTE
+            $clientes->whereHas("ultimoPedido", function ($query) use ($estado_pedido) {
+                $query->where("estado", $estado_pedido);
+            });
+        }
+        // if ($fecha) {
+        //     $clientes->whereHas("ultimoPedido", function ($query) use ($fecha) {
+        //         $query->whereDate("fecha", $fecha);
+        //     });
+        // }
+        $clientes = $clientes->where("status", 1)->get()
+            ->map(function ($cliente) {
+                $cliente->ultimo_pedido = $cliente->ultimoPedido;
+                return $cliente;
+            });
         return $clientes;
     }
     /**
@@ -44,12 +74,12 @@ class ClienteService
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $clientes = Cliente::select("clientes.*")
-            ->with(["segmentacion_zona"])
+            ->with(["segmentacion_zona", "tipo_negocio"])
             ->where("status", 1);
 
         if (Auth::user()->tipo != 'ADMINISTRADOR') {
-            $segmentacion_zona = $this->user_service->getSegmentacionZona(Auth::user()->id);
-            $clientes->where("segmentacion_zona_id", $segmentacion_zona?->id);
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $clientes->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
         }
 
         // Filtros exactos
@@ -107,6 +137,7 @@ class ClienteService
             "nombre" => $datos["nombre"],
             "fono" => $datos["fono"],
             "razon_social" => $datos["razon_social"],
+            "tipo_negocio_id" => $datos["tipo_negocio_id"],
             "nit_ci" => $datos["nit_ci"],
             "dir" => $datos["dir"],
             "latitud" => $datos["latitud"],
@@ -142,6 +173,7 @@ class ClienteService
             "nombre" => $datos["nombre"],
             "fono" => $datos["fono"],
             "razon_social" => $datos["razon_social"],
+            "tipo_negocio_id" => $datos["tipo_negocio_id"],
             "nit_ci" => $datos["nit_ci"],
             "dir" => $datos["dir"],
             "latitud" => $datos["latitud"],

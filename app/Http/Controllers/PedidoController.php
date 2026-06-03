@@ -66,9 +66,9 @@ class PedidoController extends Controller
 
     public function pedidos_distruibidor(Request $request): JsonResponse
     {
-        $segmentacion_zona = $this->user_service->getSegmentacionZona($request->distribuidor_id);
+        $segmentacion_zona_ids = $this->user_service->getSegmentacionZona($request->distribuidor_id);
 
-        $categoria_productos = $this->pedidoService->pedido_distribuidor(null, $segmentacion_zona, "PENDIENTE", true);
+        $categoria_productos = $this->pedidoService->pedido_distribuidor(null, $segmentacion_zona_ids, "PENDIENTE", true);
         return response()->JSON([
             "categoria_productos" => $categoria_productos,
         ]);
@@ -187,7 +187,7 @@ class PedidoController extends Controller
         // CANTIDAD DE ITEMS
         $cantidadItems = $pedido->pedido_detalles->count();
         $baseHeight = 260; // cabecera + totales
-        $itemHeight = 70; // espacio por item
+        $itemHeight = 75; // espacio por item
 
         $alto = $baseHeight + ($cantidadItems * $itemHeight);
 
@@ -206,26 +206,65 @@ class PedidoController extends Controller
         $literal .= " " . $array_monto[1] . "/100." . " BOLIVIANOS";
         // primero todo a minúsculas
         $literal = strtolower($literal);
-
-        $presentacions = PresentacionProducto::whereHas("pedido_detalles", function ($q) use ($pedido) {
-            $q->whereHas("pedido", function ($sub) use ($pedido) {
-                $sub->where("id", $pedido->id);
-            });
-            $q->where("status", 1);
-        })->distinct()->get()->map(function ($presentacion) use ($pedido) {
-            $presentacion->pedido_detalles = PedidoDetalle::where("pedido_id", $pedido->id)
-                ->where("presentacion_producto_id", $presentacion->id)
-                ->where("status", 1)
-                ->get();
-
-            return $presentacion;
-        });
-
-        // luego primera letra mayúscula
         $literal = ucfirst($literal);
+        $pedido->literal = $literal;
+        $pedidos = [$pedido];
+
         $pdf = PDF::loadView(
             'reportes.pedido_termico',
-            compact('pedido', 'presentacions', 'configuracion', 'literal')
+            compact('pedidos', 'configuracion')
+        )->setPaper($customPaper);
+
+        return $pdf->stream('pedido_termico.pdf');
+    }
+
+    public function pdf_pendientes()
+    {
+        $configuracion = Configuracion::get()->first();
+        $convertir = new NumeroALetras();
+
+        $pedidos = Pedido::with([
+            "pedido_detalles.producto",
+            "pedido_detalles.presentacion_producto",
+            "cliente",
+            "user_distribucion",
+        ])
+            ->where("estado", "PENDIENTE");
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
+        }
+
+        $cantidadItems = 0;
+        $pedidos = $pedidos->where("status", 1)
+            ->get()->map(function ($pedido) use ($convertir, &$cantidadItems) {
+                $array_monto = explode('.', number_format($pedido->total, 2, '.', ''));
+                $literal = $convertir->convertir($array_monto[0]);
+                $literal .= " " . $array_monto[1] . "/100." . " BOLIVIANOS";
+                // primero todo a minúsculas
+                $literal = strtolower($literal);
+                $literal = ucfirst($literal);
+                $pedido->literal = $literal;
+
+                // CANTIDAD DE ITEMS
+                $cantidadItems += $pedido->pedido_detalles->count();
+                return $pedido;
+            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | TAMAÑO PAPEL TÉRMICO 80mm
+        |--------------------------------------------------------------------------
+        */
+        $baseHeight = 260; // cabecera + totales
+        $itemHeight = 30; // espacio por item
+        $alto = $baseHeight + ($cantidadItems * $itemHeight);
+        $customPaper = [0, 0, 226.77, $alto];
+
+        $pdf = PDF::loadView(
+            'reportes.pedido_termico',
+            compact('pedidos', 'configuracion')
         )->setPaper($customPaper);
 
         return $pdf->stream('pedido_termico.pdf');

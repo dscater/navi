@@ -35,23 +35,13 @@ const headers = [
         sortable: true,
     },
     {
-        label: "SUBTOTAL Bs.",
-        key: "subtotal",
+        label: "TIPO DE NEGOCIO",
+        key: "cliente.tipo_negocio.nombre",
         sortable: true,
     },
     {
-        label: "DESCUENTO Bs.",
-        key: "descuento",
-        sortable: true,
-    },
-    {
-        label: "TOTAL Bs.",
+        label: "MONTO TOTAL Bs.",
         key: "total",
-        sortable: true,
-    },
-    {
-        label: "ESTADO",
-        key: "estado",
         sortable: true,
     },
     {
@@ -62,7 +52,6 @@ const headers = [
     {
         label: "ACCIÓN",
         key: "accion",
-        fixed: "right",
         width: "4%",
     },
 ];
@@ -177,165 +166,176 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12">
-                        <MiTable
-                            :tableClass="'bg-white mitabla'"
-                            ref="miTable"
-                            :cols="headers"
-                            :api="true"
-                            :url="route('pedidos.paginado')"
-                            :numPages="5"
-                            :multiSearch="multiSearch"
-                            :syncOrderBy="'id'"
-                            :syncOrderAsc="'DESC'"
-                            table-responsive
-                            :header-class="'bg__primary'"
-                            fixed-header
-                        >
-                            <template #estado="{ item }">
-                                <div
-                                    :class="{
-                                        'text-success fw-bold':
-                                            item.estado == 'ENTREGADO',
-                                    }"
-                                >
-                                    {{ item.estado }}
-                                </div>
-                            </template>
-                            <template #fecha="{ item }">
-                                <div>{{ item.fecha_t }} {{ item.hora }}</div>
-                            </template>
+                    <div class="col-12 overflow-auto">
+                        <div class="contenedor">
+                            <MiTable
+                                :tableClass="'bg-white mitabla'"
+                                ref="miTable"
+                                :cols="headers"
+                                :api="true"
+                                :url="route('pedidos.paginado')"
+                                :numPages="5"
+                                :multiSearch="multiSearch"
+                                :syncOrderBy="'id'"
+                                :syncOrderAsc="'DESC'"
+                                :header-class="'bg__primary'"
+                                fixed-header
+                            >
+                                <template #estado="{ item }">
+                                    <div
+                                        :class="{
+                                            'text-success fw-bold':
+                                                item.estado == 'ENTREGADO',
+                                        }"
+                                    >
+                                        {{ item.estado }}
+                                    </div>
+                                </template>
+                                <template #fecha="{ item }">
+                                    <div>
+                                        {{ item.fecha_t }} {{ item.hora }}
+                                    </div>
+                                </template>
 
-                            <template #acceso="{ item }">
-                                <div
-                                    class="badge text-sm"
-                                    :class="[
-                                        item.acceso == 1
-                                            ? 'bg-success'
-                                            : 'bg-danger',
-                                    ]"
-                                >
-                                    {{
-                                        item.acceso == 1
-                                            ? "HABILITADO"
-                                            : "DESHABILITADO"
-                                    }}
-                                </div>
-                            </template>
-                            <template #accion="{ item }">
-                                <div>
-                                    <template
-                                        v-if="
-                                            item.estado == 'ENTREGADO' &&
-                                            (props_page.auth?.user.permisos ==
-                                                '*' ||
-                                                props_page.auth?.user.permisos.includes(
-                                                    'pedidos.pdf',
-                                                ))
-                                        "
+                                <template #acceso="{ item }">
+                                    <div
+                                        class="badge text-sm"
+                                        :class="[
+                                            item.acceso == 1
+                                                ? 'bg-success'
+                                                : 'bg-danger',
+                                        ]"
                                     >
-                                        <el-tooltip
-                                            class="box-item"
-                                            effect="dark"
-                                            content="Imprimir"
-                                            placement="left-start"
-                                        >
-                                            <a
-                                                class="btn btn-light"
-                                                :href="
-                                                    route(
+                                        {{
+                                            item.acceso == 1
+                                                ? "HABILITADO"
+                                                : "DESHABILITADO"
+                                        }}
+                                    </div>
+                                </template>
+                                <template #accion="{ item }">
+                                    <div>
+                                        <template
+                                            v-if="
+                                                item.estado == 'ENTREGADO' &&
+                                                (props_page.auth?.user
+                                                    .permisos == '*' ||
+                                                    props_page.auth?.user.permisos.includes(
                                                         'pedidos.pdf',
-                                                        item.id,
-                                                    )
-                                                "
-                                                target="_blank"
-                                            >
-                                                <i class="fa fa-print"></i></a
-                                        ></el-tooltip>
-                                    </template>
-                                    <template
-                                        v-if="
-                                            props_page.auth?.user.permisos ==
-                                                '*' ||
-                                            props_page.auth?.user.permisos.includes(
-                                                'pedidos.ver',
-                                            )
-                                        "
-                                    >
-                                        <el-tooltip
-                                            class="box-item"
-                                            effect="dark"
-                                            content="Ver"
-                                            placement="left-start"
+                                                    ))
+                                            "
                                         >
-                                            <Link
-                                                class="btn btn-primary"
-                                                :href="
-                                                    route(
-                                                        'pedidos.ver',
-                                                        item.id,
-                                                    )
-                                                "
+                                            <el-tooltip
+                                                class="box-item"
+                                                effect="dark"
+                                                content="Imprimir"
+                                                placement="left-start"
                                             >
-                                                <i class="fa fa-eye"></i></Link
-                                        ></el-tooltip>
-                                    </template>
-                                    <template
-                                        v-if="
-                                            !item.despacho_id &&
-                                            (props_page.auth?.user.permisos ==
-                                                '*' ||
+                                                <a
+                                                    class="btn btn-light"
+                                                    :href="
+                                                        route(
+                                                            'pedidos.pdf',
+                                                            item.id,
+                                                        )
+                                                    "
+                                                    target="_blank"
+                                                >
+                                                    <i
+                                                        class="fa fa-print"
+                                                    ></i></a
+                                            ></el-tooltip>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                props_page.auth?.user
+                                                    .permisos == '*' ||
                                                 props_page.auth?.user.permisos.includes(
-                                                    'pedidos.edit',
-                                                ))
-                                        "
-                                    >
-                                        <el-tooltip
-                                            class="box-item"
-                                            effect="dark"
-                                            content="Editar"
-                                            placement="left-start"
+                                                    'pedidos.ver',
+                                                )
+                                            "
                                         >
-                                            <Link
-                                                class="btn btn-warning"
-                                                :href="
-                                                    route(
+                                            <el-tooltip
+                                                class="box-item"
+                                                effect="dark"
+                                                content="Ver"
+                                                placement="left-start"
+                                            >
+                                                <Link
+                                                    class="btn btn-primary"
+                                                    :href="
+                                                        route(
+                                                            'pedidos.ver',
+                                                            item.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <i
+                                                        class="fa fa-eye"
+                                                    ></i></Link
+                                            ></el-tooltip>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                !item.despacho_id &&
+                                                (props_page.auth?.user
+                                                    .permisos == '*' ||
+                                                    props_page.auth?.user.permisos.includes(
                                                         'pedidos.edit',
-                                                        item.id,
-                                                    )
-                                                "
-                                            >
-                                                <i class="fa fa-pen"></i></Link
-                                        ></el-tooltip>
-                                    </template>
-                                    <template
-                                        v-if="
-                                            !item.despacho_id &&
-                                            (props_page.auth?.user.permisos ==
-                                                '*' ||
-                                                props_page.auth?.user.permisos.includes(
-                                                    'pedidos.destroy',
-                                                ))
-                                        "
-                                    >
-                                        <el-tooltip
-                                            class="box-item"
-                                            effect="dark"
-                                            content="Eliminar"
-                                            placement="left-start"
+                                                    ))
+                                            "
                                         >
-                                            <button
-                                                class="btn btn-danger"
-                                                @click="eliminarPedido(item)"
+                                            <el-tooltip
+                                                class="box-item"
+                                                effect="dark"
+                                                content="Editar"
+                                                placement="left-start"
                                             >
-                                                <i
-                                                    class="fa fa-trash-alt"
-                                                ></i></button
-                                        ></el-tooltip>
-                                    </template>
-                                </div>
-                            </template>
-                        </MiTable>
+                                                <Link
+                                                    class="btn btn-warning"
+                                                    :href="
+                                                        route(
+                                                            'pedidos.edit',
+                                                            item.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <i
+                                                        class="fa fa-pen"
+                                                    ></i></Link
+                                            ></el-tooltip>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                !item.despacho_id &&
+                                                (props_page.auth?.user
+                                                    .permisos == '*' ||
+                                                    props_page.auth?.user.permisos.includes(
+                                                        'pedidos.destroy',
+                                                    ))
+                                            "
+                                        >
+                                            <el-tooltip
+                                                class="box-item"
+                                                effect="dark"
+                                                content="Eliminar"
+                                                placement="left-start"
+                                            >
+                                                <button
+                                                    class="btn btn-danger"
+                                                    @click="
+                                                        eliminarPedido(item)
+                                                    "
+                                                >
+                                                    <i
+                                                        class="fa fa-trash-alt"
+                                                    ></i></button
+                                            ></el-tooltip>
+                                        </template>
+                                    </div>
+                                </template>
+                            </MiTable>
+                        </div>
                     </div>
                 </div>
             </div>

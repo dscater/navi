@@ -25,7 +25,6 @@ class PedidoUpdateRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-
             "cliente_id" => "required",
             "subtotal" => "required",
             "descuento" => "required",

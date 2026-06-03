@@ -32,23 +32,28 @@ const headers = [
         sortable: true,
     },
     {
-        label: "TELÉFONO",
+        label: "CONTACTO",
         key: "fono",
         sortable: true,
     },
+    // {
+    //     label: "RAZÓN SOCIAL",
+    //     key: "razon_social",
+    //     sortable: true,
+    // },
+    // {
+    //     label: "NIT/C.I.",
+    //     key: "nit_ci",
+    //     sortable: true,
+    // },
     {
-        label: "RAZÓN SOCIAL",
-        key: "razon_social",
-        sortable: true,
-    },
-    {
-        label: "NIT/C.I.",
-        key: "nit_ci",
-        sortable: true,
-    },
-    {
-        label: "DIRECCIÓN",
+        label: "REFERENCIA",
         key: "dir",
+        sortable: true,
+    },
+    {
+        label: "TIPO DE NEGOCIO",
+        key: "tipo_negocio.nombre",
         sortable: true,
     },
     {

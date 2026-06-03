@@ -21,10 +21,10 @@ class UserController extends Controller
 
 
 
-    protected $segmentacion_zona = null;
+    protected $segmentacion_zona_ids = null;
     public function __construct(private  UserService $userService)
     {
-        $this->segmentacion_zona = $this->userService->getSegmentacionZona(Auth::user()->id);
+        $this->segmentacion_zona_ids = $this->userService->getSegmentacionZona(Auth::user()->id);
     }
 
     public function permisosUsuario(Request $request)
@@ -61,7 +61,7 @@ class UserController extends Controller
             if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
                 $clientes = Cliente::where('status', 1);
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
-                    $clientes->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
+                    $clientes->where('segmentacion_zona_id', $this->segmentacion_zona_ids);
                 }
                 $clientes = $clientes->count();
                 $array_infos[] = [
@@ -76,7 +76,7 @@ class UserController extends Controller
             if ($permisos == '*' || (is_array($permisos) && in_array('pedidos.index', $permisos))) {
                 $pedidos = Pedido::where('status', 1);
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
-                    $pedidos->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
+                    $pedidos->where('segmentacion_zona_id', $this->segmentacion_zona_ids);
                 }
                 $array_infos[] = [
                     'label' => 'PEDIDOS',
@@ -91,7 +91,7 @@ class UserController extends Controller
                 $distribucions = Pedido::where('status', 1)
                     ->where("estado", "ENTREGADO");
                 if (Auth::user()->tipo != 'ADMINISTRADOR') {
-                    $distribucions->where('segmentacion_zona_id', $this->segmentacion_zona?->id);
+                    $distribucions->where('segmentacion_zona_id', $this->segmentacion_zona_ids);
                 }
                 $array_infos[] = [
                     'label' => 'DISTRIBUCIÓN',

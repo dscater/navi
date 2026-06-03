@@ -80,4 +80,21 @@ class DistribucionController extends Controller
             ]);
         }
     }
+    public function anular(Pedido $pedido): JsonResponse|Response
+    {
+        DB::beginTransaction();
+        try {
+            $this->pedidoService->anularPedido($pedido);
+            DB::commit();
+            return response()->JSON([
+                'sw' => true,
+                'message' => 'El registro se anulo correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
 }

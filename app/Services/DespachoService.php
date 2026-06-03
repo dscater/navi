@@ -45,47 +45,82 @@ class DespachoService
      * @param array $columnsFilter
      * @return LengthAwarePaginator
      */
-    public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
+    // public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
+    // {
+    //     $despachos = Despacho::select("despachos.*")
+    //         ->with(["distribuidor:id,nombre", "user:id,nombre", "pedidos.user", "pedidos.distribuidor", "pedidos.cliente"]);
+    //     if (Auth::user()->tipo == 'DISTRIBUIDOR') {
+    //         $despachos->where("distribuidor_id", Auth::user()->id);
+    //     }
+
+    //     // Filtros exactos
+    //     foreach ($columnsFilter as $key => $value) {
+    //         if (!is_null($value)) {
+    //             $despachos->where("despachos.$key", $value);
+    //         }
+    //     }
+
+    //     // Filtros por rango
+    //     foreach ($columnsBetweenFilter as $key => $value) {
+    //         if (isset($value[0], $value[1])) {
+    //             $despachos->whereBetween("despachos.$key", $value);
+    //         }
+    //     }
+
+    //     // Búsqueda en múltiples columnas con LIKE
+    //     if (!empty($search) && !empty($columnsSerachLike)) {
+    //         $despachos->where(function ($query) use ($search, $columnsSerachLike) {
+    //             foreach ($columnsSerachLike as $col) {
+    //                 $query->orWhere("$col", "LIKE", "%$search%");
+    //             }
+    //         });
+    //     }
+
+    //     // Ordenamiento
+    //     foreach ($orderBy as $value) {
+    //         if (isset($value[0], $value[1])) {
+    //             $despachos->orderBy($value[0], $value[1]);
+    //         }
+    //     }
+
+
+    //     $despachos = $despachos->paginate($length, ['*'], 'page', $page);
+    //     return $despachos;
+    // }
+
+    public function listadoPaginado(int $length, int $page, string $search, $producto_id, $cliente_id, array $orderBy = []): LengthAwarePaginator
     {
-        $despachos = Despacho::select("despachos.*")
-            ->with(["distribuidor:id,nombre", "user:id,nombre"]);
-        if (Auth::user()->tipo == 'DISTRIBUIDOR') {
-            $despachos->where("distribuidor_id", Auth::user()->id);
+        $pedidos = Pedido::select("pedidos.*")
+            ->with(["cliente.tipo_negocio", "segmentacion_zona:id,zona", "user"])
+            ->whereNotNull("despacho_id")
+            ->where("status", 1);
+
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR') {
+            $segmentacion_zona_ids = $this->user_service->getSegmentacionZona(Auth::user()->id);
+            $pedidos->whereIn("segmentacion_zona_id", $segmentacion_zona_ids);
         }
 
-        // Filtros exactos
-        foreach ($columnsFilter as $key => $value) {
-            if (!is_null($value)) {
-                $despachos->where("despachos.$key", $value);
-            }
-        }
-
-        // Filtros por rango
-        foreach ($columnsBetweenFilter as $key => $value) {
-            if (isset($value[0], $value[1])) {
-                $despachos->whereBetween("despachos.$key", $value);
-            }
-        }
-
-        // Búsqueda en múltiples columnas con LIKE
-        if (!empty($search) && !empty($columnsSerachLike)) {
-            $despachos->where(function ($query) use ($search, $columnsSerachLike) {
-                foreach ($columnsSerachLike as $col) {
-                    $query->orWhere("$col", "LIKE", "%$search%");
-                }
+        if (!empty($producto_id)) {
+            $pedidos->whereHas("pedido_detalles", function ($query) use ($producto_id) {
+                $query->where("producto_id", $producto_id);
             });
+        }
+
+        if (!empty($cliente_id)) {
+            $pedidos->where("cliente_id", $cliente_id);
         }
 
         // Ordenamiento
         foreach ($orderBy as $value) {
             if (isset($value[0], $value[1])) {
-                $despachos->orderBy($value[0], $value[1]);
+                $pedidos->orderBy($value[0], $value[1]);
             }
         }
 
 
-        $despachos = $despachos->paginate($length, ['*'], 'page', $page);
-        return $despachos;
+        $pedidos = $pedidos->paginate($length, ['*'], 'page', $page);
+        return $pedidos;
     }
 
     /**
@@ -116,6 +151,7 @@ class DespachoService
                 foreach ($producto["pedido_detalles"] as $detalle) {
                     $pedido = Pedido::findOrFail($detalle["pedido"]["id"]);
                     $pedido->despacho_id = $despacho->id;
+                    // $pedido->distribuidor_id = $despacho->distribuidor_id;
                     $pedido->save();
 
                     // recalcular y registrar despacho

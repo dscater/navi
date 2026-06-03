@@ -282,7 +282,7 @@ class UserService
     {
         $segmentacion_zona = SegmentacionZona::whereHas("asignacion_zonas", function ($q) use ($user_id) {
             $q->where("user_id", $user_id);
-        })->get()->first();
+        })->get()->pluck("id")->toArray();
 
         return $segmentacion_zona;
     }

@@ -187,7 +187,7 @@ onUnmounted(() => {});
                             permisos == '*' ||
                             permisos.includes('distribucions.index')
                         "
-                        :label="'Distribución'"
+                        :label="'Pedidos por Entregar'"
                         :ruta="'distribucions.index'"
                         :icon="'fa fa-truck'"
                     ></ItemMenu>
@@ -203,20 +203,20 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('pedidos.index')
-                        "
-                        :label="'Pedidos'"
-                        :ruta="'pedidos.index'"
-                        :icon="'fa fa-clipboard-check'"
-                    ></ItemMenu>
-                    <ItemMenu
-                        v-if="
-                            permisos == '*' ||
                             permisos.includes('clientes.index')
                         "
                         :label="'Clientes'"
                         :ruta="'clientes.index'"
                         :icon="'fa fa-user-friends'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('pedidos.index')
+                        "
+                        :label="'Pedidos'"
+                        :ruta="'pedidos.index'"
+                        :icon="'fa fa-clipboard-check'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="

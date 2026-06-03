@@ -46,7 +46,7 @@ class PedidoDetalleService
             throw new Exception("Stock insuficiente del producto $producto->nombre actual $verifica_stock[1] unidades");
         }
 
-        $this->movimiento_inventario_service->registrarMovimiento("Despacho", "EGRESO", $producto, $cantidad_total, $presentacionProducto->precio, "Despacho de producto", "PedidoDetalle", $pedido_detalle->id);
+        $this->movimiento_inventario_service->registrarMovimiento("Despacho", "EGRESO", $producto, $cantidad_despacho, $presentacionProducto->precio, "Despacho de producto", "PedidoDetalle", $pedido_detalle->id);
 
         $pedido_detalle->update($datos_detalle);
     }

@@ -16,21 +16,39 @@ onBeforeMount(() => {
 const miTable = ref(null);
 const headers = [
     {
-        label: "Código",
+        label: "Cód. Despacho",
+        key: "despacho_id",
+        sortable: true,
+        width: "3%",
+    },
+    {
+        label: "Cód. Pedido",
         key: "id",
         sortable: true,
         width: "3%",
     },
     {
-        label: "DISTRIBUIDOR",
-        key: "distribuidor.nombre",
+        label: "CLIENTE",
+        key: "cliente.nombre",
         sortable: true,
     },
     {
-        label: "OBSERVACIÓN",
-        key: "observacion",
+        label: "ZONA",
+        key: "segmentacion_zona.zona",
         sortable: true,
     },
+    {
+        label: "VENDEDOR",
+        key: "user.full_name",
+        sortable: true,
+    },
+
+    {
+        label: "TOTAL Bs.",
+        key: "total",
+        sortable: true,
+    },
+
     {
         label: "FECHA",
         key: "fecha",
@@ -46,6 +64,8 @@ const headers = [
 
 const multiSearch = ref({
     search: "",
+    producto_id: "",
+    cliente_id: "",
     filtro: [],
 });
 
@@ -81,6 +101,24 @@ const eliminarDespacho = (item) => {
         }
     });
 };
+const listClientes = ref([]);
+const listProductos = ref([]);
+
+const cargarClientes = () => {
+    axios.get(route("clientes.listado")).then((respuesta) => {
+        listClientes.value = respuesta.data.clientes;
+    });
+};
+const cargarProductos = () => {
+    axios.get(route("productos.listado")).then((respuesta) => {
+        listProductos.value = respuesta.data.productos;
+    });
+};
+
+onBeforeMount(() => {
+    cargarClientes();
+    cargarProductos();
+});
 
 onMounted(async () => {
     appStore.stopLoading();
@@ -132,23 +170,39 @@ onMounted(async () => {
                     </div>
                     <div class="col-md-8 my-1">
                         <div class="row justify-content-end">
-                            <div class="col-md-5">
-                                <div
-                                    class="input-group"
-                                    style="align-items: end"
+                            <div class="col-md-6">
+                                <el-select
+                                    v-model="multiSearch.producto_id"
+                                    placeholder="Producto"
+                                    clearable
+                                    filterable
+                                    no-data-text="Sin datos"
+                                    no-match-text="Sin resultados"
                                 >
-                                    <input
-                                        v-model="multiSearch.search"
-                                        placeholder="Buscar"
-                                        class="form-control border-1 border-right-0"
-                                    />
-                                    <button
-                                        class="btn btn-default bg-white border"
-                                        @click="updateDatos"
-                                    >
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </div>
+                                    <el-option
+                                        v-for="item in listProductos"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-md-6">
+                                <el-select
+                                    v-model="multiSearch.cliente_id"
+                                    placeholder="Cliente"
+                                    clearable
+                                    filterable
+                                    no-data-text="Sin datos"
+                                    no-match-text="Sin resultados"
+                                >
+                                    <el-option
+                                        v-for="item in listClientes"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
                             </div>
                         </div>
                     </div>
@@ -207,7 +261,10 @@ onMounted(async () => {
                                         <Link
                                             class="btn btn-primary"
                                             :href="
-                                                route('despachos.ver', item.id)
+                                                route(
+                                                    'despachos.ver',
+                                                    item.despacho_id,
+                                                )
                                             "
                                         >
                                             <i class="fa fa-eye"></i></Link
@@ -230,7 +287,10 @@ onMounted(async () => {
                                         <a
                                             class="btn btn-light"
                                             :href="
-                                                route('despachos.pdf', item.id)
+                                                route(
+                                                    'despachos.pdf',
+                                                    item.despacho_id,
+                                                )
                                             "
                                             target="_blank"
                                         >

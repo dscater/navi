@@ -124,8 +124,16 @@ const cargarZonaAsignadas = () => {
         });
 };
 
+const listTIpoNegocios = ref([]);
+const cargoTipoNegocios = () => {
+    axios.get(route("tipo_negocios.listado")).then((response) => {
+        listTIpoNegocios.value = response.data.tipo_negocios;
+    });
+};
+
 const cargarListas = () => {
     cargarZonaAsignadas();
+    cargoTipoNegocios();
 };
 
 onMounted(() => {
@@ -177,7 +185,7 @@ onMounted(() => {
                         </ul>
                     </div>
                     <div class="col-md-4 mt-2">
-                        <label class="required">Teléfono/Celular</label>
+                        <label class="required">Contacto</label>
                         <input
                             type="text"
                             class="form-control"
@@ -195,7 +203,7 @@ onMounted(() => {
                             </li>
                         </ul>
                     </div>
-                    <div class="col-md-4 mt-2">
+                    <!-- <div class="col-md-4 mt-2">
                         <label class="">Razón Social</label>
                         <input
                             type="text"
@@ -232,9 +240,9 @@ onMounted(() => {
                                 {{ form.errors?.nit_ci }}
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
                     <div class="col-md-4 mt-2">
-                        <label class="required">Dirección</label>
+                        <label class="required">Referencia</label>
                         <input
                             type="text"
                             class="form-control"
@@ -249,6 +257,32 @@ onMounted(() => {
                         >
                             <li class="parsley-required">
                                 {{ form.errors?.dir }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="required">Tipo de Negocio</label>
+                        <el-select
+                            v-model="form.tipo_negocio_id"
+                            filterable
+                            placeholder="Seleccione un tipo de negocio"
+                            no-data-text="Sin datos"
+                            no-match-text="Sin resultados"
+                        >
+                            <el-option
+                                v-for="tipo in listTIpoNegocios"
+                                :key="tipo.id"
+                                :value="tipo.id"
+                                :label="tipo.nombre"
+                            >
+                            </el-option>
+                        </el-select>
+                        <ul
+                            v-if="form.errors?.tipo_negocio_id"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.tipo_negocio_id }}
                             </li>
                         </ul>
                     </div>
