@@ -74,8 +74,9 @@ const getFechaActual = () => {
 };
 
 const filtro_mapa = ref({
+    fecha_ini: getFechaActual(),
+    fecha_fin: getFechaActual(),
     estado: "PENDIENTE",
-    fecha: getFechaActual(),
 });
 const totalPedidos = ref(0);
 const listClientes = ref([]);
@@ -157,23 +158,35 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" v-if="user.tipo != 'VENDEDOR'">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12">
                                 <div class="row">
-                                    <!-- <div class="col-md-4">
+                                    <div class="col-md-4">
+                                        <span class="text-xs">Desde</span>
                                         <input
                                             type="date"
                                             class="form-control"
-                                            v-model="filtro_mapa.fecha"
+                                            v-model="filtro_mapa.fecha_ini"
                                             @keyup="cargarClientes"
                                             @change="cargarClientes"
                                         />
-                                    </div> -->
+                                    </div>
                                     <div class="col-md-4">
+                                        <span class="text-xs">Hasta</span>
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            v-model="filtro_mapa.fecha_fin"
+                                            @keyup="cargarClientes"
+                                            @change="cargarClientes"
+                                        />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-xs">Estado</span>
                                         <el-select
                                             v-model="filtro_mapa.estado"
                                             placeholder="Seleccione un estado"
@@ -218,6 +231,65 @@ onMounted(() => {
                                                     class="text-sm mb-0 text-white"
                                                 >
                                                     Pendientes:
+                                                    <span
+                                                        class="fs-6 fw-bold"
+                                                        >{{
+                                                            listClientes.length
+                                                        }}</span
+                                                    >
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <MapZonasClientes
+                                    v-if="cargaClientes && cargaSegmentacion"
+                                    :clientes="listClientes"
+                                    :zonas="listSegmentacions"
+                                ></MapZonasClientes>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" v-else>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div
+                                            class="small-box bg-principal my-2"
+                                        >
+                                            <div class="inner">
+                                                <p
+                                                    class="text-sm mb-0 text-white"
+                                                >
+                                                    Total Zonas Asignadas.
+                                                    <span
+                                                        class="fs-6 fw-bold"
+                                                        >{{
+                                                            listSegmentacions.length
+                                                        }}</span
+                                                    >
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div
+                                            class="small-box bg-principal my-2"
+                                        >
+                                            <div class="inner">
+                                                <p
+                                                    class="text-sm mb-0 text-white"
+                                                >
+                                                    Total Clientes:
                                                     <span
                                                         class="fs-6 fw-bold"
                                                         >{{

@@ -34,7 +34,7 @@ class ClienteService
     }
 
 
-    public function listado_pedido($estado_pedido, $fecha): Collection
+    public function listado_pedido($estado_pedido, $fecha_ini, $fecha_fin): Collection
     {
         $clientes = Cliente::select("clientes.*")
             ->with(["segmentacion_zona", "tipo_negocio"]);
@@ -49,11 +49,18 @@ class ClienteService
                 $query->where("estado", $estado_pedido);
             });
         }
-        // if ($fecha) {
-        //     $clientes->whereHas("ultimoPedido", function ($query) use ($fecha) {
-        //         $query->whereDate("fecha", $fecha);
-        //     });
-        // }
+        if ($fecha_ini && $fecha_fin) {
+            $clientes->whereHas("ultimoPedido", function ($query) use ($fecha_ini, $fecha_fin) {
+                $query->whereBetween("fecha", [$fecha_ini, $fecha_fin]);
+            });
+        }
+
+        if (Auth::user()->tipo == 'DISTRIBUIDOR') {
+            $clientes->whereHas("ultimoPedido", function ($query) {
+                $query->where("user_distribucion_id", Auth::user()->id);
+            });
+        }
+
         $clientes = $clientes->where("status", 1)->get()
             ->map(function ($cliente) {
                 $cliente->ultimo_pedido = $cliente->ultimoPedido;

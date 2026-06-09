@@ -50,10 +50,18 @@ class ClienteController extends Controller
     public function listado_pedido(Request $request): JsonResponse
     {
         $estado_pedido = $request->input("estado", "");
-        $fecha = $request->input("fecha", "");
+        $fecha_ini = $request->input("fecha_ini", "");
+        $fecha_fin = $request->input("fecha_fin", "");
+
+        if (Auth::user()->tipo == 'VENDEDOR') {
+            return response()->JSON([
+                "clientes" => $this->clienteService->listado(),
+                "total_pedidos" => $this->pedidoService->totalPedidos($estado_pedido, $fecha_ini, $fecha_fin)
+            ]);
+        }
         return response()->JSON([
-            "clientes" => $this->clienteService->listado_pedido($estado_pedido, $fecha),
-            "total_pedidos" => $this->pedidoService->totalPedidos($estado_pedido)
+            "clientes" => $this->clienteService->listado_pedido($estado_pedido, $fecha_ini, $fecha_fin),
+            "total_pedidos" => $this->pedidoService->totalPedidos($estado_pedido, $fecha_ini, $fecha_fin)
         ]);
     }
 
@@ -80,6 +88,12 @@ class ClienteController extends Controller
                 $clientes->whereHas("ultimoPedido", function ($query) {
                     $query->whereNotNull("despacho_id");
                 });
+
+                if (Auth::user()->tipo == 'DISTRIBUIDOR') {
+                    $clientes->whereHas("ultimoPedido", function ($query) {
+                        $query->where("user_distribucion_id", Auth::user()->id);
+                    });
+                }
             }
         }
         $clientes = $clientes->get();
@@ -104,7 +118,7 @@ class ClienteController extends Controller
         $orderAsc = $request->orderAsc;
 
         $columnsSerachLike = [
-            "ci",
+            "nombre",
         ];
         $columnsFilter = [];
         $columnsBetweenFilter = [];

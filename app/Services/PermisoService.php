@@ -114,6 +114,7 @@ class PermisoService
             "pedidos.index",
             "pedidos.listado",
             "pedidos.listadoByCliente",
+            "pedidos.listadoByDistribuidor",
             "pedidos.create",
             "pedidos.store",
             "pedidos.edit",
@@ -131,6 +132,11 @@ class PermisoService
             "distribucions.paginado",
             "distribucions.create",
             "distribucions.anular",
+
+            "salidas.index",
+            "salidas.paginado",
+            "salidas.create",
+            "salidas.store",
 
             "despachos.paginado",
             "despachos.index",
@@ -209,7 +215,7 @@ class PermisoService
             "clientes.edit",
             "clientes.show",
             "clientes.update",
-            "clientes.destroy",
+            // "clientes.destroy",
 
             "pedidos.paginado",
             "pedidos.index",
@@ -266,8 +272,8 @@ class PermisoService
         "VENDEDOR" => [
             "usuarios.segmentacion_zonas_asignadas",
 
-            "productos.paginado",
-            "productos.index",
+            // "productos.paginado",
+            // "productos.index",
             "productos.listado",
             "productos.listadoStockBajo",
             "productos.show",
@@ -296,6 +302,7 @@ class PermisoService
             "pedidos.index",
             "pedidos.listado",
             "pedidos.listadoByCliente",
+            "pedidos.listadoByDistribuidor",
             "pedidos.create",
             "pedidos.store",
             "pedidos.edit",

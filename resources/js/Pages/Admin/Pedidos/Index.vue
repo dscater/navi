@@ -6,6 +6,8 @@ import { usePedidos } from "@/composables/pedidos/usePedidos";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
+import axios from "axios";
+import MiPaginacion from "@/Components/MiPaginacion.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 const { axiosDelete } = useAxios();
@@ -17,56 +19,49 @@ onBeforeMount(() => {
 const { setPedido, limpiarPedido, form } = usePedidos();
 
 const miTable = ref(null);
-const headers = [
-    {
-        label: "Código",
-        key: "id",
-        sortable: true,
-        width: "3%",
-    },
-    {
-        label: "CLIENTE",
-        key: "cliente.nombre",
-        sortable: true,
-    },
-    {
-        label: "ZONA",
-        key: "segmentacion_zona.zona",
-        sortable: true,
-    },
-    {
-        label: "TIPO DE NEGOCIO",
-        key: "cliente.tipo_negocio.nombre",
-        sortable: true,
-    },
-    {
-        label: "MONTO TOTAL Bs.",
-        key: "total",
-        sortable: true,
-    },
-    {
-        label: "FECHA",
-        key: "fecha",
-        sortable: true,
-    },
-    {
-        label: "ACCIÓN",
-        key: "accion",
-        width: "4%",
-    },
-];
 
-const multiSearch = ref({
-    search: "",
-    filtro: [],
-});
-
+const getFechaActual = () => {
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${anio}-${mes}-${dia}`;
+};
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
         limpiarPedido();
-        muestra_formulario.value = false;
     }
+};
+
+const listPedidos = ref([]);
+const total = ref(0);
+const page = ref(1);
+
+const multiSearch = ref({
+    fecha_ini: getFechaActual(),
+    fecha_fin: getFechaActual(),
+    filtro: [],
+    page: page.value,
+    perPage: 12,
+});
+
+const cargarPedidos = () => {
+    axios
+        .get(route("pedidos.paginado"), {
+            params: multiSearch.value,
+        })
+        .then((response) => {
+            console.log(response.data);
+            listPedidos.value = response.data.data;
+            total.value = response.data.total;
+        });
+};
+
+// detectar cambio de pagina
+const cambioDePagina = async (value) => {
+    multiSearch.value.page = value;
+    cargarPedidos();
 };
 
 const eliminarPedido = (item) => {
@@ -95,6 +90,7 @@ const eliminarPedido = (item) => {
 };
 
 onMounted(async () => {
+    cargarPedidos();
     appStore.stopLoading();
 });
 </script>
@@ -143,32 +139,255 @@ onMounted(async () => {
                         </Link>
                     </div>
                     <div class="col-md-8 my-1">
-                        <div class="row justify-content-end">
-                            <div class="col-md-5">
-                                <div
-                                    class="input-group"
-                                    style="align-items: end"
-                                >
-                                    <input
-                                        v-model="multiSearch.search"
-                                        placeholder="Buscar"
-                                        class="form-control border-1 border-right-0"
-                                    />
-                                    <button
-                                        class="btn btn-default bg-white border"
-                                        @click="updateDatos"
-                                    >
-                                        <i class="fa fa-search"></i>
-                                    </button>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-xs">Desde</label>
+                                        <div
+                                            class="input-group"
+                                            style="align-items: end"
+                                        >
+                                            <input
+                                                type="date"
+                                                v-model="multiSearch.fecha_ini"
+                                                class="form-control border-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-xs">Hasta</label>
+                                        <div
+                                            class="input-group"
+                                            style="align-items: end"
+                                        >
+                                            <input
+                                                type="date"
+                                                v-model="multiSearch.fecha_fin"
+                                                class="form-control border-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary"
+                                            @click="cargarPedidos"
+                                        >
+                                            Cargar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
+                    <template v-if="total > 0">
+                        <div
+                            class="col-md-4 mt-2"
+                            v-for="item in listPedidos"
+                            :key="item.id"
+                        >
+                            <div class="card">
+                                <div class="card-header bg-principal">
+                                    <h4 class="mb-0 text-white text-lg fw-bold">
+                                        Pedido # {{ item.id }}
+                                    </h4>
+                                </div>
+                                <div class="card-body py-1">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="mb-1">
+                                                <strong>{{
+                                                    item.cliente.nombre
+                                                }}</strong>
+                                            </p>
+                                            <p class="mb-1">
+                                                <span>{{
+                                                    item.segmentacion_zona.zona
+                                                }}</span>
+                                            </p>
+                                            <p class="mb-1">
+                                                <span>
+                                                    {{
+                                                        item.cliente?.fono
+                                                    }}</span
+                                                >
+                                            </p>
+                                            <!-- <p class="mb-1">
+                                                <span>
+                                                    {{
+                                                        item.cliente
+                                                            ?.tipo_negocio
+                                                            ?.nombre
+                                                    }}</span
+                                                >
+                                            </p> -->
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="mb-1 text-sm">
+                                                <i
+                                                    class="fa fa-calendar-alt me-2"
+                                                ></i>
+                                                <span>{{ item.fecha }}</span>
+                                            </p>
+                                            <div>
+                                                <span
+                                                    class="badge bg-primary w-100 text-md"
+                                                    >{{ item.total }} Bs.</span
+                                                >
+                                            </div>
+                                            <div class="mt-1">
+                                                <template
+                                                    v-if="
+                                                        item.estado ==
+                                                            'ENTREGADO' &&
+                                                        (props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                            props_page.auth?.user.permisos.includes(
+                                                                'pedidos.pdf',
+                                                            ))
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Imprimir"
+                                                        placement="left-start"
+                                                    >
+                                                        <a
+                                                            class="btn-sm btn btn-light"
+                                                            :href="
+                                                                route(
+                                                                    'pedidos.pdf',
+                                                                    item.id,
+                                                                )
+                                                            "
+                                                            target="_blank"
+                                                        >
+                                                            <i
+                                                                class="fa fa-print"
+                                                            ></i></a
+                                                    ></el-tooltip>
+                                                </template>
+                                                <template
+                                                    v-if="
+                                                        props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                        props_page.auth?.user.permisos.includes(
+                                                            'pedidos.ver',
+                                                        )
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Ver"
+                                                        placement="left-start"
+                                                    >
+                                                        <Link
+                                                            class="btn-sm btn btn-primary"
+                                                            :href="
+                                                                route(
+                                                                    'pedidos.ver',
+                                                                    item.id,
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-eye"
+                                                            ></i></Link
+                                                    ></el-tooltip>
+                                                </template>
+                                                <template
+                                                    v-if="
+                                                        !item.despacho_id &&
+                                                        (props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                            props_page.auth?.user.permisos.includes(
+                                                                'pedidos.edit',
+                                                            ))
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Editar"
+                                                        placement="left-start"
+                                                    >
+                                                        <Link
+                                                            class="btn-sm btn btn-warning"
+                                                            :href="
+                                                                route(
+                                                                    'pedidos.edit',
+                                                                    item.id,
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-pen"
+                                                            ></i></Link
+                                                    ></el-tooltip>
+                                                </template>
+                                                <template
+                                                    v-if="
+                                                        !item.despacho_id &&
+                                                        (props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                            props_page.auth?.user.permisos.includes(
+                                                                'pedidos.destroy',
+                                                            ))
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Eliminar"
+                                                        placement="left-start"
+                                                    >
+                                                        <button
+                                                            class="btn-sm btn btn-danger"
+                                                            @click="
+                                                                eliminarPedido(
+                                                                    item,
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-trash-alt"
+                                                            ></i></button
+                                                    ></el-tooltip>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <MiPaginacion
+                                :current-page="multiSearch.page"
+                                :total-data="total"
+                                :per-page="multiSearch.perPage"
+                                @updatePage="cambioDePagina"
+                            />
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="col-12">
+                            <h4 class="w-100 text-center text-md">
+                                Sin registros
+                            </h4>
+                        </div>
+                    </template>
                     <div class="col-12 overflow-auto">
                         <div class="contenedor">
-                            <MiTable
+                            <!-- <MiTable
                                 :tableClass="'bg-white mitabla'"
                                 ref="miTable"
                                 :cols="headers"
@@ -334,7 +553,7 @@ onMounted(async () => {
                                         </template>
                                     </div>
                                 </template>
-                            </MiTable>
+                            </MiTable> -->
                         </div>
                     </div>
                 </div>

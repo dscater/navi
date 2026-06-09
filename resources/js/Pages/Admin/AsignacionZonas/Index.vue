@@ -116,9 +116,9 @@ const verSegmentacionZona = (item) => {
 };
 
 const tieneZonaAsignada = (item) => {
-    if (item.tipo == "VENDEDOR") {
-        return item.asignados.length > 0;
-    }
+    // if (item.tipo == "VENDEDOR") {
+    //     return item.asignados.length > 0;
+    // }
     return (
         item.asignados?.some(
             (asignacion) =>
@@ -132,16 +132,16 @@ const verificaDisabled = (item) => {
         return true;
     }
 
-    if (item.tipo == "VENDEDOR") {
-        if (!item.asignados.length) {
-            return false;
-        }
+    // if (item.tipo == "VENDEDOR") {
+    //     if (!item.asignados.length) {
+    //         return false;
+    //     }
 
-        return (
-            zona_selecionada.value.id !=
-            item.asignados?.[0]?.segmentacion_zona_id
-        );
-    }
+    //     return (
+    //         zona_selecionada.value.id !=
+    //         item.asignados?.[0]?.segmentacion_zona_id
+    //     );
+    // }
 
     return false;
 };

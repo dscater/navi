@@ -285,3 +285,25 @@ body .mi-table table thead tr th .iheader .accion.active {
     border-radius: 10px !important;
     overflow: hidden;
 }
+
+/* Dibujar el check */
+input.checkboxTable:checked::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 10px;
+    border: solid var(--bgSuccess);
+    border-width: 0 2px 2px 0;
+    top: 1px;
+    left: 5px;
+    transform: rotate(45deg);
+}
+
+input.checkboxTable:checked {
+    background-color: var(--bgSuccess2);
+}
+
+input.checkboxTable:checked:disabled {
+    cursor: not-allowed;
+    background-color: var(--bgSuccess2);
+}

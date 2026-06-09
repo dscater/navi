@@ -64,6 +64,20 @@ class PedidoController extends Controller
         ]);
     }
 
+    public function listadoByDistribuidor(Request $request): JsonResponse
+    {
+        $segmentacion_zona_ids = $this->user_service->getSegmentacionZona($request->distribuidor_id);
+        $pedidos = Pedido::with(["cliente", "segmentacion_zona"])
+            ->where("estado", "PENDIENTE")
+            ->whereNull("user_distribucion_id")
+            ->whereNull("fecha_salida")
+            ->whereIn("segmentacion_zona_id", $segmentacion_zona_ids)
+            ->get();
+        return response()->JSON([
+            "pedidos" => $pedidos
+        ]);
+    }
+
     public function pedidos_distruibidor(Request $request): JsonResponse
     {
         $segmentacion_zona_ids = $this->user_service->getSegmentacionZona($request->distribuidor_id);
@@ -89,7 +103,8 @@ class PedidoController extends Controller
     {
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
-        $search = (string)$request->input("search", "");
+        $fecha_ini = (string)$request->input("fecha_ini", "");
+        $fecha_fin = (string)$request->input("fecha_fin", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
@@ -105,7 +120,7 @@ class PedidoController extends Controller
             ];
         }
 
-        $pedidos = $this->pedidoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $pedidos = $this->pedidoService->listadoPaginado($perPage, $page, $fecha_ini, $fecha_fin, $arrayOrderBy);
         return response()->JSON([
             "data" => $pedidos->items(),
             "total" => $pedidos->total(),

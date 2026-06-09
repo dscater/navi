@@ -8,6 +8,7 @@ import Formulario from "./Formulario.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useAxios } from "@/composables/axios/useAxios";
 import UbicacionCliente from "@/Pages/Admin/Distribucions/UbicacionCliente.vue";
+import MiPaginacion from "@/Components/MiPaginacion.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 const { axiosDelete } = useAxios();
@@ -74,9 +75,15 @@ const headers = [
     },
 ];
 
+const listClientes = ref([]);
+const total = ref(0);
+const page = ref(1);
+
 const multiSearch = ref({
     search: "",
     filtro: [],
+    page: page.value,
+    perPage: 12,
 });
 
 const muestra_formulario = ref(false);
@@ -87,14 +94,25 @@ const agregarRegistro = () => {
     muestra_formulario.value = true;
 };
 
-const updateDatatable = async () => {
-    if (miTable.value) {
-        await miTable.value.cargarDatos();
-        limpiarCliente();
-        muestra_formulario.value = false;
-    }
+const valueINterval = ref(null);
+const intervalClientes = () => {
+    clearInterval(valueINterval.value);
+    valueINterval.value = setTimeout(() => {
+        cargarClientes();
+    }, 400);
 };
 
+const cargarClientes = () => {
+    axios
+        .get(route("clientes.paginado"), {
+            params: multiSearch.value,
+        })
+        .then((response) => {
+            console.log(response.data);
+            listClientes.value = response.data.data;
+            total.value = response.data.total;
+        });
+};
 const eliminarCliente = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
@@ -120,7 +138,14 @@ const eliminarCliente = (item) => {
     });
 };
 
+// detectar cambio de pagina
+const cambioDePagina = async (value) => {
+    multiSearch.value.page = value;
+    cargarClientes();
+};
+
 onMounted(async () => {
+    cargarClientes();
     appStore.stopLoading();
 });
 </script>
@@ -178,6 +203,7 @@ onMounted(async () => {
                                         v-model="multiSearch.search"
                                         placeholder="Buscar"
                                         class="form-control border-1 border-right-0"
+                                        @keyup="intervalClientes"
                                     />
                                     <button
                                         class="btn btn-default bg-white border"
@@ -191,8 +217,175 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="row">
+                    <template v-if="total > 0">
+                        <div
+                            class="col-md-4 mt-2"
+                            v-for="item in listClientes"
+                            :key="item.id"
+                        >
+                            <div class="card">
+                                <div class="card-header bg-principal">
+                                    <h4 class="mb-0 text-white text-lg fw-bold">
+                                        <p class="mb-0">
+                                            <strong>{{ item.nombre }}</strong>
+                                        </p>
+                                    </h4>
+                                </div>
+                                <div class="card-body py-1">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="mb-1">
+                                                <span>
+                                                    {{
+                                                        item.cliente?.fono
+                                                    }}</span
+                                                >
+                                            </p>
+                                            <p class="mb-1">
+                                                <span>
+                                                    {{ item.referencia }}</span
+                                                >
+                                            </p>
+                                            <p class="mb-1">
+                                                <span>
+                                                    {{
+                                                        item.segmentacion_zona
+                                                            ?.zona
+                                                    }}</span
+                                                >
+                                            </p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="mb-1">
+                                                <span>
+                                                    {{
+                                                        item.tipo_negocio.nombre
+                                                    }}</span
+                                                >
+                                            </p>
+                                            <div class="mt-1">
+                                                <!-- llevar a whatsapp -->
+                                                <a
+                                                    class="btn btn-sm btn-success"
+                                                    :href="`https://wa.me/+591${item.fono}?text=Hola%20${item.nombre}`"
+                                                    target="_blank"
+                                                >
+                                                    <i
+                                                        class="fab fa-whatsapp"
+                                                    ></i>
+                                                </a>
+
+                                                <template
+                                                    v-if="
+                                                        props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                        props_page.auth?.user.permisos.includes(
+                                                            'clientes.index',
+                                                        )
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Ver"
+                                                        placement="left-start"
+                                                    >
+                                                        <button
+                                                            class="btn btn-sm btn-primary"
+                                                            @click="
+                                                                setCliente(
+                                                                    item,
+                                                                );
+                                                                muestra_ubicacion = true;
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-eye"
+                                                            ></i></button
+                                                    ></el-tooltip>
+                                                </template>
+                                                <template
+                                                    v-if="
+                                                        props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                        props_page.auth?.user.permisos.includes(
+                                                            'clientes.edit',
+                                                        )
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Editar"
+                                                        placement="left-start"
+                                                    >
+                                                        <button
+                                                            class="btn btn-sm btn-warning"
+                                                            @click="
+                                                                setCliente(
+                                                                    item,
+                                                                );
+                                                                muestra_formulario = true;
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-pen"
+                                                            ></i></button
+                                                    ></el-tooltip>
+                                                </template>
+                                                <template
+                                                    v-if="
+                                                        props_page.auth?.user
+                                                            .permisos == '*' ||
+                                                        props_page.auth?.user.permisos.includes(
+                                                            'clientes.destroy',
+                                                        )
+                                                    "
+                                                >
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Eliminar"
+                                                        placement="left-start"
+                                                    >
+                                                        <button
+                                                            class="btn btn-sm btn-danger"
+                                                            @click="
+                                                                eliminarCliente(
+                                                                    item,
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-trash-alt"
+                                                            ></i></button
+                                                    ></el-tooltip>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <MiPaginacion
+                                :current-page="multiSearch.page"
+                                :total-data="total"
+                                :per-page="multiSearch.perPage"
+                                @updatePage="cambioDePagina"
+                            />
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="col-12">
+                            <h4 class="w-100 text-center text-md">
+                                Sin registros
+                            </h4>
+                        </div>
+                    </template>
+
                     <div class="col-12">
-                        <MiTable
+                        <!-- <MiTable
                             :tableClass="'bg-white mitabla'"
                             ref="miTable"
                             :cols="headers"
@@ -207,88 +400,9 @@ onMounted(async () => {
                             fixed-header
                         >
                             <template #accion="{ item }">
-                                <!-- llevar a whatsapp -->
-                                <a
-                                    class="btn btn-success"
-                                    :href="`https://wa.me/+591${item.fono}?text=Hola%20${item.nombre}`"
-                                    target="_blank"
-                                >
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-
-                                <template
-                                    v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'clientes.index',
-                                        )
-                                    "
-                                >
-                                    <el-tooltip
-                                        class="box-item"
-                                        effect="dark"
-                                        content="Ver"
-                                        placement="left-start"
-                                    >
-                                        <button
-                                            class="btn btn-primary"
-                                            @click="
-                                                setCliente(item);
-                                                muestra_ubicacion = true;
-                                            "
-                                        >
-                                            <i class="fa fa-eye"></i></button
-                                    ></el-tooltip>
-                                </template>
-                                <template
-                                    v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'clientes.edit',
-                                        )
-                                    "
-                                >
-                                    <el-tooltip
-                                        class="box-item"
-                                        effect="dark"
-                                        content="Editar"
-                                        placement="left-start"
-                                    >
-                                        <button
-                                            class="btn btn-warning"
-                                            @click="
-                                                setCliente(item);
-                                                muestra_formulario = true;
-                                            "
-                                        >
-                                            <i class="fa fa-pen"></i></button
-                                    ></el-tooltip>
-                                </template>
-                                <template
-                                    v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'clientes.destroy',
-                                        )
-                                    "
-                                >
-                                    <el-tooltip
-                                        class="box-item"
-                                        effect="dark"
-                                        content="Eliminar"
-                                        placement="left-start"
-                                    >
-                                        <button
-                                            class="btn btn-danger"
-                                            @click="eliminarCliente(item)"
-                                        >
-                                            <i
-                                                class="fa fa-trash-alt"
-                                            ></i></button
-                                    ></el-tooltip>
-                                </template>
+                              
                             </template>
-                        </MiTable>
+                        </MiTable> -->
                     </div>
                 </div>
             </div>
@@ -299,7 +413,7 @@ onMounted(async () => {
         v-if="muestra_formulario"
         :muestra_formulario="muestra_formulario"
         :form="form"
-        @envio-formulario="updateDatatable"
+        @envio-formulario="cargarClientes"
         @cerrar-formulario="muestra_formulario = false"
     ></Formulario>
     <UbicacionCliente

@@ -147,19 +147,22 @@ onUnmounted(() => {});
                     <li
                         class="nav-header font-weight-bold"
                         v-if="
-                            permisos == '*' ||
-                            permisos.includes('usuarios.index') ||
-                            permisos.includes('segmentacion_zonas.index') ||
-                            permisos.includes('asignacion_zonas.index') ||
-                            permisos.includes('categoria_productos.index') ||
-                            permisos.includes('productos.index') ||
-                            permisos.includes('compras.index') ||
-                            permisos.includes('clientes.index') ||
-                            permisos.includes('pedidos.index') ||
-                            permisos.includes('despachos.index') ||
-                            permisos.includes('distribucions.index') ||
-                            permisos.includes('consolidados.index') ||
-                            permisos.includes('comisions.index')
+                            usuario?.tipo == 'ADMINISTRADOR' &&
+                            (permisos == '*' ||
+                                permisos.includes('usuarios.index') ||
+                                permisos.includes('segmentacion_zonas.index') ||
+                                permisos.includes('asignacion_zonas.index') ||
+                                permisos.includes(
+                                    'categoria_productos.index',
+                                ) ||
+                                permisos.includes('productos.index') ||
+                                permisos.includes('compras.index') ||
+                                permisos.includes('clientes.index') ||
+                                permisos.includes('pedidos.index') ||
+                                permisos.includes('despachos.index') ||
+                                permisos.includes('distribucions.index') ||
+                                permisos.includes('consolidados.index') ||
+                                permisos.includes('comisions.index'))
                         "
                     >
                         ADMINISTRACIÓN
@@ -185,11 +188,20 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('distribucions.index')
+                            permisos.includes('distribucions.create')
                         "
                         :label="'Pedidos por Entregar'"
-                        :ruta="'distribucions.index'"
+                        :ruta="'distribucions.create'"
                         :icon="'fa fa-truck'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('salidas.create')
+                        "
+                        :label="'Salidas de Chofer'"
+                        :ruta="'salidas.create'"
+                        :icon="'fa fa-clipboard-list'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="
@@ -340,7 +352,12 @@ onUnmounted(() => {});
                         :ruta="'reportes.utilidad_bruta'"
                         :icon="'fa fa-file-pdf'"
                     ></ItemMenu>
-                    <li class="nav-header font-weight-bold">OTROS</li>
+                    <li
+                        class="nav-header font-weight-bold"
+                        v-if="usuario?.tipo == 'ADMINISTRADOR'"
+                    >
+                        OTROS
+                    </li>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
@@ -351,11 +368,15 @@ onUnmounted(() => {});
                         :icon="'fa fa-cog'"
                     ></ItemMenu>
                     <ItemMenu
+                        v-if="usuario?.tipo == 'ADMINISTRADOR'"
                         :label="'Perfil'"
                         :ruta="'profile.edit'"
                         :icon="'fa fa-id-card'"
                     ></ItemMenu>
-                    <li class="nav-item">
+                    <li
+                        class="nav-item"
+                        v-if="usuario?.tipo == 'ADMINISTRADOR'"
+                    >
                         <a
                             href="#"
                             class="nav-link"

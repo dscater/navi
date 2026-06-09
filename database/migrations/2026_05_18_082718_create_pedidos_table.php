@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string("tipo_pago")->nullable();
             $table->date("fecha");
             $table->time("hora");
+            $table->date("fecha_salida")->nullable();
+            $table->time("hora_salida")->nullable();
             $table->text("observacion")->nullable();
             $table->string("estado")->default("PENDIENTE"); // PENDIENTE, ENTREGADO
             $table->integer("status")->default(1);

@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\SegmentacionZonaController;
 use App\Http\Controllers\TipoNegocioController;
 use App\Http\Controllers\TipoUsuarioController;
@@ -167,6 +168,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("pedidos/paginado", [PedidoController::class, 'paginado'])->name("pedidos.paginado");
     Route::get("pedidos/listado", [PedidoController::class, 'listado'])->name("pedidos.listado");
     Route::get("pedidos/listadoByCliente", [PedidoController::class, 'listadoByCliente'])->name("pedidos.listadoByCliente");
+    Route::get("pedidos/listadoByDistribuidor", [PedidoController::class, 'listadoByDistribuidor'])->name("pedidos.listadoByDistribuidor");
     Route::get("pedidos/pedidos_distruibidor", [PedidoController::class, 'pedidos_distruibidor'])->name("pedidos.pedidos_distruibidor");
     Route::get("pedidos/pedidos_despacho", [PedidoController::class, 'pedidos_despacho'])->name("pedidos.pedidos_despacho");
     Route::get("pedidos/ver/{pedido}", [PedidoController::class, 'ver'])->name("pedidos.ver");
@@ -192,6 +194,12 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::resource("despachos", DespachoController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
+
+    // SALIDAS
+    Route::get("salidas", [SalidaController::class, 'index'])->name("salidas.index");
+    Route::get("salidas/paginado", [SalidaController::class, 'paginado'])->name("salidas.paginado");
+    Route::get("salidas/create", [SalidaController::class, 'create'])->name("salidas.create");
+    Route::post("salidas/salida_pedido", [SalidaController::class, 'store'])->name("salidas.store");
 
     // CONSOLIDADOS
     Route::get("consolidados/paginado", [ConsolidadoController::class, 'paginado'])->name("consolidados.paginado");

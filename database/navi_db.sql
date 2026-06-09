@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 03-06-2026 a las 20:52:46
+-- Tiempo de generación: 09-06-2026 a las 09:59:33
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -45,7 +45,8 @@ INSERT INTO `asignacion_zonas` (`id`, `segmentacion_zona_id`, `user_id`, `create
 (3, 1, 5, '2026-05-19 14:17:03', '2026-05-19 14:17:03'),
 (5, 2, 6, '2026-05-19 14:22:08', '2026-05-19 14:22:08'),
 (6, 3, 3, '2026-06-03 19:34:40', '2026-06-03 19:34:40'),
-(7, 3, 8, '2026-06-03 19:37:27', '2026-06-03 19:37:27');
+(7, 3, 8, '2026-06-03 19:37:27', '2026-06-03 19:37:27'),
+(8, 3, 5, '2026-06-09 08:47:22', '2026-06-09 08:47:22');
 
 -- --------------------------------------------------------
 
@@ -397,7 +398,10 @@ INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `dato
 (43, 8, 'CREACIÓN', 'EL USUARIO achoque REGISTRO UN PEDIDO', '{\"id\": 8, \"hora\": \"15:38:17\", \"fecha\": \"2026-06-03\", \"total\": \"200.00\", \"user_id\": 8, \"subtotal\": \"200.00\", \"descuento\": \"0\", \"cliente_id\": \"7\", \"created_at\": \"2026-06-03T19:38:17.000000Z\", \"updated_at\": \"2026-06-03T19:38:17.000000Z\", \"observacion\": null, \"distribuidor_id\": null, \"pedido_detalles\": [{\"id\": 10, \"precio\": \"200.00\", \"status\": 1, \"cantidad\": 1, \"subtotal\": \"200.00\", \"pedido_id\": 8, \"created_at\": \"2026-06-03T19:38:17.000000Z\", \"updated_at\": \"2026-06-03T19:38:17.000000Z\", \"producto_id\": 1, \"cantidad_total\": 12, \"cantidad_despacho\": 0, \"cantidad_entregado\": 0, \"cantidad_devolucion\": 0, \"categoria_producto_id\": 1, \"presentacion_producto_id\": 8}], \"segmentacion_zona_id\": 3}', NULL, 'PEDIDOS', '2026-06-03', '15:38:17', '2026-06-03 19:38:17', '2026-06-03 19:38:17'),
 (44, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN DESPACHO', '{\"id\": 6, \"hora\": \"16:03:29\", \"fecha\": \"2026-06-03\", \"pedidos\": [{\"id\": 8, \"hora\": \"15:38:17\", \"fecha\": \"2026-06-03\", \"total\": \"200.00\", \"estado\": \"PENDIENTE\", \"status\": 1, \"fecha_t\": \"03/06/2026\", \"user_id\": 8, \"subtotal\": \"200.00\", \"descuento\": \"0.00\", \"tipo_pago\": null, \"cliente_id\": 7, \"created_at\": \"2026-06-03T19:38:17.000000Z\", \"updated_at\": \"2026-06-03T20:03:29.000000Z\", \"despacho_id\": 6, \"observacion\": null, \"consolidado_id\": null, \"distribuidor_id\": null, \"segmentacion_zona_id\": 3, \"user_distribucion_id\": null}], \"user_id\": 1, \"created_at\": \"2026-06-03T20:03:29.000000Z\", \"updated_at\": \"2026-06-03T20:03:29.000000Z\", \"observacion\": null, \"distribuidor_id\": 3}', NULL, 'DESPACHOS', '2026-06-03', '16:03:29', '2026-06-03 20:03:29', '2026-06-03 20:03:29'),
 (45, 8, 'CREACIÓN', 'EL USUARIO achoque REGISTRO UN PEDIDO', '{\"id\": 9, \"hora\": \"16:04:30\", \"fecha\": \"2026-06-03\", \"total\": \"6.00\", \"user_id\": 8, \"subtotal\": \"6.00\", \"descuento\": \"0\", \"cliente_id\": \"7\", \"created_at\": \"2026-06-03T20:04:30.000000Z\", \"updated_at\": \"2026-06-03T20:04:30.000000Z\", \"observacion\": null, \"distribuidor_id\": null, \"pedido_detalles\": [{\"id\": 11, \"precio\": \"6.00\", \"status\": 1, \"cantidad\": 1, \"subtotal\": \"6.00\", \"pedido_id\": 9, \"created_at\": \"2026-06-03T20:04:30.000000Z\", \"updated_at\": \"2026-06-03T20:04:30.000000Z\", \"producto_id\": 3, \"cantidad_total\": 1, \"cantidad_despacho\": 0, \"cantidad_entregado\": 0, \"cantidad_devolucion\": 0, \"categoria_producto_id\": 1, \"presentacion_producto_id\": 3}], \"segmentacion_zona_id\": 3}', NULL, 'PEDIDOS', '2026-06-03', '16:04:30', '2026-06-03 20:04:30', '2026-06-03 20:04:30'),
-(46, 8, 'CREACIÓN', 'EL USUARIO achoque REGISTRO UN PEDIDO', '{\"id\": 10, \"hora\": \"16:10:58\", \"fecha\": \"2026-06-03\", \"total\": \"7.00\", \"user_id\": 8, \"subtotal\": \"7.00\", \"descuento\": \"0\", \"cliente_id\": \"7\", \"created_at\": \"2026-06-03T20:10:58.000000Z\", \"updated_at\": \"2026-06-03T20:10:58.000000Z\", \"observacion\": null, \"distribuidor_id\": 3, \"pedido_detalles\": [{\"id\": 12, \"precio\": \"7.00\", \"status\": 1, \"cantidad\": 1, \"subtotal\": \"7.00\", \"pedido_id\": 10, \"created_at\": \"2026-06-03T20:10:58.000000Z\", \"updated_at\": \"2026-06-03T20:10:58.000000Z\", \"producto_id\": 2, \"cantidad_total\": 1, \"cantidad_despacho\": 0, \"cantidad_entregado\": 0, \"cantidad_devolucion\": 0, \"categoria_producto_id\": 2, \"presentacion_producto_id\": 6}], \"segmentacion_zona_id\": 3}', NULL, 'PEDIDOS', '2026-06-03', '16:10:58', '2026-06-03 20:10:58', '2026-06-03 20:10:58');
+(46, 8, 'CREACIÓN', 'EL USUARIO achoque REGISTRO UN PEDIDO', '{\"id\": 10, \"hora\": \"16:10:58\", \"fecha\": \"2026-06-03\", \"total\": \"7.00\", \"user_id\": 8, \"subtotal\": \"7.00\", \"descuento\": \"0\", \"cliente_id\": \"7\", \"created_at\": \"2026-06-03T20:10:58.000000Z\", \"updated_at\": \"2026-06-03T20:10:58.000000Z\", \"observacion\": null, \"distribuidor_id\": 3, \"pedido_detalles\": [{\"id\": 12, \"precio\": \"7.00\", \"status\": 1, \"cantidad\": 1, \"subtotal\": \"7.00\", \"pedido_id\": 10, \"created_at\": \"2026-06-03T20:10:58.000000Z\", \"updated_at\": \"2026-06-03T20:10:58.000000Z\", \"producto_id\": 2, \"cantidad_total\": 1, \"cantidad_despacho\": 0, \"cantidad_entregado\": 0, \"cantidad_devolucion\": 0, \"categoria_producto_id\": 2, \"presentacion_producto_id\": 6}], \"segmentacion_zona_id\": 3}', NULL, 'PEDIDOS', '2026-06-03', '16:10:58', '2026-06-03 20:10:58', '2026-06-03 20:10:58'),
+(47, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN USUARIO', '{\"id\": 3, \"foto\": null, \"tipo\": \"DISTRIBUIDOR\", \"acceso\": 1, \"nombre\": \"FELIX CORTEZ\", \"status\": 1, \"bloqueo\": 1, \"usuario\": \"fcortez\", \"created_at\": \"2026-05-19T13:03:19.000000Z\", \"updated_at\": \"2026-05-19T13:03:19.000000Z\", \"fecha_registro\": \"2026-05-19\"}', '{\"id\": 3, \"foto\": null, \"tipo\": \"DISTRIBUIDOR\", \"acceso\": \"1\", \"nombre\": \"FELIX CORTEZ\", \"status\": 1, \"bloqueo\": \"0\", \"usuario\": \"fcortez\", \"created_at\": \"2026-05-19T13:03:19.000000Z\", \"updated_at\": \"2026-06-09T08:38:31.000000Z\", \"fecha_registro\": \"2026-05-19\"}', 'USUARIOS', '2026-06-09', '04:38:31', '2026-06-09 08:38:31', '2026-06-09 08:38:31'),
+(48, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UNA ASIGNACIÓN DE ZONA', '{\"id\": 8, \"user_id\": 5, \"created_at\": \"2026-06-09T08:47:22.000000Z\", \"updated_at\": \"2026-06-09T08:47:22.000000Z\", \"segmentacion_zona_id\": 3}', NULL, 'ASIGNACIÓN DE ZONAS', '2026-06-09', '04:47:22', '2026-06-09 08:47:22', '2026-06-09 08:47:22'),
+(49, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN USUARIO', '{\"id\": 6, \"foto\": \"61779392180.jpg\", \"tipo\": \"VENDEDOR\", \"acceso\": 1, \"nombre\": \"MARIA MAMANI\", \"status\": 1, \"bloqueo\": 1, \"usuario\": \"mmamani\", \"created_at\": \"2026-05-19T13:04:11.000000Z\", \"updated_at\": \"2026-05-21T19:36:20.000000Z\", \"fecha_registro\": \"2026-05-19\"}', '{\"id\": 6, \"foto\": \"61779392180.jpg\", \"tipo\": \"VENDEDOR\", \"acceso\": \"1\", \"nombre\": \"MARIA MAMANI\", \"status\": 1, \"bloqueo\": \"0\", \"usuario\": \"mmamani\", \"created_at\": \"2026-05-19T13:04:11.000000Z\", \"updated_at\": \"2026-06-09T09:35:56.000000Z\", \"fecha_registro\": \"2026-05-19\"}', 'USUARIOS', '2026-06-09', '05:35:56', '2026-06-09 09:35:56', '2026-06-09 09:35:56');
 
 -- --------------------------------------------------------
 
@@ -511,6 +515,8 @@ CREATE TABLE `pedidos` (
   `tipo_pago` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
+  `fecha_salida` date DEFAULT NULL,
+  `hora_salida` time DEFAULT NULL,
   `observacion` text COLLATE utf8mb4_unicode_ci,
   `estado` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDIENTE',
   `status` int NOT NULL DEFAULT '1',
@@ -522,17 +528,17 @@ CREATE TABLE `pedidos` (
 -- Volcado de datos para la tabla `pedidos`
 --
 
-INSERT INTO `pedidos` (`id`, `user_id`, `user_distribucion_id`, `distribuidor_id`, `segmentacion_zona_id`, `cliente_id`, `despacho_id`, `consolidado_id`, `subtotal`, `descuento`, `total`, `tipo_pago`, `fecha`, `hora`, `observacion`, `estado`, `status`, `created_at`, `updated_at`) VALUES
-(1, 5, 5, 3, 1, 1, 3, 1, 420.00, 0.00, 420.00, 'EFECTIVO', '2026-05-26', '11:33:35', NULL, 'ENTREGADO', 1, '2026-05-26 15:33:35', '2026-05-26 15:34:36'),
-(2, 5, 5, 3, 1, 2, 3, 1, 305.00, 0.00, 305.00, 'EFECTIVO', '2026-05-26', '11:33:46', NULL, 'ENTREGADO', 1, '2026-05-26 15:33:46', '2026-05-26 15:34:36'),
-(3, 5, 5, 3, 1, 3, 4, 2, 150.00, 0.00, 150.00, 'EFECTIVO', '2026-05-26', '12:40:50', NULL, 'ENTREGADO', 1, '2026-05-26 16:40:50', '2026-05-26 16:41:31'),
-(4, 1, NULL, 3, 1, 1, 5, NULL, 7.00, 0.00, 7.00, NULL, '2026-05-30', '09:40:26', NULL, 'PENDIENTE', 1, '2026-05-30 13:40:26', '2026-06-03 14:35:24'),
-(5, 1, NULL, 4, 2, 4, NULL, NULL, 7.00, 0.00, 7.00, NULL, '2026-05-30', '09:42:16', NULL, 'PENDIENTE', 1, '2026-05-30 13:42:16', '2026-05-30 13:42:16'),
-(6, 1, NULL, 3, 1, 2, 5, NULL, 200.00, 0.00, 200.00, NULL, '2026-06-03', '10:34:56', NULL, 'PENDIENTE', 1, '2026-06-03 14:34:56', '2026-06-03 14:35:24'),
-(7, 1, NULL, 3, 1, 2, 5, NULL, 7.00, 0.00, 7.00, NULL, '2026-06-03', '10:35:07', NULL, 'ANULADO', 0, '2026-06-03 14:35:07', '2026-06-03 15:08:00'),
-(8, 8, NULL, 3, 3, 7, 6, NULL, 200.00, 0.00, 200.00, NULL, '2026-06-03', '15:38:17', NULL, 'PENDIENTE', 1, '2026-06-03 19:38:17', '2026-06-03 20:03:29'),
-(9, 8, NULL, 3, 3, 7, NULL, NULL, 6.00, 0.00, 6.00, NULL, '2026-06-03', '16:04:30', NULL, 'PENDIENTE', 1, '2026-06-03 20:04:30', '2026-06-03 20:04:30'),
-(10, 8, NULL, 3, 3, 7, NULL, NULL, 7.00, 0.00, 7.00, NULL, '2026-06-03', '16:10:58', NULL, 'PENDIENTE', 1, '2026-06-03 20:10:58', '2026-06-03 20:10:58');
+INSERT INTO `pedidos` (`id`, `user_id`, `user_distribucion_id`, `distribuidor_id`, `segmentacion_zona_id`, `cliente_id`, `despacho_id`, `consolidado_id`, `subtotal`, `descuento`, `total`, `tipo_pago`, `fecha`, `hora`, `fecha_salida`, `hora_salida`, `observacion`, `estado`, `status`, `created_at`, `updated_at`) VALUES
+(1, 5, 5, 3, 1, 1, 3, 1, 420.00, 0.00, 420.00, 'EFECTIVO', '2026-05-26', '11:33:35', NULL, NULL, NULL, 'ENTREGADO', 1, '2026-05-26 15:33:35', '2026-05-26 15:34:36'),
+(2, 5, 5, 3, 1, 2, 3, 1, 305.00, 0.00, 305.00, 'EFECTIVO', '2026-05-26', '11:33:46', NULL, NULL, NULL, 'ENTREGADO', 1, '2026-05-26 15:33:46', '2026-05-26 15:34:36'),
+(3, 5, 5, 3, 1, 3, 4, 2, 150.00, 0.00, 150.00, 'EFECTIVO', '2026-05-26', '12:40:50', NULL, NULL, NULL, 'ENTREGADO', 1, '2026-05-26 16:40:50', '2026-05-26 16:41:31'),
+(4, 1, 3, 3, 1, 1, 5, NULL, 7.00, 0.00, 7.00, NULL, '2026-05-30', '09:40:26', '2026-06-09', '05:24:42', NULL, 'PENDIENTE', 1, '2026-05-30 13:40:26', '2026-06-09 09:24:42'),
+(5, 1, NULL, 4, 2, 4, NULL, NULL, 7.00, 0.00, 7.00, NULL, '2026-05-30', '09:42:16', NULL, NULL, NULL, 'PENDIENTE', 1, '2026-05-30 13:42:16', '2026-05-30 13:42:16'),
+(6, 1, NULL, 3, 1, 2, 5, NULL, 200.00, 0.00, 200.00, NULL, '2026-06-03', '10:34:56', NULL, NULL, NULL, 'PENDIENTE', 1, '2026-06-03 14:34:56', '2026-06-03 14:35:24'),
+(7, 1, NULL, 3, 1, 2, 5, NULL, 7.00, 0.00, 7.00, NULL, '2026-06-03', '10:35:07', NULL, NULL, NULL, 'ANULADO', 0, '2026-06-03 14:35:07', '2026-06-03 15:08:00'),
+(8, 8, NULL, 3, 3, 7, 6, NULL, 200.00, 0.00, 200.00, NULL, '2026-06-03', '15:38:17', NULL, NULL, NULL, 'PENDIENTE', 1, '2026-06-03 19:38:17', '2026-06-03 20:03:29'),
+(9, 8, NULL, 3, 3, 7, NULL, NULL, 6.00, 0.00, 6.00, NULL, '2026-06-03', '16:04:30', NULL, NULL, NULL, 'PENDIENTE', 1, '2026-06-03 20:04:30', '2026-06-03 20:04:30'),
+(10, 8, NULL, 3, 3, 7, NULL, NULL, 7.00, 0.00, 7.00, NULL, '2026-06-03', '16:10:58', NULL, NULL, NULL, 'PENDIENTE', 1, '2026-06-03 20:10:58', '2026-06-03 20:10:58');
 
 -- --------------------------------------------------------
 
@@ -735,10 +741,10 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `usuario`, `nombre`, `password`, `foto`, `acceso`, `bloqueo`, `tipo`, `fecha_registro`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 'admin', '$2y$12$M2b1lEQrbaI17YIiht9xAuk2FCenB023wiuQVI63qmFsgogMzdXFe', NULL, 1, 0, 'ADMINISTRADOR', '2026-05-18', 1, '2026-05-18 13:31:09', '2026-05-18 13:31:09'),
 (2, 'jperes', 'JUAN PERES', '$2y$12$LQY1VK7rzrSVgLmxmMYRyeh.JeSIG2Hn9SavUruOtwuFgwktPTa6W', NULL, 1, 1, 'ADMINISTRADOR', '2026-05-19', 1, '2026-05-19 13:02:59', '2026-05-30 13:50:43'),
-(3, 'fcortez', 'FELIX CORTEZ', '$2y$12$1m21Dvtn6UxFGOUABnzwZep515WuVPuiKuDYjbgCoOxzBTqU378/O', NULL, 1, 1, 'DISTRIBUIDOR', '2026-05-19', 1, '2026-05-19 13:03:19', '2026-05-19 13:03:19'),
+(3, 'fcortez', 'FELIX CORTEZ', '$2y$12$1m21Dvtn6UxFGOUABnzwZep515WuVPuiKuDYjbgCoOxzBTqU378/O', NULL, 1, 0, 'DISTRIBUIDOR', '2026-05-19', 1, '2026-05-19 13:03:19', '2026-06-09 08:38:31'),
 (4, 'csanz', 'CARLOS SANZ', '$2y$12$PPb6IyMpNpo1KTqPhYF./eTkJr8ildoMDAtEkXbto3Fxn26QTZ2ua', NULL, 1, 1, 'DISTRIBUIDOR', '2026-05-19', 1, '2026-05-19 13:03:33', '2026-05-19 13:03:33'),
 (5, 'jmamani', 'JOSE MAMANI', '$2y$12$rMLj2OuFwzN/uTtmuJ2G0eFjE0NPp/GxoIJB5Z4QUBLaTdOzUSMlq', NULL, 1, 1, 'VENDEDOR', '2026-05-19', 1, '2026-05-19 13:03:57', '2026-05-19 13:03:57'),
-(6, 'mmamani', 'MARIA MAMANI', '$2y$12$SCXrQpZOHpAhBcRhYYr2oOcFE0ti9fX8oqMNAZ.q0eD1dtd7j0g0a', '61779392180.jpg', 1, 1, 'VENDEDOR', '2026-05-19', 1, '2026-05-19 13:04:11', '2026-05-21 19:36:20'),
+(6, 'mmamani', 'MARIA MAMANI', '$2y$12$SCXrQpZOHpAhBcRhYYr2oOcFE0ti9fX8oqMNAZ.q0eD1dtd7j0g0a', '61779392180.jpg', 1, 0, 'VENDEDOR', '2026-05-19', 1, '2026-05-19 13:04:11', '2026-06-09 09:35:56'),
 (7, 'jgonzales', 'jose gonzales', '$2y$12$e9x.kHTvJCbWBkd5OpUmOeDCSuT4zBYg0mWqF4NOl859GPtjHFFSq', NULL, 1, 1, 'DISTRIBUIDOR', '2026-05-22', 1, '2026-05-22 20:06:14', '2026-05-22 20:06:14'),
 (8, 'achoque', 'alex choque', '$2y$12$EOlegQUVVKGeo0cmU66FSOXOACun00K36xbTnTik7kvkle5J9F5Fy', NULL, 1, 1, 'VENDEDOR', '2026-06-03', 1, '2026-06-03 19:36:43', '2026-06-03 19:36:43');
 
@@ -911,7 +917,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `asignacion_zonas`
 --
 ALTER TABLE `asignacion_zonas`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria_productos`
@@ -977,7 +983,7 @@ ALTER TABLE `despachos`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`

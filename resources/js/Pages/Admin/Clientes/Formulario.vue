@@ -137,6 +137,10 @@ const cargarListas = () => {
 };
 
 onMounted(() => {
+    if (form.id != 0) {
+        form.latitud = Number(form.latitud);
+        form.longitud = Number(form.longitud);
+    }
     cargarListas();
 });
 </script>

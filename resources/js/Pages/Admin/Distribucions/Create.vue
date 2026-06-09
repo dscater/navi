@@ -307,7 +307,7 @@ onMounted(async () => {
         </template>
 
         <div class="row mb-2">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <Link
                     v-if="
                         props_page.auth?.user.permisos == '*' ||
@@ -319,10 +319,23 @@ onMounted(async () => {
                     class="btn btn-light bg-white border text-sm"
                     :href="route('distribucions.index')"
                 >
-                    <i class="fa fa-arrow-left"></i> Volver
+                    <i class="fa fa-table"></i> Historial de Pedidos
                 </Link>
+                <a
+                    v-if="
+                        props_page.auth?.user.permisos == '*' ||
+                        props_page.auth?.user.permisos.includes(
+                            'pedidos.pdf_pendientes',
+                        )
+                    "
+                    type="button"
+                    class="btn btn-outline-primary text-sm ms-1"
+                    :href="route('pedidos.pdf_pendientes')"
+                    target="_blank"
+                >
+                    <i class="fa fa-print"></i> Tickets Pendientes
+                </a>
             </div>
-            <div class="col-md-8 my-1"></div>
         </div>
         <div class="row">
             <div class="col-md-6">

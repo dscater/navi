@@ -20,13 +20,25 @@ class Pedido extends Model
         "tipo_pago",
         "fecha",
         "hora",
+        "fecha_salida",
+        "hora_salida",
         "observacion",
         "estado",
         "status",
     ];
 
-    protected $appends = ["fecha_t"];
+    protected $appends = ["fecha_t", "fecha_salida_t", "salida"];
 
+    public function getSalidaAttribute()
+    {
+        return $this->user_distribucion_id && $this->fecha_salida ? 1 : 0;
+    }
+
+    public function getFechaSalidaTAttribute()
+    {
+        if (!$this->fecha_salida) return "";
+        return date("d/m/Y", strtotime($this->fecha_salida));
+    }
     public function getFechaTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha));
