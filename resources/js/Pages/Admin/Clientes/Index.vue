@@ -259,7 +259,8 @@ onMounted(async () => {
                                             <p class="mb-1">
                                                 <span>
                                                     {{
-                                                        item.tipo_negocio.nombre
+                                                        item.tipo_negocio
+                                                            ?.nombre
                                                     }}</span
                                                 >
                                             </p>

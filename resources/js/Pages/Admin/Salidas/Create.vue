@@ -173,7 +173,7 @@ onMounted(async () => {
             </div>
         </div>
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 overflow-auto">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
