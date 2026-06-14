@@ -67,7 +67,7 @@ const cambioDePagina = async (value) => {
 const eliminarPedido = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
-        html: `<strong>${item.nombre}</strong>`,
+        html: `<strong>#${item.id}</strong>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -83,7 +83,7 @@ const eliminarPedido = (item) => {
                 route("pedidos.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
-                updateDatatable();
+                cargarPedidos();
             }
         }
     });
@@ -306,7 +306,8 @@ onMounted(async () => {
                                                 </template>
                                                 <template
                                                     v-if="
-                                                        !item.despacho_id &&
+                                                        item.estado ==
+                                                            'PENDIENTE' &&
                                                         (props_page.auth?.user
                                                             .permisos == '*' ||
                                                             props_page.auth?.user.permisos.includes(
@@ -336,7 +337,8 @@ onMounted(async () => {
                                                 </template>
                                                 <template
                                                     v-if="
-                                                        !item.despacho_id &&
+                                                        item.estado ==
+                                                            'PENDIENTE' &&
                                                         (props_page.auth?.user
                                                             .permisos == '*' ||
                                                             props_page.auth?.user.permisos.includes(

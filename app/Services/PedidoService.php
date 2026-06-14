@@ -247,6 +247,13 @@ class PedidoService
         // DETALLES
         foreach ($datos["pedido_detalles"] as $item) {
             $producto = Producto::findOrFail($item["producto_id"]);
+
+            // validar cantidad disponible
+            $arr_disponible = $this->producto_service->verificaStockDisponible($producto->id, $item["cantidad_total"]);
+            if (!$arr_disponible[0]) {
+                throw new Exception("La cantidad disponible del producto " . $producto->nombre . " es de " . $arr_disponible[1] . "; insuficiente para lo solicitado de " . $item['cantidad_total']);
+            }
+
             $datos_detalle = [
                 "producto_id" => $item["producto_id"],
                 "categoria_producto_id" => $producto->categoria_producto_id,
@@ -304,6 +311,13 @@ class PedidoService
         // DETALLES
         foreach ($datos["pedido_detalles"] as $item) {
             $producto = Producto::findOrFail($item["producto_id"]);
+
+            // validar cantidad disponible
+            $arr_disponible = $this->producto_service->verificaStockDisponible($producto->id, $item["cantidad_total"], $pedido->id);
+            if (!$arr_disponible[0]) {
+                throw new Exception("La cantidad disponible del producto " . $producto->nombre . " es de " . $arr_disponible[1] . "; insuficiente para lo solicitado de " . $item['cantidad_total']);
+            }
+
             $datos_detalle = [
                 "producto_id" => $item["producto_id"],
                 "categoria_producto_id" => $producto->categoria_producto_id,

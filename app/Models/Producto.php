@@ -16,7 +16,24 @@ class Producto extends Model
         "imagen",
     ];
 
-    protected $appends = ["url_imagen"];
+    protected $appends = [
+        "url_imagen",
+        // "stock_disponible"
+    ];
+
+    public function getStockDisponibleAttribute()
+    {
+        $stock_actual = (float)$this->stock_actual;
+
+        $c_pedidos_pendientes = PedidoDetalle::where("producto_id", $this->id)
+            ->whereHas("pedido", function ($q) {
+                $q->where("estado", "PENDIENTE");
+                $q->where("status", 1);
+            })->sum("cantidad_total");
+
+        return (float)$stock_actual - (float)$c_pedidos_pendientes;
+    }
+
 
     public function getUrlImagenAttribute()
     {

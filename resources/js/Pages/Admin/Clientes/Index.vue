@@ -132,7 +132,7 @@ const eliminarCliente = (item) => {
                 route("clientes.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
-                updateDatatable();
+                cargarClientes();
             }
         }
     });

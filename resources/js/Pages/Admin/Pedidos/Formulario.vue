@@ -54,8 +54,13 @@ const enviarFormulario = () => {
             console.log(code ?? "");
             console.log(form.errors);
             if (form.errors) {
-                const error =
+                let error =
                     "Existen errores en el formulario, por favor verifique";
+
+                if (form.errors.error) {
+                    error = form.errors.error;
+                }
+
                 Swal.fire({
                     icon: "info",
                     title: "Error",
@@ -118,9 +123,15 @@ const cargarClientes = () => {
 
 const listProductos = ref([]);
 const cargarProductos = () => {
-    axios.get(route("productos.listado")).then((response) => {
-        listProductos.value = response.data.productos;
-    });
+    axios
+        .get(route("productos.listado"), {
+            params: {
+                stock_pendientes: true,
+            },
+        })
+        .then((response) => {
+            listProductos.value = response.data.productos;
+        });
 };
 
 const cargarListas = () => {
@@ -193,9 +204,9 @@ const agregarCarrito = () => {
 
     if (
         parseFloat(cantidad_total.value) >
-        parseFloat(productoSeleccionado.value.stock_actual)
+        parseFloat(productoSeleccionado.value.stock_disponible)
     ) {
-        toast.error("La cantidad solicitada supera el stock actual");
+        toast.error("La cantidad solicitada supera el stock disponible");
         return;
     }
 
@@ -394,7 +405,7 @@ onMounted(() => {
                             >
                                 Unidades disponibles:
                                 <span class="fw-bold fs-6">{{
-                                    productoSeleccionado.stock_actual
+                                    productoSeleccionado.stock_disponible
                                 }}</span>
                             </div>
                         </div>

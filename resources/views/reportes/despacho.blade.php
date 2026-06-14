@@ -45,12 +45,12 @@
         .logo img {
             position: absolute;
             height: 90px;
-            top: -20px;
+            top: -25px;
             left: 0px;
         }
 
         h2.titulo {
-            width: 450px;
+            width: 700px;
             margin: auto;
             margin-top: 0PX;
             text-align: center;
@@ -58,7 +58,7 @@
         }
 
         .texto {
-            width: 250px;
+            width: 700px;
             text-align: center;
             margin: auto;
             font-weight: bold;
@@ -123,6 +123,10 @@
             font-weight: bold;
         }
 
+        .normal {
+            font-weight: normal;
+        }
+
         .lista {
             padding-left: 4px;
             margin-left: 8px;
@@ -130,6 +134,18 @@
 
         .text-md {
             font-size: 10pt;
+        }
+
+        .text-lg {
+            font-size: 13pt;
+        }
+
+        .border-bottom {
+            border-bottom: solid 1px black;
+        }
+
+        .border-top {
+            border-top: solid 1px black;
         }
     </style>
 </head>
@@ -143,62 +159,86 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">Despacho por Producto</h4>
-        <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
+        <h4 class="texto">Reporte de Despachos por Producto</h4>
+        {{-- <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4> --}}
     </div>
-    <table border="0" style="margin-top: 40px;width:60%;">
+    <table border="0" style="margin-top: 60px;width:100%;">
         <tr>
-            <td><strong>Código Despacho:</strong> {{ $despacho->id }}</td>
+            <td width="75%">
+                <strong>Distribuidor:</strong> {{ $despacho->distribuidor->nombre }}
+            </td>
+            <td width="">
+                <strong>Fecha Imp.:</strong> {{ date('d/m/Y') }}
+            </td>
         </tr>
         <tr>
-            <td><strong>Fecha:</strong> {{ $despacho->fecha_t }} {{ $despacho->hora }}</td>
+            <td>
+                <strong>Fecha Pedido:</strong> {{ $despacho->fecha_t }}
+            </td>
+            <td>
+                <strong>Hora Imp.:</strong> {{ date('H:i') }}
+            </td>
         </tr>
         <tr>
-            <td><strong>Distribuidor:</strong> {{ $despacho->distribuidor->nombre }}</td>
-        </tr>
-        <tr>
-            <td><strong>Observacion:</strong> {{ $despacho->observacion }}</td>
+            <td></td>
+            <td><strong>Usuario: </strong>{{ Auth::user()->usuario }}</td>
         </tr>
     </table>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th class="bg-principal">Producto</th>
-                <th class="bg-principal" style="min-width: 140px">
-                    Cantidad Pedido
-                </th>
-                <!-- <th class="bg-principal" style="min-width: 140px">
-                                Stock Actual
-                            </th> -->
-                <th class="bg-principal" style="min-width: 140px">
-                    Cantidad Despacho
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-
-            @foreach ($categoria_productos as $item)
+    @foreach ($categoria_productos as $item)
+        <table style="margin-bottom:20px;">
+            <tbody>
                 <tr>
-                    <td colspan="3" class="gray bold">Categoría: {{ $item->nombre }}</td>
+                    <td width="9%"></td>
+                    <td width="9%"></td>
+                    <td></td>
+                    <td width="25%"></td>
                 </tr>
+                <tr>
+                    <td colspan="4" class="bold border-bottom text-md border-top">CATEGORÍA: <span
+                            class="normal">{{ $item->nombre }}</span></td>
+                </tr>
+                <tr class="border-bottom">
+                    <td class="bold">Cód. Sist.</td>
+                    <td class="bold">Cod. Prod.</td>
+                    <td class="bold">Nombre</td>
+                    <td class="bold derecha">Total</td>
+                </tr>
+                @php
+                    $total = 0;
+                @endphp
                 @foreach ($item['productos'] as $producto_categoria)
                     <tr>
                         <td>
-                            <span class="fw-bold fs-6 me-1">
+                            <span class="">
+                                {{ $producto_categoria->id }}</span>
+                        </td>
+                        <td>
+                            <span class="">
+                                {{ $producto_categoria->codigo }}</span>
+                        </td>
+                        <td>
+                            <span class="">
                                 {{ $producto_categoria->nombre }}</span>
                         </td>
-                        <td class="centreado">
+                        {{-- <td class="centreado">
                             {{ $producto_categoria->cantidad_total }}
-                        </td>
-                        <td class="centreado">
+                        </td> --}}
+                        <td class="derecha">
                             {{ $producto_categoria->cantidad_despacho }}
                         </td>
                     </tr>
+                    @php
+                        $total += (float) $producto_categoria->cantidad_despacho;
+                    @endphp
                 @endforeach
-            @endforeach
-        </tbody>
-    </table>
+                <tr class="border-top">
+                    <td colspan="3" class="derecha bold">TOTAL</td>
+                    <td class="bold derecha">{{ $total }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @endforeach
 </body>
 
 </html>

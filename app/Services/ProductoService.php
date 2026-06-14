@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PedidoDetalle;
 use App\Models\Producto;
 use App\Models\User;
 use App\Services\HistorialAccionService;
@@ -19,11 +20,18 @@ class ProductoService
 
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
-    public function listado(): Collection
+    public function listado($stock_pendientes): Collection
     {
         $productos = Producto::select("productos.*")
             ->with(["presentacion_productos"])
             ->where("estado", 1)->get();
+
+        if ($stock_pendientes) {
+            $productos->map(function ($producto) {
+                $producto->stock_disponible = $producto->setAppends(["url_imagen", "stock_disponible"]);
+                return $producto;
+            });
+        }
         return $productos;
     }
     /**
@@ -192,6 +200,7 @@ class ProductoService
         return $producto;
     }
 
+    // stock_actual
     public function verificaStock($producto_id, $cantidad): bool
     {
         $producto = Producto::findOrFail($producto_id);
@@ -203,6 +212,7 @@ class ProductoService
         return $disponible;
     }
 
+    // stock_actual
     public function verificaStockCantidad($producto_id, $cantidad): array
     {
         $producto = Producto::findOrFail($producto_id);
@@ -214,6 +224,7 @@ class ProductoService
         return [$disponible, $producto->stock_actual];
     }
 
+    // stock_actual
     public function validaStockCantidad($producto_id, $cantidad)
     {
         $producto = Producto::findOrFail($producto_id);
@@ -226,5 +237,28 @@ class ProductoService
             return false;
         }
         return true;
+    }
+
+    // cantidad disponible
+    public function verificaStockDisponible($producto_id, $cantidad, $pedido_id = 0): array
+    {
+        $producto = Producto::findOrFail($producto_id);
+        $disponible = false;
+        $c_pedidos_pendientes = PedidoDetalle::where("producto_id", $producto_id)
+            ->whereHas("pedido", function ($q) use ($pedido_id) {
+                $q->where("estado", "PENDIENTE");
+                $q->where("status", 1);
+                if ($pedido_id != 0) {
+                    $q->where("id", "!=", $pedido_id);
+                }
+            })->sum("cantidad_total");
+
+        $stock_disponible = (float)$producto->stock_actual - (float)$c_pedidos_pendientes;
+
+        if ($stock_disponible >= $cantidad) {
+            $disponible = true;
+        }
+
+        return [$disponible, $stock_disponible];
     }
 }
